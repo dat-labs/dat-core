@@ -1,12 +1,12 @@
 ---
 name: Feature Request
-description: Suggest a feature for dat
+description: Suggest a feature for dat-core
 labels: ["kind:enhancement"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for suggesting a feature for dat!
+        Thanks for suggesting a feature for dat-core!
         If you like to discuss your idea first, please join our [Slack](https://join.slack.com/t/dat-labs/shared_invite/zt-23wh57yhx-3kAdu022NJjabn8M25qTxA)
         and pose your questions in the #technical-help channel.
         For minor features and improvements, feel free to open a [pull request](https://github.com/dat-labs/dat-core/pulls) directly.
@@ -19,13 +19,13 @@ body:
   - type: dropdown
     attributes:
       label: Are you a dat user?
-      description: Please tell us how you are using dat.
+      description: Please tell us how you are using dat-core.
       multiple: false
       options:
-        - "Yes, I'm already a dat user."
-        - "Yes, I run dat in production."
+        - "Yes, I'm already a dat-core user."
+        - "Yes, I run dat-core in production."
         - "Yes, I use it for fun."
-        - "I'd consider using dat, but it's lacking a feature I need."
+        - "I'd consider using dat-core, but it's lacking a feature I need."
   - type: textarea
     attributes:
       label: Use case
