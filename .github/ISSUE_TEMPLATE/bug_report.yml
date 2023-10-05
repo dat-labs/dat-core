@@ -1,0 +1,118 @@
+---
+name: Bug Report
+description: Report a problem with dat-core
+labels: ["kind:bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for bringing a potential issue to our attention in dat-core!
+        Kindly complete the following sections. If you're uncertain whether this constitutes
+        a bug or not, we encourage you to visit our [Slack workspace](https://join.slack.com/t/dat-labs/shared_invite/zt-23wh57yhx-3kAdu022NJjabn8M25qTxA)
+        and inquire in the #technical-help channel.
+  - type: input
+    attributes:
+      label: dat-core version
+      description: Which version of dat-core are you currently using? You can locate this information within the output of dat --version.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Describe the problem
+      description: Outline the problem or issue you encountered.
+      placeholder: >
+        Share the context in which the issue occurred, and details of what happened.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: Describe your expectation of how dat-core should behave.
+      placeholder: >
+        Please provide more details regarding why you think the observed behavior is incorrect.
+        This may involve including precise error messages, log excerpts, or screenshots.
+        You can also attach files by simply dragging and dropping them here.
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: >
+        How can we replicate the issue? If it's not straightforward to reproduce, please join our [Slack](https://join.slack.com/t/dat-labs/shared_invite/zt-23wh57yhx-3kAdu022NJjabn8M25qTxA)
+        and ask in the #technical-help channel.
+      placeholder: >
+        Furnish a detailed, step-by-step description of the procedure to replicate the
+        issue you're encountering. For utmost clarity, consider including a link to a public
+        repository containing a minimalistic reproducer, or share a code snippet that facilitates the problem reproduction.
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Operating system
+      description: What operating system are you using?
+      multiple: true
+      options:
+        - "Linux"
+        - "macOS"
+        - "Windows"
+        - "Other"
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Runtime environment
+      description: >
+        What kind of deployment do you have? If you use a Managed Service, consider first using regular
+        channels of reporting issues for the service.
+      multiple: false
+      options:
+        - "Local"
+        - "Virtual Machine"
+        - "Docker, Docker Compose"
+        - "Kubernetes"
+        - "Airflow"
+        - "Astronomer"
+        - "Google Cloud Composer"
+        - "Google Colab"
+        - "GitHub Codespaces"
+        - "Other"
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Python version
+      description: What Python version are you using?
+      multiple: false
+      options:
+        - "3.11"
+        - "3.10"
+        - "3.9"
+        - "3.8"
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: dat-core source
+      description: Which of the following source are you using?
+      multiple: true
+      options:
+        - Google BigQuery
+        - DuckDB
+        - Filesystem & buckets
+        - Postgres
+        - Amazon Redshift
+        - Snowflake
+  - type: textarea
+    attributes:
+      label: dat-core data destination
+      description: What data source are you using?
+      placeholder: >
+        E.g. dat-core verified destination, FacebookAds, google-sheets, pipedrive, etc.
+  - type: textarea
+    attributes:
+      label: Other deployment details
+      description: Offer more details about your deployment.
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: Is there anything else you'd like us to know?
+      placeholder: >
+        E.g. issue frequency, workarounds, related issues, suggestions on how to fix, etc.
