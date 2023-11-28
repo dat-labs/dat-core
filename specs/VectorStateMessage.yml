@@ -1,0 +1,30 @@
+VectorStateMessage:
+  type: object
+  additionalProperties: true
+  properties:
+    stream:
+      type: object
+      additionalProperties: true
+      required:
+        - stream_descriptor
+        - stream_state
+      properties:
+        stream_descriptor:
+          type: object
+          additionalProperties: true
+          required:
+            - name
+          properties:
+            name:
+              type: string
+            namespace:
+              type: string
+        stream_state:
+          type: object
+          additionalProperties: true
+          required:
+            - data
+          properties:
+            data:
+              description: "the state data"
+              type: object

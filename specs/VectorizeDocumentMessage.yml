@@ -1,0 +1,20 @@
+VectorizeDocumentMessage:
+  type: object
+  additionalProperties: true
+  required:
+    - stream
+    - data
+    - emitted_at
+  properties:
+    namespace:
+      description: "namespace the data is associated with"
+      type: string
+    stream:
+      description: "stream the data is associated with"
+      type: string
+    data:
+      description: "record data"
+      type: object
+    emitted_at:
+      description: "when the data was emitted from the source. epoch in millisecond."
+      type: integer

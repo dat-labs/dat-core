@@ -1,0 +1,18 @@
+VectorizeDocumentStream:
+  type: array
+  items:
+    type: object
+    required:
+      - sync_mode
+    properties:
+      name:
+        type: string
+      dir_uris:
+        type: array
+        items:
+          type: string
+      sync_mode:
+        type: string
+        enum:
+          - full_refresh
+          - incremental

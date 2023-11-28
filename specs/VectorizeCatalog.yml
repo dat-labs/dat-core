@@ -1,0 +1,25 @@
+VectorizeCatalog:
+  description: Specification of VectorizeCatalog
+  type: object
+  required:
+    - document_streams
+  properties:
+    document_streams:
+      type: array
+      items:
+        type: object
+        required:
+          - name
+          - sync_mode
+        properties:
+          name:
+            type: string
+          dir_uris:
+            type: array
+            items:
+              type: string
+          sync_mode:
+            type: string
+            enum:
+              - full_refresh
+              - incremental
