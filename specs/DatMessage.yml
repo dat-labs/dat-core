@@ -29,9 +29,9 @@ properties:
   record:
     description: "record message: the record"
     "$ref": "./DatDocumentMessage.yml"
-  # state:
-  #   description: "schema message: the state. Must be the last message produced. The platform uses this information"
-  #   "$ref": "#/definitions/VectorizeStateMessage"
+  state:
+    description: "schema message: the state. Must be the last message produced. The platform uses this information"
+    "$ref": "./DatStateMessage.yml"
   # trace:
   #   description: "trace message: a message to communicate information about the status and performance of a connector"
   #   "$ref": "#/definitions/VectorizeTraceMessage"
