@@ -2,7 +2,8 @@ from abc import ABC, abstractmethod
 from typing import (Any, Dict, Iterable, Iterator, List,
     Mapping, MutableMapping, Optional, Tuple, Union)
 from utils import schema_validate
-from specs.DatProtocolModels import GenericMessage
+from pydantic_models.dat_message import DatMessage
+from pydantic_models.dat_catalog import DatCatalog
 
 class SourceBase(ABC):
     """
@@ -50,7 +51,7 @@ class SourceBase(ABC):
             # TODO: Raise proper error
             raise
 
-    def discover(self, config: Mapping[str, Any]) -> Dict:
+    def discover(self, config: Mapping[str, Any]) -> DatCatalog:
         """
         Should publish a connectors capabilities i.e it's catalog
 
@@ -59,16 +60,17 @@ class SourceBase(ABC):
               the source's spec.
 
         Returns:
-            Dict: TODO: Should return a DatCatalog object
+            DatCatalog: Supported streams in the connector
         """
-        pass
+        streams = [stream for stream in self.streams(config=config)]
+        return DatCatalog(streams=streams)
 
     def read(
         self,
         config: Mapping[str, Any],
         catalog: Mapping[str, Any],
         state: Optional[Union[List[Dict], MutableMapping[str, Any]]] = None,
-    ) -> Iterator[GenericMessage]:
+    ) -> Iterator[DatMessage]:
         """
         The read operation which will read from the source based on the configured streams
 
@@ -81,5 +83,18 @@ class SourceBase(ABC):
 
         Yields:
             Iterator[Dict]: Each row should be wrapped around a DatMessage obj
+        """
+        pass
+
+    @abstractmethod
+    def streams(self, config: Mapping[str, Any]) -> List[Dict]:
+        """
+        Will return the supported streams
+
+        Args:
+            config (Mapping[str, Any]): User provided connector specs
+
+        Returns:
+            List[Dict]: #TODO return Stream object
         """
         pass
