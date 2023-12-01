@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Iterable, Iterator, List, Mapping, MutableMapping, Optional, Tuple, Union
+from typing import (Any, Dict, Iterable, Iterator, List,
+    Mapping, MutableMapping, Optional, Tuple, Union)
 from utils import schema_validate
+from specs.DatProtocolModels import GenericMessage
 
 class SourceBase(ABC):
     """
@@ -66,7 +68,7 @@ class SourceBase(ABC):
         config: Mapping[str, Any],
         catalog: Mapping[str, Any],
         state: Optional[Union[List[Dict], MutableMapping[str, Any]]] = None,
-    ) -> Iterator[Dict]:
+    ) -> Iterator[GenericMessage]:
         """
         The read operation which will read from the source based on the configured streams
 
