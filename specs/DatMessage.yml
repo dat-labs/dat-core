@@ -16,9 +16,9 @@ properties:
       - CONNECTION_STATUS
       - CATALOG
       - TRACE
-  # log:
-  #   description: "log message: any kind of logging you want the platform to know about."
-  #   "$ref": "#/definitions/VectorizeLogMessage"
+  log:
+    description: "log message: any kind of logging you want the platform to know about."
+    "$ref": "./DatLogMessage.yml"
   spec:
     "$ref": "./ConnectorSpecification.yml"
   connectionStatus:
