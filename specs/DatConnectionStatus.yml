@@ -1,5 +1,5 @@
-# VectorizeConnectionStatus:
-description: Vectorize connection status
+# DatConnectionStatus:
+description: Dat connection status
 type: object
 additionalProperties: true
 required:

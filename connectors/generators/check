@@ -1,0 +1,49 @@
+#! .venv/bin/python
+import os
+import json
+import yaml
+import click
+import openai
+from jsonschema import validate
+from langchain.embeddings.openai import OpenAIEmbeddings
+# from .utils import get_config, schema_validate
+# from base import GeneratorsBase
+
+def schema_validate(json_str, schema_yml_path):
+    with open(schema_yml_path) as yaml_in:
+        schema = yaml.safe_load(yaml_in)
+    instance = json.loads(json_str)
+    return validate(
+        instance=instance,
+        schema=schema,
+    ) is None
+
+
+@click.command()
+@click.option('--config', required=True, help='/path/to/config')
+def main(config):
+    assert schema_validate(
+        json_str=open(config).read(),
+        schema_yml_path="./specs/ConnectorSpecification.yml",
+    )
+    _d = {
+        'DatConnectionStatus': {
+            'status': 'FAILED',
+        }
+    }
+    # import pdb;pdb.set_trace()
+    try:
+        OpenAIEmbeddings(
+            openai_api_key=os.getenv('OPENAI_API_KEY', None),
+            # model=self.model,
+        ).embed_query('foo')
+        # print(_r)
+    except openai.AuthenticationError:
+        print(json.dumps(_d))
+        raise
+    _d['DatConnectionStatus']['status'] = 'SUCCEEDED'
+    print(json.dumps(_d))
+    return
+
+if __name__ == '__main__':
+    main()
