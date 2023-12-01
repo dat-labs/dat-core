@@ -8,6 +8,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from pydantic import AnyUrl, BaseModel, Extra, Field
+from dat_catalog import DatCatalog
 
 
 class Type(Enum):
@@ -66,10 +67,6 @@ class DocumentStream(BaseModel):
     sync_mode: SyncMode
 
 
-class VectorizeCatalog(BaseModel):
-    document_streams: List[DocumentStream]
-
-
 class DatMessage(BaseModel):
     class Config:
         extra = Extra.allow
@@ -77,6 +74,6 @@ class DatMessage(BaseModel):
     type: Type = Field(..., description='Message type')
     spec: Optional[ConnectorSpecification] = None
     connectionStatus: Optional[VectorizeConnectionStatus] = None
-    catalog: Optional[VectorizeCatalog] = Field(
+    catalog: Optional[DatCatalog] = Field(
         None, description='catalog message: the catalog'
     )

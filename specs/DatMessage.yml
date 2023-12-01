@@ -22,10 +22,10 @@ properties:
   spec:
     "$ref": "./ConnectorSpecification.yml"
   connectionStatus:
-    "$ref": "./VectorizeConnectionStatus.yml"
+    "$ref": "./DatConnectionStatus.yml"
   catalog:
     description: "catalog message: the catalog"
-    "$ref": "./VectorizeCatalog.yml"
+    "$ref": "./DatCatalog.yml"
   # record:
   #   description: "record message: the record"
   #   "$ref": "#/definitions/VectorizeRecordMessage"
