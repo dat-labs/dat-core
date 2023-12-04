@@ -8,11 +8,13 @@ project_path = os.path.dirname(os.path.abspath(__file__))
 
 setup(
     name='dat-core',
+    packages=['dat-core'],
+    package_dir={'dat-core': '..'},
     version='0.1',
     description=('Core library for Data Activation Tool'),
     url='https://datachannel.co/',
     license='MIT',
-    packages=find_packages(where=project_path),
+    # packages=find_packages(where=project_path),
     zip_safe=False,
     install_requires=[],
 )

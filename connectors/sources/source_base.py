@@ -1,14 +1,19 @@
+import os
 from abc import ABC, abstractmethod
 from typing import (Any, Dict, Iterable, Iterator, List,
     Mapping, MutableMapping, Optional, Tuple, Union)
+import yaml
 from utils import schema_validate
 from pydantic_models.dat_message import DatMessage
 from pydantic_models.dat_catalog import DatCatalog
+from pydantic_models.connector_specification import ConnectorSpecification
 
 class SourceBase(ABC):
     """
     Base abstract Class for all sources
     """
+    _spec_file = None
+
     def __init__(self) -> None:
         super().__init__()
     
@@ -28,11 +33,14 @@ class SourceBase(ABC):
         """
         pass
 
-    def spec(self):
+    def spec(self) -> ConnectorSpecification:
         """
         Will return source specification
         """
-        pass
+        with open(self._spec_file, 'r') as f:
+            spec_json = yaml.safe_load(f)
+        print(spec_json)
+        return ConnectorSpecification.model_validate(spec_json)
     
     def check(self, config: Mapping[str, Any]) -> Dict:
         """

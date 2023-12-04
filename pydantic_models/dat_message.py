@@ -8,8 +8,8 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from pydantic import AnyUrl, BaseModel, Extra, Field
-from dat_catalog import DatCatalog
-from dat_log_message import DatLogMessage
+from pydantic_models.dat_catalog import DatCatalog
+from pydantic_models.dat_log_message import DatLogMessage
 
 
 class Type(Enum):
@@ -20,29 +20,6 @@ class Type(Enum):
     CONNECTION_STATUS = 'CONNECTION_STATUS'
     CATALOG = 'CATALOG'
     TRACE = 'TRACE'
-
-
-class ConnectorSpecification(BaseModel):
-    class Config:
-        extra = Extra.allow
-
-    protocol_version: Optional[str] = Field(
-        None,
-        description='the Vectorize Protocol version supported by the connector. Protocol versioning uses SemVer.',
-    )
-    documentationUrl: Optional[AnyUrl] = None
-    changelogUrl: Optional[AnyUrl] = None
-    connectionSpecification: Dict[str, Any] = Field(
-        ...,
-        description='ConnectorDefinition specific blob. Must be a valid JSON string.',
-    )
-    supportsIncremental: Optional[bool] = Field(
-        None, description='If the connector supports incremental mode or not.'
-    )
-    supported_destination_sync_modes: Optional[List[Any]] = Field(
-        None, description='List of destination sync modes supported by the connector'
-    )
-
 
 class Status(Enum):
     SUCCEEDED = 'SUCCEEDED'
