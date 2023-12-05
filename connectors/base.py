@@ -24,14 +24,13 @@ class ConnectorBase(ABC):
         """
         pass
 
-    def spec(self) -> ConnectorSpecification:
+    def spec(self) -> Dict:
         """
         Will return source specification
         """
         with open(self._spec_file, 'r') as f:
             spec_json = yaml.safe_load(f)
-        print(spec_json)
-        return ConnectorSpecification.model_validate(spec_json)
+        return spec_json
 
     def check(self, config: Mapping[str, Any]) -> Dict:
         """
