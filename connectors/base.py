@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import (Any, Dict, Mapping, Optional, Tuple)
 import yaml
+from utils import schema_validate
 from pydantic_models.connector_specification import ConnectorSpecification
 
 
@@ -11,16 +12,15 @@ class ConnectorBase(ABC):
     @abstractmethod
     def check_connection(self, config: Mapping[str, Any]) -> Tuple[bool, Optional[Any]]:
         """
-        Based on the given config, it will check if connection to source can be
-        established.
+        Based on the given config, it will check if connection to
+        a source/generator/desitnation can be established.
 
         Args:
             config (Mapping[str, Any]): The user-provided configuration as specified by
               the source's spec.
 
         Returns:
-            Tuple[bool, Optional[Any]]: If the bool is True, then connection is established and
-            no errors are returned. Otherwise, the next item in the Tuple will contain error
+            Tuple[bool, Optional[Any]]: If the bool is True, then connection is established. The next item in the Tuple will either house a connection error or proof of connection.
         """
         pass
 
@@ -44,6 +44,10 @@ class ConnectorBase(ABC):
         Returns:
             Dict: TODO: Should be a DatConnectionStatus object
         """
+        assert schema_validate(
+            json_str=open(config).read(),
+            schema_yml_path=self._spec_file,
+        )
         check_succeeded, error = self.check_connection(config)
         if not check_succeeded:
             # TODO: Raise proper error
