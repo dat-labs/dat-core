@@ -17,7 +17,7 @@ class Stream(ABC):
         camel case string matching the class name.
         """
         # TODO: Make a function for camel case
-        return self.__class__.name
+        return self.__class__.__name__
     
     @property
     def sync_mode(self) -> SyncMode:
