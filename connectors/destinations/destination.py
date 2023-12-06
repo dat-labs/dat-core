@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any, Iterable, List, Mapping
 from pydantic_models.dat_message import DatMessage
+from pydantic_models.dat_catalog import DatCatalog
 from connectors.base import ConnectorBase
 
 
@@ -14,9 +15,11 @@ class Destination(ConnectorBase):
         None
     """
 
-    @abstractmethod
+    def __init__(self) -> None:
+        super().__init__()
+
     def write(
-        self, config: Mapping[str, Any], configured_catalog: ConfiguredDatCatalog, input_messages: Iterable[DatMessage]
+        self, config: Mapping[str, Any], configured_catalog: DatCatalog, input_messages: Iterable[DatMessage]
     ) -> Iterable[DatMessage]:
         """
         Abstract method to be implemented by subclasses.
@@ -32,3 +35,4 @@ class Destination(ConnectorBase):
         Raises:
             NotImplementedError: This method must be implemented by subclasses.
         """
+        pass

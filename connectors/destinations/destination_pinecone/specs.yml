@@ -1,0 +1,21 @@
+# ConnectorSpecification:
+description: Specification of a connector (source/embeddingsgenerator/destination)
+type: object
+required:
+  - connectionSpecification
+additionalProperties: true
+properties:
+  connectionSpecification:
+    description: ConnectorDefinition specific blob. Must be a valid JSON string.
+    type: object
+    required:
+      - pinecone_index
+      - pinecone_environment
+      - pinecone_api_key
+    properties:
+      pinecone_index:
+        type: string
+      pinecone_environment:
+        type: string
+      pinecone_api_key:
+        type: string
