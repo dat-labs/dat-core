@@ -69,6 +69,7 @@ class Agent(ZendeskStream):
         available authenticator
         """
         resp = requests.get(self._endpoint, params=params, headers=self.authenticator.get_auth_header())
+        print(f'Calling {self._endpoint}')
         if resp.status_code == 200:
             return resp.json()
         else:

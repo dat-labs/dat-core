@@ -51,4 +51,4 @@ class ConnectorBase(ABC):
         check_succeeded, error = self.check_connection(config)
         if not check_succeeded:
             # TODO: Raise proper error
-            raise
+            raise Exception('Raise proper exception')

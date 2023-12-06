@@ -15,10 +15,6 @@ class SourceBase(ConnectorBase):
     """
     Base abstract Class for all sources
     """
-
-    def __init__(self) -> None:
-        super().__init__()
-
     def discover(self, config: ConnectorSpecification) -> DatCatalog:
         """
         Should publish a connectors capabilities i.e it's catalog

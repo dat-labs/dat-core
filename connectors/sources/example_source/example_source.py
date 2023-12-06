@@ -25,7 +25,8 @@ class Zendesk(SourceBase):
             )
         agent_stream = Agent(config, authenticator=auth)
         try:
-            agent_stream.read_records(config=config, sync_mode=SyncMode.incremental)
+            for record in agent_stream.read_records(config=config, sync_mode=SyncMode.incremental):
+                print(record)
         except: #TODO: Catch an AuthenticationError
             return False, False
         
@@ -47,6 +48,6 @@ if __name__ == '__main__':
     config = ConnectorSpecification(
         connectionSpecification={'zendesk_username': '', 'zendesk_password': ''}
     )
-    print(Zendesk().check(config=config))
+    Zendesk().check(config=config)
     print(Zendesk().discover(config=config))
     
