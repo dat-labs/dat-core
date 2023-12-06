@@ -1,26 +1,34 @@
-from connectors.generators.spec import main as spec
+from pydantic_models.connector_specification import ConnectorSpecification
+from connectors.generators.base import OpenAI
 from conftest import *
 
 
 def test_generators_spec():
     """
     GIVEN None
-    WHEN ./connectors/generators/spec.py is called
+    WHEN spec() is called on a valid Generator class
     THEN spec stated in ./specs/ConnectorSpecification.yml is returned
     """
-    _r = spec()
-    with open('./specs/ConnectorSpecification.yml') as yaml_in:
+    
+    spec = OpenAI().spec()
+    with open('./connectors/generators/specs.yml') as yaml_in:
         schema = yaml.safe_load(yaml_in)
-        assert schema == _r
+        assert schema == spec
 
 
 def test_generators_check():
     """
     GIVEN a valid connectionSpecification JSON config
-    WHEN ./connectors/generators/spec.py is called
-    THEN spec stated in ./specs/ConnectorSpecification.yml is returned
+    WHEN check() is called on a valid Generator class
+    THEN no error is raised
     """
-    _r = spec()
-    with open('./specs/ConnectorSpecification.yml') as yaml_in:
-        schema = yaml.safe_load(yaml_in)
-        assert schema == _r
+    check = OpenAI().check(config=ConnectorSpecification.model_validate_json(
+            open('generator_config.json').read()),)
+    assert check is None
+
+def test_generators_generate():
+    """
+    GIVEN a valid connectionSpecification JSON config
+    WHEN check() is called on a valid Generator class
+    THEN no error is raised
+    """

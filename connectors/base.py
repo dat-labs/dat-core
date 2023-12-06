@@ -45,7 +45,7 @@ class ConnectorBase(ABC):
             Dict: TODO: Should be a DatConnectionStatus object
         """
         assert schema_validate(
-            json_str=open(config).read(),
+            json_str=config.model_dump_json(),
             schema_yml_path=self._spec_file,
         )
         check_succeeded, error = self.check_connection(config)
