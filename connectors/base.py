@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import (Any, Dict, Mapping, Optional, Tuple)
+from typing import (Any, Dict, Optional, Tuple)
 import yaml
 from utils import schema_validate
 from pydantic_models.connector_specification import ConnectorSpecification
+from pydantic_models.dat_connection_status import DatConnectionStatus, Status
 
 
 class ConnectorBase(ABC):
@@ -10,7 +11,7 @@ class ConnectorBase(ABC):
     _spec_file = None
 
     @abstractmethod
-    def check_connection(self, config: Mapping[str, Any]) -> Tuple[bool, Optional[Any]]:
+    def check_connection(self, config: ConnectorSpecification) -> Tuple[bool, Optional[Any]]:
         """
         Based on the given config, it will check if connection to
         a source/generator/desitnation can be established.
@@ -32,7 +33,7 @@ class ConnectorBase(ABC):
             spec_json = yaml.safe_load(f)
         return spec_json
 
-    def check(self, config: Mapping[str, Any]) -> Dict:
+    def check(self, config: ConnectorSpecification) -> Dict:
         """
         This will verify that the passed configuration follows a given schema and
           that connection can be established.
@@ -45,10 +46,12 @@ class ConnectorBase(ABC):
             Dict: TODO: Should be a DatConnectionStatus object
         """
         assert schema_validate(
-            json_str=config.model_dump_json(),
+            instance=config.model_dump(),
             schema_yml_path=self._spec_file,
         )
-        check_succeeded, error = self.check_connection(config)
-        if not check_succeeded:
-            # TODO: Raise proper error
-            raise Exception('Raise proper exception')
+        # e_o_p_o_c: error or proof of connection
+        check_succeeded, e_o_p_o_c = self.check_connection(config)
+        return DatConnectionStatus(
+            status=Status.SUCCEEDED if check_succeeded else Status.FAILED,
+            message=str(e_o_p_o_c),
+        )

@@ -17,7 +17,7 @@ class Zendesk(SourceBase):
     def check_connection(self, config: Mapping[str, Any]) -> Tuple[bool, Any | None]:
         """
         Check whether the user provided config is able to make a connection 
-        to zendesk or not
+        to Zendesk or not
         """
         auth = BasicHttpAuthenticator(
             username=config.connectionSpecification['zendesk_username'],
