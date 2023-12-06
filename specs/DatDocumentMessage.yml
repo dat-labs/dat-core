@@ -17,7 +17,7 @@ properties:
     properties:
       document_chunk:
         description: "document chunks emitted by source"
-        type: object
+        type: string
   emitted_at:
     description: "when the data was emitted from the source. epoch in millisecond."
     type: integer
