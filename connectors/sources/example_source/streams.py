@@ -1,15 +1,19 @@
+import requests
 from typing import Any, Dict, Iterable, List, Mapping, Optional
 from connectors.sources.stream import Stream
 from pydantic_models.connector_specification import ConnectorSpecification
-
-
+from pydantic_models.dat_catalog import SyncMode
 class ZendeskStream(Stream):
     """
     Base class for a Zendesk stream
     """
+    def __init__(self, config: ConnectorSpecification, **kwargs: Mapping[str, Any]) -> None:
+        self.config = config
+        self.authenticator = kwargs.get('authenticator', None)
+    
     def read_records(self,
         config: ConnectorSpecification,
-        sync_mode: str,
+        sync_mode: SyncMode,
         cursor_field: List[str] | None = None,
         stream_state: Mapping[str, Any] | None = None
     ) -> Iterable[Dict]:
@@ -44,11 +48,48 @@ class Agent(ZendeskStream):
     """
     Stream class for a Zendesk Agent
     """
+    _endpoint = 'https://www.zopim.com/api/v2/agents'
+
     def request_params(self, stream_state: Optional[Mapping[str, Any]], next_page_token: Optional[str]) -> Dict:
-        pass
+        """
+        Any optional parameter that has to be passed to send_request
+
+        Args:
+            stream_state (Optional[Mapping[str, Any]]): Last know state of the stream
+            next_page_token (Optional[str]): If available
+
+        Returns:
+            Dict: request params as a dict
+        """
+        return {'limit': 100}
 
     def send_request(self, params: Dict) -> Iterable[Dict]:
-        pass
-
+        """
+        Send a HTTP request with the given params and 
+        available authenticator
+        """
+        resp = requests.get(self._endpoint, params=params, headers=self.authenticator.get_auth_header())
+        if resp.status_code == 200:
+            return resp.json()
+        else:
+            raise Exception('Raise an Authentication error') #TODO
+        
     def parse_response(self, response: Iterable[Dict]) -> Iterable[Dict]:
-        pass
+        """
+        Parse the response based on available schema
+        TODO: Integrate parsing based on schema information
+        """
+        return response
+    
+    def next_page_token(self, response: Iterable[Dict], current_page_token: Optional[str]) -> str:
+        """
+        TODO: To be implemented
+
+        Args:
+            response (Iterable[Dict]): _description_
+            current_page_token (Optional[str]): _description_
+
+        Returns:
+            str: _description_
+        """
+        return None

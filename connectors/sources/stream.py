@@ -7,9 +7,6 @@ class Stream(ABC):
     """
     Base abstract class for a Dat Stream
     """
-    def __init__(self, config: ConnectorSpecification) -> None:
-        self.config = config
-
     @property
     def name(self) -> str:
         """
