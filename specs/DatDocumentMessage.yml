@@ -2,7 +2,6 @@
 type: object
 additionalProperties: true
 required:
-  - stream
   - data
   - emitted_at
 properties:
