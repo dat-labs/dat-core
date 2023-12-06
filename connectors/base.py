@@ -23,7 +23,6 @@ class ConnectorBase(ABC):
         Returns:
             Tuple[bool, Optional[Any]]: If the bool is True, then connection is established. The next item in the Tuple will either house a connection error or proof of connection.
         """
-        pass
 
     def spec(self) -> Dict:
         """
