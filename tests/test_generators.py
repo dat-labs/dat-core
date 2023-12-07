@@ -13,7 +13,7 @@ def test_generators_spec():
     """
     
     spec = OpenAI().spec()
-    with open('./connectors/generators/specs.yml') as yaml_in:
+    with open('./connectors/generators/specs/openai-specs.yml') as yaml_in:
         schema = yaml.safe_load(yaml_in)
         assert schema == spec
 

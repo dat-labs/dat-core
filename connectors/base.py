@@ -32,7 +32,7 @@ class ConnectorBase(ABC):
             spec_json = yaml.safe_load(f)
         return spec_json
 
-    def check(self, config: ConnectorSpecification) -> Dict:
+    def check(self, config: ConnectorSpecification) -> DatConnectionStatus:
         """
         This will verify that the passed configuration follows a given schema and
           that connection can be established.
@@ -42,12 +42,8 @@ class ConnectorBase(ABC):
             the source's spec.
 
         Returns:
-            Dict: TODO: Should be a DatConnectionStatus object
+            DatConnectionStatus
         """
-        assert schema_validate(
-            instance=config.model_dump(),
-            schema_yml_path=self._spec_file,
-        )
         # e_o_p_o_c: error or proof of connection
         check_succeeded, e_o_p_o_c = self.check_connection(config)
         return DatConnectionStatus(

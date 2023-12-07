@@ -1,14 +1,10 @@
 # ConnectorSpecification:
-description: Specification of a connector (source/embeddingsgenerator/destination)
+description: Specification of OpenAI Generator
 type: object
 required:
   - connectionSpecification
 additionalProperties: true
 properties:
-  # General Properties (Common to all connectors)
-  # protocol_version: 1.0
-  # documentationUrl: 'www.example.com'
-  # changelogUrl: 'www.example.com'
   connectionSpecification:
     description: ConnectorDefinition specific blob. Must be a valid JSON string.
     type: object
@@ -17,4 +13,3 @@ properties:
     properties:
       openai_api_key:
         type: string
-      
