@@ -18,6 +18,7 @@ class Destination(ConnectorBase):
     def __init__(self) -> None:
         super().__init__()
 
+    @abstractmethod
     def write(
         self, config: Mapping[str, Any], configured_catalog: DatCatalog, input_messages: Iterable[DatMessage]
     ) -> Iterable[DatMessage]:
@@ -35,4 +36,3 @@ class Destination(ConnectorBase):
         Raises:
             NotImplementedError: This method must be implemented by subclasses.
         """
-        pass
