@@ -1,5 +1,6 @@
 from pydantic_models.connector_specification import ConnectorSpecification
-from pydantic_models.dat_connection_status import DatConnectionStatus, Status
+from pydantic_models.dat_connection_status import Status
+from pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data
 from connectors.generators.base import OpenAI
 from conftest import *
 
@@ -23,13 +24,32 @@ def test_generators_check():
     WHEN check() is called on a valid Generator class
     THEN no error is raised
     """
-    check = OpenAI().check(config=ConnectorSpecification.model_validate_json(
+    check = OpenAI().check(
+        config=ConnectorSpecification.model_validate_json(
             open('generator_config.json').read()),)
     assert check.status == Status.SUCCEEDED
 
 def test_generators_generate():
     """
     GIVEN a valid connectionSpecification JSON config
-    WHEN check() is called on a valid Generator class
-    THEN no error is raised
+    WHEN generate() is called on a valid Generator class
+    THEN a generator is returned with metadata intact and vectors populated
     """
+    metadata = {'foo': 'bar'}
+    generate = OpenAI().generate(
+        config=ConnectorSpecification.model_validate_json(
+            open('generator_config.json').read()),
+        dat_message=DatMessage(
+            type=Type.RECORD,
+            record=DatDocumentMessage(
+                data=Data(
+                    document_chunk='foo',
+                    metadata=metadata,
+                    ),
+                emitted_at=1,
+            ),
+        )    
+    )
+    for dm in generate:
+        assert dm.record.data.metadata == metadata
+        assert len(dm.record.data.vectors)

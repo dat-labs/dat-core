@@ -1,6 +1,6 @@
 #! /Users/rijumone/Kitchen/dat-core/.venv/bin/python
 # import click
-import json
+from time import time
 from typing import Iterator, List
 import openai
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -20,7 +20,7 @@ class GeneratorBase(ConnectorBase):
     def generate(
         self,
         config: ConnectorSpecification,
-        document_chunk: DatMessage
+        dat_message: DatMessage
     ) -> Iterator[DatMessage]:
         """
         The generator operation will generator vector chunks
@@ -33,10 +33,10 @@ class GeneratorBase(ConnectorBase):
             Iterator[Dict]: Each row should be wrapped around a DatMessage obj
         """
         
-        _r = OpenAIEmbeddings(
+        dat_message.record.data.vectors = OpenAIEmbeddings(
             openai_api_key=config.connectionSpecification.get('openai_api_key'),
-        ).embed_query(document_chunk.record.data.document_chunk)
-        print(_r)
+        ).embed_query(dat_message.record.data.document_chunk)
+        yield dat_message
 
 
     
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     e = OpenAI().generate(
         config=ConnectorSpecification.model_validate_json(
             open('generator_config.json').read()),
-        document_chunk=DatMessage(
+        dat_message=DatMessage(
             type=Type.RECORD,
             record=DatDocumentMessage(
                 data=Data(
@@ -79,4 +79,4 @@ if __name__ == '__main__':
             ),
         )    
     )
-    print(e)
+    print(list(e))
