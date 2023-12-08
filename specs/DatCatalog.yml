@@ -14,6 +14,8 @@ properties:
       properties:
         name:
           type: string
+        json_schema:
+          type: object
         dir_uris:
           type: array
           items:

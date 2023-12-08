@@ -7,8 +7,9 @@ class ZendeskStream(Stream):
     """
     Base class for a Zendesk stream
     """
-    def __init__(self, config: ConnectorSpecification, **kwargs: Mapping[str, Any]) -> None:
+    def __init__(self, config: ConnectorSpecification, schema: Optional[Mapping[str, Any]], **kwargs: Mapping[str, Any]) -> None:
         self.config = config
+        self._schema = schema
         self.authenticator = kwargs.get('authenticator', None)
     
     def read_records(self,

@@ -21,8 +21,23 @@ class Stream(ABC):
         # TODO: Fix return
         return SyncMode.incremental
     
+    @property
+    def json_schema(self) -> Mapping[str, Any]:
+        return self._schema
+    
     def as_pydantic_model(self) -> DocumentStream:
-        return DocumentStream(name=self.name, sync_mode=self.sync_mode)
+        return DocumentStream(name=self.name, sync_mode=self.sync_mode, json_schema=self.json_schema)
+    
+    def get_schema_json(self) -> Dict:
+        """
+        Get the schema by either reading from the catalog.yml or some
+        custom implementation
+
+        Returns:
+            Dict: schema of the stream response
+        """
+        # Default behavior. Otherwise one could have custom implementation
+        return self.json_schema
 
     @abstractmethod
     def read_records(self,
