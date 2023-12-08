@@ -1,0 +1,21 @@
+type: object
+properties:
+  streams:
+    type: array
+    items:
+      - type: object
+        properties:
+          name: content_search
+          json_schema:
+            type: object
+            properties:
+              text_content:
+                type: string
+              page_id:
+                type: string
+                
+          supported_sync_modes:
+            type: string
+            enum:
+              - incremental
+              - full

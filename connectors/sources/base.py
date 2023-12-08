@@ -48,8 +48,10 @@ class SourceBase(ConnectorBase):
         Yields:
             Iterator[Dict]: Each row should be wrapped around a DatMessage obj
         """
-        for configured_stream in catalog.streams:
-            yield from configured_stream.read_records(
+        stream_instances = {s.name: s for s in self.streams(config)}
+        for configured_stream in catalog.document_streams:
+            stream_instance = stream_instances.get(configured_stream.name)
+            yield from stream_instance.read_records(
                 config=config,
                 sync_mode=configured_stream.sync_mode,
                 cursor_field=None, # TODO: To be implemented,

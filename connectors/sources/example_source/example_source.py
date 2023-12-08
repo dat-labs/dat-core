@@ -45,9 +45,13 @@ class Zendesk(SourceBase):
         return [Agent(config)]
 
 if __name__ == '__main__':
+    import os
+    # config_json = Zendesk().spec()
+    # print(config_json)
     config = ConnectorSpecification(
-        connectionSpecification={'zendesk_username': '', 'zendesk_password': ''}
+        connectionSpecification={'zendesk_username': os.environ.get('zendesk_username'), 'zendesk_password': os.environ.get('zendesk_password')}
     )
+    print(config.model_dump_json())
     Zendesk().check(config=config)
     print(Zendesk().discover(config=config))
     
