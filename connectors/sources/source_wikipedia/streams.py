@@ -1,15 +1,16 @@
 import requests
+import time
 from lxml import html
 from typing import Any, Dict, Iterable, List, Mapping, Optional
 from connectors.sources.stream import Stream
 from pydantic_models.connector_specification import ConnectorSpecification
 from pydantic_models.dat_catalog import SyncMode
-
+from pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data
 class WikipediaStream(Stream):
     """
     Base class for a Wikipedia stream
     """
-    def __init__(self, config: ConnectorSpecification, schema: Optional[Mapping[str, Any]], **kwargs: Mapping[str, Any]) -> None:
+    def __init__(self, config: ConnectorSpecification, schema: Optional[Mapping[str, Any]]=None, **kwargs: Mapping[str, Any]) -> None:
         self.config = config
         self._schema = schema
         self.authenticator = kwargs.get('authenticator', None)
@@ -94,8 +95,15 @@ class ContentSearch(WikipediaStream):
         document = html.document_fromstring(raw_html)
         text = ''
         for p in document.xpath('//p'):
-            text += p.text_content() + '\n'
-            yield text
+            text = p.text_content() + '\n'
+            dat_msg = DatMessage(
+                type=Type.RECORD,
+                record=DatDocumentMessage(
+                    stream=self.name,
+                    data=Data(document_chunk=text, metadata=None),
+                    emitted_at=int(time.time())),
+            )
+            yield dat_msg
     
     def next_page_token(self, response: Iterable[Dict], current_page_token: Optional[str]) -> str:
         """
