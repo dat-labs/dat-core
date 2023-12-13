@@ -13,6 +13,7 @@ class Zendesk(SourceBase):
     Example source
     """
     _spec_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'specs.yml')
+    _catalog_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'catalog.yml')
 
     def check_connection(self, config: Mapping[str, Any]) -> Tuple[bool, Any | None]:
         """
@@ -32,13 +33,15 @@ class Zendesk(SourceBase):
         
         return (True, True)
     
-    def streams(self, config: Mapping[str, Any]) -> List[Stream]:
+    def streams(self, config: Mapping[str, Any], json_schemas: Mapping[str, Mapping[str, Any]]=None) -> List[Stream]:
         """
         Return list of available streams in Zendesk
 
         Args:
             config (Mapping[str, Any]): The user-provided configuration as specified by
               the source's spec.
+            json_schemas (Mapping[str, Mapping[str, Any]]): List of json schemas with each item a dictionary
+                with it's key as stream name
         Returns:
             List[Stream]: No need to explain
         """

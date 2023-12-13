@@ -9,6 +9,7 @@ from pydantic_models.dat_connection_status import DatConnectionStatus, Status
 class ConnectorBase(ABC):
 
     _spec_file = None
+    _catalog_file = None
 
     @abstractmethod
     def check_connection(self, config: ConnectorSpecification) -> Tuple[bool, Optional[Any]]:

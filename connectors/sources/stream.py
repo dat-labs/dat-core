@@ -2,19 +2,21 @@ from typing import Dict, List, Optional, Iterable, Mapping, Any
 from abc import ABC, abstractmethod
 from pydantic_models.connector_specification import ConnectorSpecification
 from pydantic_models.dat_catalog import DocumentStream, SyncMode
+from utils import to_snake_case
 
 class Stream(ABC):
     """
     Base abstract class for a Dat Stream
     """
+    @classmethod
     @property
-    def name(self) -> str:
+    def name(cls) -> str:
         """
         Returns the name of the stream. Ideally it should be a
         camel case string matching the class name.
         """
         # TODO: Make a function for camel case
-        return self.__class__.__name__
+        return to_snake_case(cls.__name__)
     
     @property
     def sync_mode(self) -> SyncMode:

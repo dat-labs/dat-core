@@ -15,6 +15,14 @@ class SourceBase(ConnectorBase):
     """
     Base abstract Class for all sources
     """
+    def read_catalog_file(self) -> Dict:
+        """
+        Read the catalog file and return the json contents
+        """
+        with open(self._catalog_file, 'r') as _f:
+            catalog_json = yaml.safe_load(_f)
+            return catalog_json
+        
     def discover(self, config: ConnectorSpecification) -> DatCatalog:
         """
         Should publish a connectors capabilities i.e it's catalog
@@ -26,7 +34,10 @@ class SourceBase(ConnectorBase):
         Returns:
             DatCatalog: Supported streams in the connector
         """
-        streams = [stream.as_pydantic_model() for stream in self.streams(config=config)]
+        catalog_json = self.read_catalog_file()
+        streams = catalog_json['properties']['streams']['items']
+        json_schemas = {_s['properties']['name']: _s['properties']['json_schema']['properties'] for _s in streams}
+        streams = [stream.as_pydantic_model() for stream in self.streams(config=config, json_schemas=json_schemas)]
         return DatCatalog(document_streams=streams)
 
     def read(
@@ -59,12 +70,14 @@ class SourceBase(ConnectorBase):
             )
 
     @abstractmethod
-    def streams(self, config: Mapping[str, Any]) -> List[Stream]:
+    def streams(self, config: Mapping[str, Any], json_schemas: Mapping[str, Mapping[str, Any]]=None) -> List[Stream]:
         """
         Will return the supported streams
 
         Args:
             config (Mapping[str, Any]): User provided connector specs
+            json_schemas (Mapping[str, Mapping[str, Any]]): List of json schemas with each item a dictionary
+                with it's key as stream name
 
         Returns:
             List[Dict]: #TODO return Stream object
