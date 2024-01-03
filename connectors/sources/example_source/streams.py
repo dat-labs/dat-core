@@ -1,8 +1,13 @@
+import time
+import json
 import requests
 from typing import Any, Dict, Iterable, List, Mapping, Optional
 from connectors.sources.stream import Stream
 from pydantic_models.connector_specification import ConnectorSpecification
 from pydantic_models.dat_catalog import SyncMode
+from pydantic_models.dat_message import DatMessage
+from pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data
+
 class ZendeskStream(Stream):
     """
     Base class for a Zendesk stream
@@ -17,7 +22,7 @@ class ZendeskStream(Stream):
         sync_mode: SyncMode,
         cursor_field: List[str] | None = None,
         stream_state: Mapping[str, Any] | None = None
-    ) -> Iterable[Dict]:
+    ) -> DatMessage:
         """
         Will fetch data from the stream. It also supports pagination
 
@@ -76,12 +81,19 @@ class Agent(ZendeskStream):
         else:
             raise Exception('Raise an Authentication error') #TODO
         
-    def parse_response(self, response: Iterable[Dict]) -> Iterable[Dict]:
+    def parse_response(self, response: Iterable[Dict]) -> DatMessage:
         """
         Parse the response based on available schema
         TODO: Integrate parsing based on schema information
         """
-        return response
+        dat_msg = DatMessage(
+                type=Type.RECORD,
+                record=DatDocumentMessage(
+                    stream=self.name,
+                    data=Data(document_chunk=json.dumps(response), metadata=None),
+                    emitted_at=int(time.time())),
+            )
+        yield dat_msg
     
     def next_page_token(self, response: Iterable[Dict], current_page_token: Optional[str]) -> str:
         """

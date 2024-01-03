@@ -20,7 +20,7 @@ class WikipediaStream(Stream):
         sync_mode: SyncMode,
         cursor_field: Optional[List[str]] = None,
         stream_state: Optional[Mapping[str, Any]] = None
-    ) -> Iterable[Dict]:
+    ) -> DatMessage:
         """
         Will fetch data from the stream. It also supports pagination
 
@@ -86,7 +86,7 @@ class ContentSearch(WikipediaStream):
         else:
             raise Exception('Raise an Authentication error') #TODO
         
-    def parse_response(self, response: Iterable[Dict]) -> Iterable[Dict]:
+    def parse_response(self, response: Iterable[Dict]) -> DatMessage:
         """
         Parse the response based on available schema
         TODO: Integrate parsing based on schema information

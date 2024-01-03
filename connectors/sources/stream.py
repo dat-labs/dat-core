@@ -2,6 +2,7 @@ from typing import Dict, List, Optional, Iterable, Mapping, Any
 from abc import ABC, abstractmethod
 from pydantic_models.connector_specification import ConnectorSpecification
 from pydantic_models.dat_catalog import DocumentStream, SyncMode
+from pydantic_models.dat_message import DatMessage
 from utils import to_snake_case
 
 class Stream(ABC):
@@ -47,5 +48,5 @@ class Stream(ABC):
         sync_mode: str,
         cursor_field: Optional[List[str]] = None,
         stream_state: Optional[Mapping[str, Any]] = None
-    ) -> Iterable[Dict]:
+    ) -> DatMessage:
         pass
