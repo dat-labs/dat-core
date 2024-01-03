@@ -9,7 +9,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class Model(BaseModel):
+class StreamMetadata(BaseModel):
     class Config:
         extra = 'allow'
 
