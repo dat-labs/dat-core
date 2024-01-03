@@ -18,8 +18,8 @@ class WikipediaStream(Stream):
     def read_records(self,
         config: ConnectorSpecification,
         sync_mode: SyncMode,
-        cursor_field: List[str] | None = None,
-        stream_state: Mapping[str, Any] | None = None
+        cursor_field: Optional[List[str]] = None,
+        stream_state: Optional[Mapping[str, Any]] = None
     ) -> Iterable[Dict]:
         """
         Will fetch data from the stream. It also supports pagination

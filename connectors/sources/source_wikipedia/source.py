@@ -14,7 +14,7 @@ class Wikipedia(SourceBase):
     _spec_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'specs.yml')
     _catalog_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'catalog.yml')
 
-    def check_connection(self, config: ConnectorSpecification) -> Tuple[bool, Any | None]:
+    def check_connection(self, config: ConnectorSpecification) -> Tuple[bool, Any]:
         """
         Check whether the user provided config is able to make a connection 
         to Wikipedia or not
@@ -45,6 +45,6 @@ if __name__ == '__main__':
     config = ConnectorSpecification(connectionSpecification={})
     catalog = Wikipedia().discover(config=config)
     print(catalog)
-    # doc_generator = Wikipedia().read(config=config, catalog=catalog)
-    # for doc in doc_generator:
-    #     print(doc)
+    doc_generator = Wikipedia().read(config=config, catalog=catalog)
+    for doc in doc_generator:
+        print(doc)
