@@ -1,0 +1,24 @@
+description: Will define the Connection between Source(s), Generator(s) and Destination(s)
+type: object
+required:
+  - spec
+additionalProperties: true
+properties:
+  protocol_version:
+    description: "the Vectorize Protocol version supported by the connector. Protocol versioning uses SemVer."
+    type: string
+  spec:
+    description: ConnectorDefinition specific blob. Must be a valid JSON string.
+    type: object
+    required:
+      - source
+      - generator
+      - destination
+    properties:
+      source:
+        "$ref": "./ConnectorSpecification.yml"
+      generator:
+        "$ref": "./ConnectorSpecification.yml"
+      destination:
+        "$ref": "./ConnectorSpecification.yml"
+        
