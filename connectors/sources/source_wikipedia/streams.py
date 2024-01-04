@@ -6,6 +6,8 @@ from connectors.sources.stream import Stream
 from pydantic_models.connector_specification import ConnectorSpecification
 from pydantic_models.dat_catalog import SyncMode
 from pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data
+from pydantic_models.stream_metadata import StreamMetadata
+from utils import to_snake_case
 class WikipediaStream(Stream):
     """
     Base class for a Wikipedia stream
@@ -15,6 +17,10 @@ class WikipediaStream(Stream):
         self._schema = schema
         self.authenticator = kwargs.get('authenticator', None)
     
+    @property
+    def source_name(cls) -> str:
+        return to_snake_case('Wikipedia')
+
     def read_records(self,
         config: ConnectorSpecification,
         sync_mode: SyncMode,
@@ -42,11 +48,26 @@ class WikipediaStream(Stream):
             )
             response = self.send_request(params)
             for record in self.parse_response(response):
+                record.record.data.metadata = self.get_metadata(
+                    # document_chunk=record.record.data.document_chunk,
+                    document_chunk=None,
+                    data_entity='Quantum Computing'
+                    )
                 yield record
 
             next_page_token = self.next_page_token(response, current_page_token=next_page_token)
             if not next_page_token:
                 break
+    
+    def get_metadata(self, document_chunk: str, data_entity: str) -> StreamMetadata:
+        metadata = StreamMetadata(
+            source=self.source_name,
+            stream=self.name,
+            data_entity=data_entity,
+            retrieved_at=int(time.time()),
+            document_chunk=document_chunk
+        )
+        return metadata
 
 class ContentSearch(WikipediaStream):
     """

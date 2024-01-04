@@ -1,8 +1,9 @@
 from typing import Dict, List, Optional, Iterable, Mapping, Any
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractclassmethod
 from pydantic_models.connector_specification import ConnectorSpecification
 from pydantic_models.dat_catalog import DocumentStream, SyncMode
 from pydantic_models.dat_message import DatMessage
+from pydantic_models.stream_metadata import StreamMetadata
 from utils import to_snake_case
 
 class Stream(ABC):
@@ -19,6 +20,14 @@ class Stream(ABC):
         # TODO: Make a function for camel case
         return to_snake_case(cls.__name__)
     
+    @property
+    @abstractclassmethod
+    def source_name(cls) -> str:
+        """
+        Should return the name of the source connector
+        """
+        pass
+
     @property
     def sync_mode(self) -> SyncMode:
         # TODO: Fix return
@@ -41,6 +50,22 @@ class Stream(ABC):
         """
         # Default behavior. Otherwise one could have custom implementation
         return self.json_schema
+    
+    @abstractmethod
+    def get_metadata(self, document_chunk: str, data_entity: str) -> StreamMetadata:
+        """
+        Get necessary metadata to be published which will give a
+        hint about the nature of data that is being published
+
+        Args:
+            document_chunk (str): A single chunk of text document
+            data_entity (str): Data entity represents the source of the document chunk. It
+                can be a file_url, some database table, local filepath etc
+
+        Returns:
+            StreamMetadata: Object of this class
+        """
+        pass
 
     @abstractmethod
     def read_records(self,
