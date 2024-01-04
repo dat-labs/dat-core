@@ -61,11 +61,11 @@ class WikipediaStream(Stream):
     
     def get_metadata(self, document_chunk: str, data_entity: str) -> StreamMetadata:
         metadata = StreamMetadata(
-            source=self.source_name,
-            stream=self.name,
-            data_entity=data_entity,
-            retrieved_at=int(time.time()),
-            document_chunk=document_chunk
+            dat_source=self.source_name,
+            dat_stream=self.name,
+            dat_document_entity=data_entity,
+            dat_last_modified=int(time.time()),
+            dat_document_chunk=document_chunk
         )
         return metadata
 

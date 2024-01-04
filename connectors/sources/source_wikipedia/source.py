@@ -47,4 +47,4 @@ if __name__ == '__main__':
     print(catalog)
     doc_generator = Wikipedia().read(config=config, catalog=catalog)
     for doc in doc_generator:
-        print(doc)
+        print(doc.model_dump_json())
