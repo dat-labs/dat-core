@@ -1,7 +1,15 @@
 from __future__ import annotations
+
+from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from pydantic import AnyUrl, BaseModel, Field
+
+class DestinationSyncMode(Enum):
+    append = 'append'
+    replace = 'replace'
+    upsert = 'upsert'
+
 
 class ConnectorSpecification(BaseModel):
     class Config:
@@ -20,6 +28,6 @@ class ConnectorSpecification(BaseModel):
     supportsIncremental: Optional[bool] = Field(
         None, description='If the connector supports incremental mode or not.'
     )
-    supported_destination_sync_modes: Optional[List[Any]] = Field(
+    supported_destination_sync_modes: Optional[List[DestinationSyncMode]] = Field(
         None, description='List of destination sync modes supported by the connector'
     )

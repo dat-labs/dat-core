@@ -1,5 +1,9 @@
+import io
+import sys
 from abc import ABC, abstractmethod
+from loguru import logger
 from typing import Any, Iterable, List, Mapping
+from pydantic import ValidationError
 from pydantic_models.dat_message import DatMessage
 from pydantic_models.dat_catalog import DatCatalog
 from connectors.base import ConnectorBase
@@ -36,3 +40,13 @@ class Destination(ConnectorBase):
         Raises:
             NotImplementedError: This method must be implemented by subclasses.
         """
+
+    def _parse_input_stream(self, input_stream: io.TextIOWrapper) -> Iterable[DatMessage]:
+        """Reads from stdin, converting to Dat messages"""
+        for line in input_stream:
+            try:
+                _message = DatMessage.parse_raw(line)
+                print(f"message: {_message}")
+                yield _message
+            except ValidationError:
+                logger.info(f"ignoring input which can't be deserialized as Dat Message: {line}")
