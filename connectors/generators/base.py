@@ -95,8 +95,9 @@ class SentenceTransformers(GeneratorBase):
             Iterator[Dict]: Each row should be wrapped around a DatMessage obj
         """
         
-        dat_message.record.data.vectors = SentenceTransformer('all-MiniLM-L6-v2').encode(
-            dat_message.record.data.document_chunk)
+        dat_message.record.data.vectors = [_ for _ in SentenceTransformer('all-MiniLM-L6-v2').encode(
+            dat_message.record.data.document_chunk)]
+        # list comprehension to convert Numpy array to Python list
         yield dat_message
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional, Iterable, Mapping, Any
 from abc import ABC, abstractmethod, abstractclassmethod
 from pydantic_models.connector_specification import ConnectorSpecification
-from pydantic_models.dat_catalog import DocumentStream, SyncMode
+from pydantic_models.dat_document_stream import DatDocumentStream, SyncMode
 from pydantic_models.dat_message import DatMessage
 from pydantic_models.stream_metadata import StreamMetadata
 from utils import to_snake_case
@@ -19,14 +19,6 @@ class Stream(ABC):
         """
         # TODO: Make a function for camel case
         return to_snake_case(cls.__name__)
-    
-    @property
-    @abstractclassmethod
-    def source_name(cls) -> str:
-        """
-        Should return the name of the source connector
-        """
-        pass
 
     @property
     def sync_mode(self) -> SyncMode:
@@ -37,8 +29,8 @@ class Stream(ABC):
     def json_schema(self) -> Mapping[str, Any]:
         return self._schema
     
-    def as_pydantic_model(self) -> DocumentStream:
-        return DocumentStream(name=self.name, sync_mode=self.sync_mode, json_schema=self.json_schema)
+    def as_pydantic_model(self) -> DatDocumentStream:
+        return DatDocumentStream(name=self.name, sync_mode=self.sync_mode, json_schema=self.json_schema)
     
     def get_schema_json(self) -> Dict:
         """

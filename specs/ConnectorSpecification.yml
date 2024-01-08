@@ -3,6 +3,7 @@ description: Specification of a connector (source/embeddingsgenerator/destinatio
 type: object
 required:
   - connectionSpecification
+  - name
 additionalProperties: true
 properties:
   # General Properties (Common to all connectors)
@@ -15,6 +16,9 @@ properties:
   changelogUrl:
     type: string
     format: uri
+  name:
+    description: "The name of the specific connector to which this ConnectorSpecification belongs."
+    type: string
   connectionSpecification:
     description: ConnectorDefinition specific blob. Must be a valid JSON string.
     type: object
@@ -24,15 +28,6 @@ properties:
     description: If the connector supports incremental mode or not.
     type: boolean
   # Destination Connectors Properties
-  # Normalization is currently implemented using dbt, so it requires `supportsDBT` to be true for this to be true.
-  # supportsNormalization:
-  #   description: If the connector supports normalization or not.
-  #   type: boolean
-  #   default: false
-  # supportsDBT:
-  #   description: If the connector supports DBT or not.
-  #   type: boolean
-  #   default: false
   supported_destination_sync_modes:
     description: List of destination sync modes supported by the connector
     type: array
