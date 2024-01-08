@@ -1,21 +1,17 @@
-import json
 import os
-import itertools
-import pinecone
 from connectors.destinations.destination import Destination
-from typing import Any, Iterable, Mapping, Tuple, Optional, Generator, TypeVar, List
-import pinecone
+from typing import Any, Iterable, Mapping, Tuple, Optional
 from pydantic_models.connector_specification import ConnectorSpecification, DestinationSyncMode
 from pydantic_models.dat_catalog import DatCatalog
 from pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data
-from connectors.destinations.destination_pinecone.seeder import PineconeSeeder, Chunk
+from connectors.destinations.destination_pinecone.seeder import PineconeSeeder
 from connectors.destinations.vector_db_helpers.data_processor import DataProcessor
 
 
 BATCH_SIZE = 1000
 
 
-class DestinationPinecone(Destination):
+class Pinecone(Destination):
 
     _spec_file = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), 'specs.yml')
@@ -32,13 +28,10 @@ class DestinationPinecone(Destination):
             return (False, e)
 
     def write(self, config: Mapping[str, Any], input_messages: Iterable[DatMessage]) -> Iterable[DatMessage]:
-        # vectors = []
-        # for input_message in input_messages:
-        #     vectors.append((input_message.record.data.document_chunk, input_message.record.data.vectors))
-        # self._insert_data_to_pinecone(vectors)
         self._init_seeder(config)
         processor = DataProcessor(config, self.seeder, BATCH_SIZE, False)
-        yield from processor.processor(config, input_messages)
+        processor.processor(config, input_messages)
+        return processor.number_of_documents
 
     # def spec(self, *args: Any, **kwargs: Any) -> ConnectorSpecification:
     #     return ConnectorSpecification(
@@ -57,16 +50,14 @@ if __name__ == '__main__':
     destination_config_file = os.path.join(os.path.dirname(
         os.path.abspath(__file__)), 'destination_config.json')
     config = ConnectorSpecification.model_validate_json(
-        open(destination_config_file).read(), )
-    # config = ConnectorSpecification.parse_obj(
-    #     json.loads(open(destination_config_file).read()))
+            open(destination_config_file).read(), )
     print(config)
-    _spec = DestinationPinecone().spec()
+    _spec = Pinecone().spec()
     print(f"spec: {_spec}")
-    _dest = DestinationPinecone().check(config=config)
+    _dest = Pinecone().check(config=config)
     print(f"destination check: {_dest}")
 
-    messages = DestinationPinecone().write(config=config, input_messages=[
+    docs = Pinecone().write(config=config, input_messages=[
         DatMessage(
             type=Type.RECORD,
             record=DatDocumentMessage(
@@ -94,3 +85,4 @@ if __name__ == '__main__':
             ),
         ),
     ])
+    print(f"docs: {docs}")

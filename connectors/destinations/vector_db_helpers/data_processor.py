@@ -13,6 +13,9 @@ class Chunk:
     record: DatDocumentMessage
     embedding: Optional[List[float]] = None
 
+METADATA_FILTER_FIELDS = ["dat_source", "dat_stream", "dat_document_entity"]
+
+
 class DataProcessor(ABC):
     """
     Base abstract class for a Data Processor.
@@ -26,18 +29,17 @@ class DataProcessor(ABC):
         self.batch_size = batch_size
         self.omit_raw_text = omit_raw_text
         self._init_batch()
-
-    def _init_batch(self) -> None:
-        self.documents: Dict[Tuple[str, str], List[Chunk]] = defaultdict(list)
-        self.document_chunks: List[Chunk] = []
+        self._init_class_vars()
+    
+    def _init_class_vars(self) -> None:
         self.number_of_documents = 0
         self.metadata_filter = {}
 
+    def _init_batch(self) -> None:
+        self.document_chunks: List[Chunk] = []
+
     def _process_batch(self) -> None:
-        print(f"Documents: {self.documents}")
-        # for (namespace, stream), documents in self.documents.items():
-        #     self.seeder.seed(documents, namespace, stream)
-        # print(f"Processed {self.number_of_documents} documents.")
+        print(f"Documents: {self.document_chunks}")
         if len(self.document_chunks) > 0:
             self.seeder.seed(self.document_chunks, self.document_chunks[0].record.namespace, self.document_chunks[0].record.stream)
             print(f"Processed {self.number_of_documents} documents.")
@@ -64,11 +66,11 @@ class DataProcessor(ABC):
                         embedding=message.record.data.vectors,
                     )
                 )
-                if len(self.documents) >= self.batch_size:
+                if len(self.document_chunks) >= self.batch_size:
                     self._process_batch()
         self._process_batch()
 
     def _prepare_metadata_filter(self, metadata: Dict[str, Any]) -> None:
         for key, value in metadata.items():
-            if key.startswith("dat"):
+            if key in METADATA_FILTER_FIELDS:
                 self.metadata_filter[key] = {"$eq": value}

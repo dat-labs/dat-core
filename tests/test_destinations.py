@@ -5,7 +5,7 @@ from io import StringIO
 from typing import Any, List, Union
 from pydantic_models.connector_specification import ConnectorSpecification
 from pydantic_models.dat_connection_status import Status
-from connectors.destinations.destination_pinecone.destination_pinecone import DestinationPinecone
+from connectors.destinations.destination_pinecone.destination_pinecone import Pinecone
 from conftest import *
 from pydantic_models.dat_message import DatMessage, DatDocumentMessage, Data
 from pydantic_models.dat_connection_status import DatConnectionStatus
@@ -39,7 +39,7 @@ class TestDestination:
         WHEN spec() is called on a valid Destination class
         THEN spec stated in ./specs/ConnectorSpecification.yml is returned
         """
-        spec = DestinationPinecone().spec()
+        spec = Pinecone().spec()
         with open('./connectors/destinations/destination_pinecone/specs.yml') as yaml_in:
             schema = yaml.safe_load(yaml_in)
             assert schema == spec
@@ -53,7 +53,7 @@ class TestDestination:
         destination_config_file = "./connectors/destinations/destination_pinecone/destination_config.json"
         config = ConnectorSpecification.model_validate_json(
             open(destination_config_file).read(), )
-        check = DestinationPinecone().check(
+        check = Pinecone().check(
             config=config)
         print(check)
         assert check.status == Status.SUCCEEDED
@@ -67,7 +67,7 @@ class TestDestination:
         input_stream = StringIO(mocked_stdin_string)
         assert input_stream is not None
 
-        result_messages = list(DestinationPinecone()._parse_input_stream(input_stream))
+        result_messages = list(Pinecone()._parse_input_stream(input_stream))
         assert len(result_messages) == 1
         assert result_messages[0].record.data.document_chunk == "bar"
 
@@ -80,15 +80,19 @@ class TestDestination:
         destination_config_file = "./connectors/destinations/destination_pinecone/destination_config.json"
         config = ConnectorSpecification.model_validate_json(
             open(destination_config_file).read(), )
-        DestinationPinecone().write(config=config, input_messages=[
+        input_messages = [
             DatMessage(
                 type=Type.RECORD,
                 record=DatDocumentMessage(
                     data=Data(
                         document_chunk='foo',
-                        vectors=[1, 2, 3],
+                        vectors=[0.0] * 1536,
+                        metadata={"meta": "Objective", "dat_source": "S3",
+                                  "dat_stream": "PDF", "dat_document_entity": "DBT/DBT Overview.pdf"},
                     ),
                     emitted_at=1,
+                    namespace="pytest_seeder",
+                    stream="S3",
                 ),
             ),
             DatMessage(
@@ -96,10 +100,15 @@ class TestDestination:
                 record=DatDocumentMessage(
                     data=Data(
                         document_chunk='bar',
-                        vectors=[1, 2, 3],
+                        vectors=[0.0] * 1536,
+                        metadata={"meta": "Arbitrary", "dat_source": "S3",
+                                  "dat_stream": "PDF", "dat_document_entity": "DBT/DBT Overview.pdf"},
                     ),
-                    emitted_at=1,
+                    emitted_at=2,
+                    namespace="pytest_seeder",
+                    stream="S3",
                 ),
             ),
-        ])
-        assert True
+        ]
+        docs = Pinecone().write(config=config, input_messages=input_messages)
+        assert docs == len(input_messages)

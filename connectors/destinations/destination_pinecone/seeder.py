@@ -22,7 +22,6 @@ class PineconeSeeder(Seeder):
 
     def seed(self, document_chunks: List[Chunk], namespace: str, stream: str) -> None:
         pinecone_docs = []
-        # import pdb;pdb.set_trace()
         for document_chunk in document_chunks:
             chunk = document_chunk
             metadata = chunk.metadata
@@ -46,7 +45,6 @@ class PineconeSeeder(Seeder):
             self.pinecone_index.delete(filter=filter, namespace=namespace)
 
     def delete_by_metadata(self, filter, top_k, namespace=None):
-        import pdb;pdb.set_trace()
         zero_vector = [0.0] * self.embedding_dimensions
         query_result = self.pinecone_index.query(
             vector=zero_vector, filter=filter, top_k=top_k, namespace=namespace)
@@ -56,7 +54,7 @@ class PineconeSeeder(Seeder):
                 # split into chunks of 1000 ids to avoid id limit
                 batches = create_chunks(vector_ids, batch_size=MAX_IDS_PER_DELETE)
                 for batch in batches:
-                    self.pinecone_index(ids=list(batch), namespace=namespace)
+                    self.pinecone_index.delete(ids=list(batch), namespace=namespace)
                     print(f"Deleted {len(batch)} vectors")
             query_result = self.pinecone_index.query(
                 vector=zero_vector, filter=filter, top_k=top_k, namespace=namespace)
