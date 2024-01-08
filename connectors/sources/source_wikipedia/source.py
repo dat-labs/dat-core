@@ -42,7 +42,7 @@ class Wikipedia(SourceBase):
     
 
 if __name__ == '__main__':
-    config = ConnectorSpecification(connectionSpecification={})
+    config = ConnectorSpecification(name='Wikipedia', connectionSpecification={})
     catalog = Wikipedia().discover(config=config)
     print(catalog)
     doc_generator = Wikipedia().read(config=config, catalog=catalog)

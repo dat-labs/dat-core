@@ -4,7 +4,7 @@ from lxml import html
 from typing import Any, Dict, Iterable, List, Mapping, Optional
 from connectors.sources.stream import Stream
 from pydantic_models.connector_specification import ConnectorSpecification
-from pydantic_models.dat_catalog import SyncMode
+from pydantic_models.dat_document_stream import SyncMode
 from pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data
 from pydantic_models.stream_metadata import StreamMetadata
 from utils import to_snake_case
@@ -16,10 +16,6 @@ class WikipediaStream(Stream):
         self.config = config
         self._schema = schema
         self.authenticator = kwargs.get('authenticator', None)
-    
-    @property
-    def source_name(cls) -> str:
-        return to_snake_case('Wikipedia')
 
     def read_records(self,
         config: ConnectorSpecification,
@@ -61,7 +57,7 @@ class WikipediaStream(Stream):
     
     def get_metadata(self, document_chunk: str, data_entity: str) -> StreamMetadata:
         metadata = StreamMetadata(
-            dat_source=self.source_name,
+            dat_source=self.config.name,
             dat_stream=self.name,
             dat_document_entity=data_entity,
             dat_last_modified=int(time.time()),

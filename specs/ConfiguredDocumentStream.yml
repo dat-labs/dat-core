@@ -1,0 +1,26 @@
+type: object
+additionalProperties: true
+required:
+  - stream
+  - sync_mode
+  - destination_sync_mode
+properties:
+  stream:
+    "$ref": "./DatDocumentStream.yml"
+  sync_mode:
+    type: string
+    enum:
+      - full_refresh
+      - incremental
+  cursor_field:
+    description: Path to the field that will be used to determine if a record is new or modified since the last sync. This field is REQUIRED if `sync_mode` is `incremental`. Otherwise it is ignored.
+    type: array
+    items:
+      type: string
+  primary_key:
+    description: Paths to the fields that will be used as primary key. This field is REQUIRED if `destination_sync_mode` is `*_dedup`. Otherwise it is ignored.
+    type: array
+    items:
+      type: array
+      items:
+        type: string
