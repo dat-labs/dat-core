@@ -16,9 +16,27 @@ properties:
       - destination
     properties:
       source:
-        "$ref": "./ConnectorSpecification.yml"
+        type: object
+        required:
+          - spec
+          - catalog
+        properties:
+          spec:
+            "$ref": "./ConnectorSpecification.yml"
+          catalog:
+            "$ref": "./DatCatalog.yml"
       generator:
-        "$ref": "./ConnectorSpecification.yml"
+        type: object
+        required:
+          - spec
+        properties:
+          spec:
+            "$ref": "./ConnectorSpecification.yml"
       destination:
-        "$ref": "./ConnectorSpecification.yml"
+        type: object
+        required:
+          - spec
+        properties:
+          spec:
+            "$ref": "./ConnectorSpecification.yml"
         
