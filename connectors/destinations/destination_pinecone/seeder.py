@@ -55,7 +55,6 @@ class PineconeSeeder(Seeder):
                 batches = create_chunks(vector_ids, batch_size=MAX_IDS_PER_DELETE)
                 for batch in batches:
                     self.pinecone_index.delete(ids=list(batch), namespace=namespace)
-                    print(f"Deleted {len(batch)} vectors")
             query_result = self.pinecone_index.query(
                 vector=zero_vector, filter=filter, top_k=top_k, namespace=namespace)
 
