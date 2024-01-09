@@ -52,6 +52,9 @@ class DataProcessor(ABC):
 
     def processor(self, configured_catalog: DatCatalog, input_messages: Iterable[DatMessage]) -> Iterable[DatMessage]:
         for message in input_messages:
+            if message.type == Type.STATE:
+                self._process_batch()
+                yield message
             if message.type == Type.RECORD:
                 print(f"message: {message}")
                 self.number_of_documents += 1

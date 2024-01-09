@@ -45,8 +45,22 @@ class Destination(ConnectorBase):
         """Reads from stdin, converting to Dat messages"""
         for line in input_stream:
             try:
-                _message = DatMessage.parse_raw(line)
+                # import pdb;pdb.set_trace()
+                _message = DatMessage.model_validate_json(line)
                 print(f"message: {_message}")
                 yield _message
             except ValidationError:
                 logger.info(f"ignoring input which can't be deserialized as Dat Message: {line}")
+
+    def _run_write(self, config: Mapping[str, Any], configured_catalog_path: DatCatalog) -> Iterable[DatMessage]:
+        """
+        Reads from stdin, converting to Dat messages, and writes to the destination.
+        """
+        # import pdb;pdb.set_trace()
+        wrapped_stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8")
+        catalog = DatCatalog.model_validate_json(open(configured_catalog_path).read())
+        input_messages = self._parse_input_stream(wrapped_stdin)
+        print(f"input_messages: {input_messages}")
+        logger.info("Begin writing to the destination...")
+        yield from self.write(config=config, configured_catalog=catalog, input_messages=input_messages)
+        logger.info("Writing complete.")

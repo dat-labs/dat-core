@@ -1,12 +1,8 @@
-import json
-import yaml
-from jsonschema import validate
-import pytest
-from connectors.destinations.destination import Destination
+from pytest import fixture
 
-
-@pytest.fixture(name="destination")
-def destination_fixture(mocker) -> Destination:
-
-    mocker.patch("connectors.destinations.Destination.__abstractmethods__", set())
-    return Destination()
+@fixture
+def monkeypatch():
+    from _pytest.monkeypatch import MonkeyPatch
+    mp = MonkeyPatch()
+    yield mp
+    mp.undo()

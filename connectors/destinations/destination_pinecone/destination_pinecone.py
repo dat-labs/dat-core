@@ -27,11 +27,10 @@ class Pinecone(Destination):
         except Exception as e:
             return (False, e)
 
-    def write(self, config: Mapping[str, Any], input_messages: Iterable[DatMessage]) -> Iterable[DatMessage]:
+    def write(self, config: Mapping[str, Any], configured_catalog: DatCatalog, input_messages: Iterable[DatMessage]) -> Iterable[DatMessage]:
         self._init_seeder(config)
         processor = DataProcessor(config, self.seeder, BATCH_SIZE, False)
-        processor.processor(config, input_messages)
-        return processor.number_of_documents
+        yield from processor.processor(configured_catalog, input_messages)
 
     # def spec(self, *args: Any, **kwargs: Any) -> ConnectorSpecification:
     #     return ConnectorSpecification(
@@ -51,13 +50,15 @@ if __name__ == '__main__':
         os.path.abspath(__file__)), 'destination_config.json')
     config = ConnectorSpecification.model_validate_json(
             open(destination_config_file).read(), )
+    configured_catalog = DatCatalog.model_validate_json(
+            open('./connectors/destinations/destination_pinecone/configured_catalog.json').read(), )
     print(config)
     _spec = Pinecone().spec()
     print(f"spec: {_spec}")
     _dest = Pinecone().check(config=config)
     print(f"destination check: {_dest}")
 
-    docs = Pinecone().write(config=config, input_messages=[
+    docs = Pinecone().write(config=config,configured_catalog=configured_catalog , input_messages=[
         DatMessage(
             type=Type.RECORD,
             record=DatDocumentMessage(
@@ -85,4 +86,5 @@ if __name__ == '__main__':
             ),
         ),
     ])
-    print(f"docs: {docs}")
+    for doc in docs:
+        print(f"doc: {doc}")

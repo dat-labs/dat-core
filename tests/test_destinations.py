@@ -1,5 +1,7 @@
 import os
 import argparse
+import io
+import json
 import yaml
 from io import StringIO
 from typing import Any, List, Union
@@ -7,8 +9,9 @@ from pydantic_models.connector_specification import ConnectorSpecification
 from pydantic_models.dat_connection_status import Status
 from connectors.destinations.destination_pinecone.destination_pinecone import Pinecone
 from conftest import *
-from pydantic_models.dat_message import DatMessage, DatDocumentMessage, Data
+from pydantic_models.dat_message import DatMessage, DatDocumentMessage, Data, DatStateMessage, Stream, StreamState, StreamDescriptor
 from pydantic_models.dat_connection_status import DatConnectionStatus
+from pydantic_models.dat_catalog import DatCatalog
 from connectors.destinations.destination import Destination
 from connectors.destinations.vector_db_helpers.utils import create_chunks
 from pydantic_models.dat_message import Type
@@ -62,7 +65,7 @@ class TestDestination:
     def test_destination_parse_input_stream_valid_invalid(self, ):
         # Prepare a valid input stream
         mocked_input: List[DatMessage] = [(_message("s1", data=Data(document_chunk='bar', vectors=[1, 2, 3])))]
-        mocked_stdin_string = "\n".join([record.json(exclude_unset=True) for record in mocked_input])
+        mocked_stdin_string = "\n".join([record.model_dump_json(exclude_unset=True) for record in mocked_input])
         mocked_stdin_string += "\n add this non-serializable string to verify the destination does not break on malformed input"
 
         input_stream = StringIO(mocked_stdin_string)
@@ -127,3 +130,67 @@ class TestDestination:
             _chunk_cnt += 1
             print(f"Count {_chunk_cnt} - chunk: {chunk}")
             assert len(chunk) == 100
+
+    def test_destination_run_write(self, monkeypatch):
+        """
+        GIVEN a valid connectionSpecification JSON config
+        WHEN _run_write() is called on a valid Destination class
+        THEN _run_write func should read from sys.stdin.buffer
+        """
+        destination_config_file = "./connectors/destinations/destination_pinecone/destination_config.json"
+        config = ConnectorSpecification.model_validate_json(
+            open(destination_config_file).read(), )
+        # configured_catalog = DatCatalog.model_validate_json(
+        #     open('./connectors/destinations/destination_pinecone/configured_catalog.json').read(), )
+        mocked_input: List[DatMessage] = [
+            DatMessage(
+                type=Type.RECORD,
+                record=DatDocumentMessage(
+                    data=Data(
+                        document_chunk='foo',
+                        vectors=[0.0] * 1536,
+                        metadata={"meta": "Objective", "dat_source": "S3",
+                                  "dat_stream": "PDF", "dat_document_entity": "DBT/DBT Overview.pdf"},
+                    ),
+                    emitted_at=1,
+                    namespace="pytest_seeder",
+                    stream="S3",
+                ),
+            ),
+            DatMessage(
+                type=Type.RECORD,
+                record=DatDocumentMessage(
+                    data=Data(
+                        document_chunk='bar',
+                        vectors=[0.0] * 1536,
+                        metadata={"meta": "Arbitrary", "dat_source": "S3",
+                                  "dat_stream": "PDF", "dat_document_entity": "DBT/DBT Overview.pdf"},
+                    ),
+                    emitted_at=2,
+                    namespace="pytest_seeder",
+                    stream="S3",
+                ),
+            ),
+            DatMessage(
+                type=Type.STATE,
+                state=DatStateMessage(
+                    stream=Stream(
+                            stream_descriptor=StreamDescriptor(name="S3", namespace="pytest_seeder"),
+                            stream_state=StreamState(data={"last_emitted_at": 2}),
+                        ),
+                    ),
+            ),
+        ]
+        mocked_stdin_string = "\n".join([record.model_dump_json(exclude_unset=True) for record in mocked_input])
+        mocked_stdin = io.TextIOWrapper(io.BytesIO(bytes(mocked_stdin_string, "utf-8")))
+        print(f"mocked_stdin: {mocked_stdin}")
+        monkeypatch.setattr("sys.stdin", mocked_stdin)
+
+        returned_write_result = Pinecone()._run_write(
+            config=config,
+            configured_catalog_path="./connectors/destinations/destination_pinecone/configured_catalog.json",
+        )
+        for result in returned_write_result:
+            print(f"result: {result}")
+            assert isinstance(result, DatMessage)
+            assert result.type == Type.STATE
