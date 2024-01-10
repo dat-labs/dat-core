@@ -29,3 +29,8 @@ properties:
           data:
             description: "the state data"
             type: object
+          stream_status:
+            description: "the stream status"
+            type: string
+            enum:
+              - STARTED
