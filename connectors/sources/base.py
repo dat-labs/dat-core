@@ -4,7 +4,7 @@ from typing import (Any, Dict, Iterable, Iterator, List,
     Mapping, MutableMapping, Optional, Tuple, Union)
 import yaml
 from utils import schema_validate
-from pydantic_models.dat_message import DatMessage
+from pydantic_models.dat_message import DatMessage, DatStateMessage, Stream as StateMessageStream, StreamDescriptor, StreamState, StreamStatus
 from pydantic_models.dat_catalog import DatCatalog
 from pydantic_models.connector_specification import ConnectorSpecification
 from pydantic_models.dat_catalog import DatCatalog
@@ -62,6 +62,16 @@ class SourceBase(ConnectorBase):
         stream_instances = {s.name: s for s in self.streams(config)}
         for configured_stream in catalog.document_streams:
             stream_instance = stream_instances.get(configured_stream.name)
+            start_msg = DatStateMessage(
+                stream=StateMessageStream(
+                    stream_descriptor=StreamDescriptor(name=configured_stream.name),
+                    stream_state=StreamState(
+                        data={},
+                        stream_status=StreamStatus.STARTED
+                    )
+                )
+            )
+            yield start_msg
             yield from stream_instance.read_records(
                 config=config,
                 sync_mode=configured_stream.sync_mode,

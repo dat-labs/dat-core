@@ -6,6 +6,7 @@ from connectors.sources.stream import Stream
 from pydantic_models.connector_specification import ConnectorSpecification
 from pydantic_models.dat_document_stream import SyncMode
 from pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data
+from pydantic_models.dat_log_message import DatLogMessage, Level
 from pydantic_models.stream_metadata import StreamMetadata
 from utils import to_snake_case
 class WikipediaStream(Stream):
@@ -97,7 +98,11 @@ class ContentSearch(WikipediaStream):
         available authenticator
         """
         resp = requests.get(self._endpoint, params=params, headers=self.authenticator.get_auth_header())
-        print(f'Calling {self._endpoint}')
+        log_message = DatLogMessage(
+            level=Level.INFO,
+            message=f'Calling {self._endpoint}'
+        )
+        print(log_message)
         if resp.status_code == 200:
             return resp.json()
         else:
