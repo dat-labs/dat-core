@@ -98,11 +98,14 @@ class ContentSearch(WikipediaStream):
         available authenticator
         """
         resp = requests.get(self._endpoint, params=params, headers=self.authenticator.get_auth_header())
-        log_message = DatLogMessage(
-            level=Level.INFO,
-            message=f'Calling {self._endpoint}'
+        log_message = DatMessage(
+            type=Type.LOG,
+            log=DatLogMessage(
+                level=Level.INFO,
+                message=f'Calling {self._endpoint}'
+            )
         )
-        print(log_message)
+        print(log_message.model_dump_json())
         if resp.status_code == 200:
             return resp.json()
         else:
