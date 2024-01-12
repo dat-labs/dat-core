@@ -9,7 +9,10 @@ from pydantic_models.connector_specification import ConnectorSpecification
 from pydantic_models.dat_connection_status import Status
 from connectors.destinations.destination_pinecone.destination_pinecone import Pinecone
 from conftest import *
-from pydantic_models.dat_message import DatMessage, DatDocumentMessage, Data, DatStateMessage, Stream, StreamState, StreamDescriptor
+from pydantic_models.dat_message import (DatMessage, DatDocumentMessage,
+                                         Data, DatStateMessage, Stream,
+                                         StreamState, StreamDescriptor,
+                                         StreamStatus)
 from pydantic_models.dat_connection_status import DatConnectionStatus
 from pydantic_models.dat_catalog import DatCatalog
 from connectors.destinations.destination import Destination
@@ -142,8 +145,7 @@ class TestDestination:
             open(destination_config_file).read(), )
         # configured_catalog = DatCatalog.model_validate_json(
         #     open('./connectors/destinations/destination_pinecone/configured_catalog.json').read(), )
-        mocked_input: List[DatMessage] = [
-            DatMessage(
+        first_record = DatMessage(
                 type=Type.RECORD,
                 record=DatDocumentMessage(
                     data=Data(
@@ -156,27 +158,58 @@ class TestDestination:
                     namespace="pytest_seeder",
                     stream="S3",
                 ),
-            ),
-            DatMessage(
+            )
+        second_record = DatMessage(
                 type=Type.RECORD,
                 record=DatDocumentMessage(
                     data=Data(
                         document_chunk='bar',
                         vectors=[0.0] * 1536,
                         metadata={"meta": "Arbitrary", "dat_source": "S3",
-                                  "dat_stream": "PDF", "dat_document_entity": "DBT/DBT Overview.pdf"},
+                                  "dat_stream": "PDF", "dat_document_entity": "Apple/DBT/DBT Overview.pdf"},
                     ),
                     emitted_at=2,
                     namespace="pytest_seeder",
                     stream="S3",
                 ),
+            )
+        mocked_input: List[DatMessage] = [
+            DatMessage(
+                type=Type.STATE,
+                state=DatStateMessage(
+                    stream=Stream(
+                        stream_descriptor=StreamDescriptor(name="S3", namespace="pytest_seeder"),
+                        stream_state=StreamState(
+                            data={},
+                            stream_status=StreamStatus.STARTED
+                        )
+                    )
+                ),
+                record=first_record.record
             ),
+            first_record,
+            DatMessage(
+                type=Type.STATE,
+                state=DatStateMessage(
+                    stream=Stream(
+                        stream_descriptor=StreamDescriptor(name="S3", namespace="pytest_seeder"),
+                        stream_state=StreamState(
+                            data={},
+                            stream_status=StreamStatus.STARTED
+                        )
+                    )
+                ),
+                record=second_record.record
+            ),
+            second_record,
             DatMessage(
                 type=Type.STATE,
                 state=DatStateMessage(
                     stream=Stream(
                             stream_descriptor=StreamDescriptor(name="S3", namespace="pytest_seeder"),
-                            stream_state=StreamState(data={"last_emitted_at": 2}),
+                            stream_state=StreamState(
+                                data={"last_emitted_at": 2},
+                                stream_status=StreamStatus.COMPLETED),
                         ),
                     ),
             ),

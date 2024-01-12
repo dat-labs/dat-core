@@ -89,6 +89,7 @@ class StreamDescriptor(BaseModel):
 
 class StreamStatus(Enum):
     STARTED = 'STARTED'
+    COMPLETED = 'COMPLETED'
 
 
 class StreamState(BaseModel):
