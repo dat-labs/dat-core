@@ -11,7 +11,8 @@ from pydantic_models.dat_message import (
     StreamDescriptor,
     StreamState,
     StreamStatus,
-    Type
+    Type,
+    DatDocumentMessage
 )
 
 from pydantic_models.dat_catalog import DatCatalog
@@ -71,25 +72,35 @@ class SourceBase(ConnectorBase):
         stream_instances = {s.name: s for s in self.streams(config)}
         for configured_stream in catalog.document_streams:
             stream_instance = stream_instances.get(configured_stream.name)
-            start_msg = DatMessage(
-                type=Type.STATE,
-                state=DatStateMessage(
-                    stream=StateMessageStream(
-                        stream_descriptor=StreamDescriptor(name=configured_stream.name),
-                        stream_state=StreamState(
-                            data={},
-                            stream_status=StreamStatus.STARTED
-                        )
-                    )
-            )
-            )
-            yield start_msg
-            yield from stream_instance.read_records(
+            records = stream_instance.read_records(
                 config=config,
                 sync_mode=configured_stream.sync_mode,
                 cursor_field=None, # TODO: To be implemented,
                 stream_state=state,
             )
+            try:
+                first_record = next(records)
+                start_msg = DatMessage(
+                    type=Type.STATE,
+                    state=DatStateMessage(
+                        stream=StateMessageStream(
+                            stream_descriptor=StreamDescriptor(name=configured_stream.name),
+                            stream_state=StreamState(
+                                data={},
+                                stream_status=StreamStatus.STARTED
+                            )
+                        )
+                    ),
+                    record=first_record.record
+                )
+                yield start_msg
+                yield first_record
+                for record in records:
+                    yield record
+            except Exception as exc:
+                # TODO: Add specific exception
+                raise
+
 
     @abstractmethod
     def streams(self, config: Mapping[str, Any], json_schemas: Mapping[str, Mapping[str, Any]]=None) -> List[Stream]:

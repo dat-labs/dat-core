@@ -46,8 +46,8 @@ class WikipediaStream(Stream):
             response = self.send_request(params)
             for record in self.parse_response(response):
                 record.record.data.metadata = self.get_metadata(
-                    # document_chunk=record.record.data.document_chunk,
-                    document_chunk=None,
+                    document_chunk=record.record.data.document_chunk,
+                    # document_chunk=None,
                     data_entity='Quantum Computing'
                     )
                 yield record
