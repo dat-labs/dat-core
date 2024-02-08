@@ -59,8 +59,9 @@ class DataProcessor(ABC):
         for message in input_messages:
             if message.type == Type.STATE:
                 if message.state.stream.stream_state.stream_status == StreamStatus.STARTED:
-                    self._prepare_metadata_filter(message.record.data.metadata)
-                    self._process_delete(self.metadata_filter, message.record.namespace)
+                    if "upsert":
+                        self._prepare_metadata_filter(message.record.data.metadata)
+                        self._process_delete(self.metadata_filter, message.record.namespace)
                     yield message
                 else:
                     self._process_batch()

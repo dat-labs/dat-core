@@ -1,0 +1,20 @@
+# ConnectorSpecification:
+description: Specification of a connector (source/embeddingsgenerator/destination)
+type: object
+required:
+  - connectionSpecification
+additionalProperties: true
+properties:
+  connectionSpecification:
+    description: ConnectorDefinition specific blob. Must be a valid JSON string.
+    type: object
+    required:
+      - public_endpoint
+      - collection_name
+    properties:
+      public_endpoint:
+        description: Public endpoint of the Qdrant server
+        type: string
+      collection_name:
+        description: Name of the collection to use
+        type: string
