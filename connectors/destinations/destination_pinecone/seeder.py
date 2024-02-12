@@ -2,7 +2,7 @@ import uuid
 import itertools
 import pinecone
 from typing import Any, List, Optional, Tuple, Iterator, Iterable, Dict
-from connectors.destinations.vector_db_helpers.seeder import Seeder, Chunk
+from connectors.destinations.vector_db_helpers.seeder import Seeder
 from connectors.destinations.vector_db_helpers.utils import create_chunks
 
 PINECONE_BATCH_SIZE = 40
@@ -20,13 +20,11 @@ class PineconeSeeder(Seeder):
         self.pinecone_index = pinecone.Index(config.connectionSpecification.get('pinecone_index'))
         self.embedding_dimensions = embedding_dimensions
 
-    def seed(self, document_chunks: List[Chunk], namespace: str, stream: str) -> None:
+    def seed(self, document_chunks: List, namespace: str, stream: str) -> None:
         pinecone_docs = []
         for document_chunk in document_chunks:
-            chunk = document_chunk
-            metadata = chunk.metadata
-            metadata["text"] = chunk.page_content
-            pinecone_docs.append((str(uuid.uuid4()), chunk.embedding, metadata))
+            metadata = document_chunk.data.metadata
+            pinecone_docs.append((str(uuid.uuid4()), document_chunk.data.vectors, metadata.model_dump()))
         serial_batches = create_chunks(pinecone_docs, batch_size=PINECONE_BATCH_SIZE * PARALLELISM_LIMIT)
         for batch in serial_batches:
             async_results = [
