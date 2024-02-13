@@ -67,3 +67,7 @@ class Stream(ABC):
         stream_state: Optional[Mapping[str, Any]] = None
     ) -> DatMessage:
         pass
+
+    @property
+    def model_dict(self, ):
+        return self.model_dict

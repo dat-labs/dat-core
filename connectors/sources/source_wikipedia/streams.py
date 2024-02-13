@@ -13,8 +13,14 @@ class WikipediaStream(Stream):
     """
     Base class for a Wikipedia stream
     """
-    def __init__(self, config: ConnectorSpecification, schema: Optional[Mapping[str, Any]]=None, **kwargs: Mapping[str, Any]) -> None:
+    def __init__(self, 
+        config: ConnectorSpecification, 
+        # model_dict: Mapping[str, Any], 
+        schema: Optional[Mapping[str, Any]]=None, 
+        **kwargs: Mapping[str, Any]
+    ) -> None:
         self.config = config
+        # self.model_dict = model_dict
         self._schema = schema
         self.authenticator = kwargs.get('authenticator', None)
 
@@ -126,7 +132,8 @@ class ContentSearch(WikipediaStream):
                 record=DatDocumentMessage(
                     stream=self.as_pydantic_model(),
                     data=Data(document_chunk=text, metadata=None),
-                    emitted_at=int(time.time())),
+                    emitted_at=int(time.time()),
+                    namespace='test_1',),
             )
             yield dat_msg
     

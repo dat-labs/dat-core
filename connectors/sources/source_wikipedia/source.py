@@ -38,7 +38,12 @@ class Wikipedia(SourceBase):
             catalog_json = self.read_catalog_file()
             streams = catalog_json['properties']['streams']['items']
             json_schemas = {_s['properties']['name']: _s['properties']['json_schema']['properties'] for _s in streams}
-        return [ContentSearch(config=config, schema=json_schemas.get(ContentSearch.name), authenticator=auth)]
+        return [ContentSearch(
+            config=config, 
+            # model_dict=self, 
+            schema=json_schemas.get(ContentSearch.name), 
+            authenticator=auth,
+        )]
     
 
 if __name__ == '__main__':

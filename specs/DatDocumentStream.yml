@@ -3,9 +3,13 @@ description: Definition of Dat Document Stream
 additionalProperties: true
 required:
   - name
+  - namespace
   - sync_mode
 properties:
   name:
+    type: string
+  namespace:
+    description: "namespace the data is associated with"
     type: string
   json_schema:
     type: object
