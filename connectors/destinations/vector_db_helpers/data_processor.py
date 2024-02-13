@@ -22,18 +22,17 @@ class DataProcessor(ABC):
     """
 
     def __init__(
-        self, config: Any, seeder: Seeder, batch_size: int, omit_raw_text: bool
+        self, config: Any, seeder: Seeder, batch_size: int,
     ) -> None:
         self.config = config
         self.seeder = seeder
         self.batch_size = batch_size
-        self.omit_raw_text = omit_raw_text
         self._init_batch()
         self._init_class_vars()
     
     def _init_class_vars(self) -> None:
-        self.number_of_documents = 0
-        self.metadata_filter = {}
+        self.number_of_documents: int = 0
+        self.metadata_filter: Dict[str, Any] = {}
 
     def _init_batch(self) -> None:
         self.document_chunks: List[Chunk] = []
