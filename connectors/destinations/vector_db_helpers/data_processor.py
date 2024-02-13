@@ -6,12 +6,6 @@ from connectors.destinations.vector_db_helpers.seeder import Seeder
 from pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data, StreamStatus
 from pydantic_models.dat_catalog import DatCatalog
 
-@dataclass
-class Chunk:
-    page_content: Optional[str]
-    metadata: Dict[str, Any]
-    record: DatDocumentMessage
-    embedding: Optional[List[float]] = None
 
 METADATA_FILTER_FIELDS = ["dat_source", "dat_stream", "dat_document_entity"]
 
@@ -35,8 +29,8 @@ class DataProcessor(ABC):
         self.metadata_filter: Dict[str, Any] = {}
 
     def _init_batch(self) -> None:
-        self.document_chunks: List[Chunk] = []
-        self.documents: Dict[Tuple[str, str]: Dict[str, List[Chunk]]] = defaultdict(lambda: defaultdict(list))
+        self.document_chunks: List = []
+        self.documents: Dict[Tuple[str, str]: Dict[str, List]] = defaultdict(lambda: defaultdict(list))
         self.document_deleted_cnt: Dict[Tuple[str, str]: Dict[str, int]] = defaultdict(lambda: defaultdict(int))
 
     def _process_batch(self) -> None:
@@ -68,14 +62,10 @@ class DataProcessor(ABC):
             if message.type == Type.RECORD:
                 print(f"message: {message}")
                 self.number_of_documents += 1
-                self.documents[(message.record.namespace, message.record.stream)][message.record.data.metadata["dat_document_entity"]].append(
-                    Chunk(
-                        page_content=message.record.data.document_chunk,
-                        metadata=message.record.data.metadata,
-                        record=message.record,
-                        embedding=message.record.data.vectors,
-                    )
-                )
+                self.documents[
+                    (message.record.namespace, message.record.stream)][
+                        message.record.data.metadata.dat_document_entity].append(
+                            message.record)
                 if self.number_of_documents >= self.batch_size:
                     self._process_batch()
         self._process_batch()
