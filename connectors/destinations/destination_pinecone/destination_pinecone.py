@@ -29,7 +29,7 @@ class Pinecone(Destination):
 
     def write(self, config: Mapping[str, Any], configured_catalog: DatCatalog, input_messages: Iterable[DatMessage]) -> Iterable[DatMessage]:
         self._init_seeder(config)
-        processor = DataProcessor(config, self.seeder, BATCH_SIZE, False)
+        processor = DataProcessor(config, self.seeder, BATCH_SIZE)
         yield from processor.processor(configured_catalog, input_messages)
 
     # def spec(self, *args: Any, **kwargs: Any) -> ConnectorSpecification:

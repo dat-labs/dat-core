@@ -68,18 +68,7 @@ def generate(config):
             continue
         e = SourceClass().generate(
             config=config_mdl,
-            dat_message=DatMessage(
-                type=Type.RECORD,
-                record=DatDocumentMessage(
-                    data=Data(
-                        document_chunk=json_line['record'][
-                            'data']['document_chunk'],
-                        metadata=json_line['record'][
-                            'data']['metadata'],
-                    ),
-                    emitted_at=int(time()),
-                ),
-            )
+            dat_message=DatMessage.model_validate(json_line)
         )
         for vector in e:
             click.echo(vector.model_dump_json())
@@ -108,22 +97,7 @@ def write(config, catalog):
             click.echo(line)
             continue
         rows_buffer.append(
-            DatMessage(
-                type=Type.RECORD,
-                record=DatDocumentMessage(
-                    data=Data(
-                        document_chunk=json_line['record'][
-                            'data']['document_chunk'],
-                        vectors=json_line['record'][
-                            'data']['vectors'],
-                        metadata=json_line['record'][
-                            'data']['metadata'],
-                    ),
-                    emitted_at=int(time()),
-                    namespace="Seeder",
-                    stream="S3",
-                )
-            )
+            DatMessage.model_validate(json_line)
         )
         if len(rows_buffer) < MAX_LEN_ROWS_BUFFER:
             continue

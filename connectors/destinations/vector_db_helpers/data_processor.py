@@ -63,7 +63,7 @@ class DataProcessor(ABC):
                 print(f"message: {message}")
                 self.number_of_documents += 1
                 self.documents[
-                    (message.record.namespace, message.record.stream)][
+                    (message.record.namespace, message.record.stream.name)][
                         message.record.data.metadata.dat_document_entity].append(
                             message.record)
                 if self.number_of_documents >= self.batch_size:

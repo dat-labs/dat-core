@@ -3,34 +3,18 @@ type: object
 additionalProperties: true
 properties:
   stream:
+    "$ref": "./DatDocumentStream.yml"
+  stream_state:
     type: object
     additionalProperties: true
     required:
-      - stream_descriptor
-      - stream_state
+      - data
     properties:
-      stream_descriptor:
-        description: "A stream descriptor contains all information required to identify a Stream"
+      data:
+        description: "the state data"
         type: object
-        additionalProperties: true
-        required:
-          - name
-        properties:
-          name:
-            type: string
-          namespace:
-            type: string
-      stream_state:
-        type: object
-        additionalProperties: true
-        required:
-          - data
-        properties:
-          data:
-            description: "the state data"
-            type: object
-          stream_status:
-            description: "the stream status"
-            type: string
-            enum:
-              - STARTED
+      stream_status:
+        description: "the stream status"
+        type: string
+        enum:
+          - STARTED

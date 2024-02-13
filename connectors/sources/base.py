@@ -3,16 +3,12 @@ from abc import abstractmethod
 from typing import (Any, Dict, Iterable, Iterator, List,
     Mapping, MutableMapping, Optional, Tuple, Union)
 import yaml
-from utils import schema_validate
 from pydantic_models.dat_message import (
     DatMessage,
     DatStateMessage,
-    Stream as StateMessageStream,
-    StreamDescriptor,
     StreamState,
     StreamStatus,
     Type,
-    DatDocumentMessage
 )
 
 from pydantic_models.dat_catalog import DatCatalog
@@ -83,12 +79,10 @@ class SourceBase(ConnectorBase):
                 start_msg = DatMessage(
                     type=Type.STATE,
                     state=DatStateMessage(
-                        stream=StateMessageStream(
-                            stream_descriptor=StreamDescriptor(name=configured_stream.name),
-                            stream_state=StreamState(
-                                data={},
-                                stream_status=StreamStatus.STARTED
-                            )
+                        stream=configured_stream,
+                        stream_state=StreamState(
+                            data={},
+                            stream_status=StreamStatus.STARTED
                         )
                     ),
                     record=first_record.record

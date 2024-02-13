@@ -124,7 +124,7 @@ class ContentSearch(WikipediaStream):
             dat_msg = DatMessage(
                 type=Type.RECORD,
                 record=DatDocumentMessage(
-                    stream=self.name,
+                    stream=self.as_pydantic_model(),
                     data=Data(document_chunk=text, metadata=None),
                     emitted_at=int(time.time())),
             )
