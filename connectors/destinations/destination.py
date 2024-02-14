@@ -47,7 +47,7 @@ class Destination(ConnectorBase):
             try:
                 # import pdb;pdb.set_trace()
                 _message = DatMessage.model_validate_json(line)
-                print(f"message: {_message}")
+                # print(f"message: {_message}")
                 yield _message
             except ValidationError:
                 logger.info(f"ignoring input which can't be deserialized as Dat Message: {line}")
