@@ -5,12 +5,6 @@ from typing import Any, Generator, Iterable, List, Optional, Tuple, TypeVar, Dic
 from pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data
 
 
-@dataclass
-class Chunk:
-    page_content: Optional[str]
-    metadata: Dict[str, Any]
-    record: DatDocumentMessage
-    embedding: Optional[List[float]] = None
 
 class Seeder(ABC):
 
@@ -18,7 +12,7 @@ class Seeder(ABC):
         self.config = config
 
     @abstractmethod
-    def seed(self, document_chunks: List[Chunk], namespace: str, stream: str) -> None:
+    def seed(self, document_chunks: List[DatDocumentMessage], namespace: str, stream: str) -> None:
         """
         This method should be used to index documents in the destination.
         """
