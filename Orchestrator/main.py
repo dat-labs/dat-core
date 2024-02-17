@@ -91,7 +91,7 @@ def gen_tmp_file(func):
                         with NamedTemporaryFile(mode='w', prefix='cnctn_dst_',
                                                 dir=TMP_DIR_LOCATION) as dst_ctlg_tmp_file:
                             dst_ctlg_tmp_file.write(
-                                connection_mdl.spec.destination.spec.model_dump_json())
+                                connection_mdl.spec.destination.catalog.model_dump_json())
                             dst_ctlg_tmp_file.flush()
                             func(*args, src_tmp_file.name, src_ctlg_tmp_file.name,
                                  gen_tmp_file.name, dst_tmp_file.name, dst_ctlg_tmp_file.name)
@@ -102,27 +102,25 @@ def src_cmd_proc(src_queue: Queue, src_cmd: str) -> None:
     with Popen(shlex.split(src_cmd), stdout=PIPE) as proc_in:
         for line_a in proc_in.stdout:
             src_queue.put(line_a)
-    # all done
     src_queue.put(None)
 
 
 def gen_cmd_proc(src_queue: Queue, vectors_queue: Queue, gen_cmd: str) -> None:
     while True:
-        try:
-            item = src_queue.get_nowait()
-        except Empty:
+        item = src_queue.get()
+        if item is None:
             break
         with Popen(shlex.split(gen_cmd), stdin=PIPE, stdout=PIPE) as proc_out:
             proc_out.stdin.write(item)
             vectors_queue.put(proc_out.communicate()[0])
+    vectors_queue.put(None)
 
 
 def dst_cmd_proc(vectors_queue: Queue, dst_cmd: str) -> None:
     items = []
     while True:
-        try:
-            item = vectors_queue.get_nowait()
-        except Empty:
+        item = vectors_queue.get()
+        if item is None:
             break
 
         items.append(item)

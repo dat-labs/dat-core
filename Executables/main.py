@@ -79,7 +79,6 @@ def generate(config):
 @click.option('--catalog', '-ctlg', type=click.File(), required=True)
 def write(config, catalog):
     from pydantic_models.dat_message import DatMessage, Type
-    from pydantic_models.dat_message import DatDocumentMessage, Data
 
     config_mdl = ConnectorSpecification.model_validate_json(config.read())
     SourceClass = getattr(
