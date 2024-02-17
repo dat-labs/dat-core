@@ -39,4 +39,6 @@ properties:
         properties:
           spec:
             "$ref": "./ConnectorSpecification.yml"
+          catalog:
+            "$ref": "./DatCatalog.yml"
         
