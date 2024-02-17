@@ -8,9 +8,6 @@ from pydantic_models.dat_catalog import DatCatalog
 from pydantic_models.stream_metadata import StreamMetadata
 
 
-METADATA_FILTER_FIELDS = ["dat_source", "dat_stream", "dat_document_entity"]
-
-
 class DataProcessor(ABC):
     """
     Base abstract class for a Data Processor.
@@ -44,17 +41,19 @@ class DataProcessor(ABC):
         print(f"Processed {self.number_of_documents} documents.")
         self._init_batch()
 
-    def _process_delete(self, metadata: Mapping[str, Any], namespace: str) -> None:
+    def _process_delete(self, metadata: StreamMetadata, namespace: str) -> None:
         print(f"Deleting documents with metadata: {metadata}")
         self.seeder.delete(filter=metadata, namespace=namespace)
 
     def processor(self, configured_catalog: DatCatalog, input_messages: Iterable[DatMessage]) -> Iterable[DatMessage]:
+        print(f"Processing {len(input_messages)} messages.")
         for message in input_messages:
+            print(f"Processing message: {message}")
             if message.type == Type.STATE:
                 if message.state.stream_state.stream_status == StreamStatus.STARTED:
                     if "upsert":
-                        self._prepare_metadata_filter(message.record.data.metadata)
-                        self._process_delete(self.metadata_filter, message.record.namespace)
+                        # self._prepare_metadata_filter(message.record.data.metadata)
+                        self._process_delete(message.record.data.metadata, message.record.namespace)
                     yield message
                 else:
                     self._process_batch()
@@ -69,7 +68,6 @@ class DataProcessor(ABC):
                     self._process_batch()
         self._process_batch()
 
-    def _prepare_metadata_filter(self, metadata: StreamMetadata) -> None:
-        for key, value in metadata.model_dump().items():
-            if key in METADATA_FILTER_FIELDS:
-                self.metadata_filter[key] = {"$eq": value}
+    # def _prepare_metadata_filter(self, metadata: StreamMetadata) -> None:
+    #     self.metadata_filter = self.seeder.metadata_filter(metadata)
+    #     print(f"Metadata filter: {self.metadata_filter}")

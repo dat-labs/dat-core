@@ -11,8 +11,8 @@ from pydantic import BaseModel, Field
 
 
 class SyncMode(Enum):
-    full_refresh = 'full_refresh'
-    incremental = 'incremental'
+    INCREMENTAL = 'incremental'
+    FULL_REFRESH = 'full_refresh'
 
 
 class DatDocumentStream(BaseModel):

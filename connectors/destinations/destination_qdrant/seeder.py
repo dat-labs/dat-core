@@ -1,12 +1,13 @@
 import uuid
-from qdrant_client import QdrantClient
-from typing import Any, List, Optional
-from connectors.destinations.vector_db_helpers.seeder import Seeder, Chunk
-from connectors.destinations.vector_db_helpers.utils import create_chunks
+from qdrant_client import QdrantClient, models
+from typing import Any, List, Optional, Dict
+from connectors.destinations.vector_db_helpers.seeder import Seeder
 from qdrant_openapi_client.models import VectorParams, Distance
+from pydantic_models.dat_message import DatDocumentMessage
+from pydantic_models.stream_metadata import StreamMetadata
 
 
-DISTANCE_METRIC_MAP = {
+DISTANCE_MAP = {
     "dot": Distance.DOT,
     "cos": Distance.COSINE,
     "euc": Distance.EUCLID,
@@ -16,33 +17,46 @@ class QdrantSeeder(Seeder):
     def __init__(self, config: Any, embedding_dimensions: int):
         super().__init__(config)
         self.embedding_dimensions = embedding_dimensions
+        self._create_client()
 
-    def seed(self, document_chunks: List[Chunk], namespace: str, stream: str) -> None:
-        pass
-        # for chunk in document_chunks:
-        #     metadata = chunk.metadata
-        #     metadata["text"] = chunk.page_content
-        #     self.qdrant_client.upsert(
-        #         index_name=namespace,
-        #         data=[{
-        #             "id": str(uuid.uuid4()),
-        #             "vector": chunk.embedding,
-        #             "metadata": metadata
-        #         }]
-        #     )
+    def seed(self, document_chunks: List[DatDocumentMessage], namespace: str, stream: str) -> None:
+        points = []
+        for document_chunk in document_chunks:
+            metadata = document_chunk.data.metadata.model_dump()
+            chunk = document_chunk.data.vectors
+            points.append(
+                models.PointStruct(
+                    id=str(uuid.uuid4()),
+                    vector=chunk,
+                    payload=metadata
+                )
+            )
+        self._client.upload_points(
+            collection_name=self.config.connectionSpecification.get('collection'),
+            points=points
+        )
 
     def delete(self, filter, namespace=None):
-        pass
-        # self.qdrant_client.delete(index_name=namespace, filter=filter)
+        should_filter = self.metadata_filter(filter.model_dump())
+        self._client.delete(
+            collection_name=self.config.connectionSpecification.get('collection'),
+            points_selector=models.FilterSelector(
+                filter=models.Filter(
+                    should=should_filter
+                ),
+            )
+        )
+        # scroll = self.scroll(scroll_filter=should_filter)
+        # for point in scroll[0]:
+        #     delete_ids.append(point.id)
+
 
     def check(self) -> Optional[str]:
         try:
-            self._create_client()
-
             if not self._client:
                 return (False, "Qdrant is not alive")
             available_collections = [collection.name for collection in self._client.get_collections().collections]
-            distance = DISTANCE_METRIC_MAP.get(self.config.connectionSpecification.get('distance'))
+            distance = DISTANCE_MAP.get(self.config.connectionSpecification.get('distance'))
             collection_name = self.config.connectionSpecification.get('collection')
             if collection_name in available_collections:
                 description = self._client.get_collection(collection_name=collection_name)
@@ -61,4 +75,24 @@ class QdrantSeeder(Seeder):
 
     def _create_client(self):
         url = self.config.connectionSpecification.get('url')
+        print(f"Qdrant url: {url}")
         self._client = QdrantClient(url)
+    
+    def scroll(self, scroll_filter: List[models.FieldCondition]):
+        scroll = self._client.scroll(
+            collection_name=self.config.connectionSpecification.get('collection'),
+            scroll_filter=models.Filter(
+                should=scroll_filter
+            ),
+        )
+        return scroll
+
+    def metadata_filter(self, metadata: Dict[Any, str]) -> Any:
+        should_fields = []
+        for field in self.METADATA_FILTER_FIELDS:
+            if field in metadata:
+                should_fields.append(models.FieldCondition(
+                    key=field,
+                    match=models.MatchValue(value=metadata[field])
+                ))
+        return should_fields

@@ -10,9 +10,9 @@ from typing import Any, Dict, List, Optional
 from pydantic import AnyUrl, BaseModel, Field
 
 class DestinationSyncMode(Enum):
-    append = 'append'
-    replace = 'replace'
-    upsert = 'upsert'
+    UPSERT = 'upsert'
+    APPEND = 'append'
+    REPLACE = 'replace'
 
 
 class ConnectorSpecification(BaseModel):

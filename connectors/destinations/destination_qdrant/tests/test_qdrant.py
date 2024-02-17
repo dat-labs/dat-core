@@ -1,17 +1,19 @@
-import io
 import yaml
 from typing import List
 from pydantic_models.connector_specification import ConnectorSpecification
 from pydantic_models.dat_connection_status import Status
-from connectors.destinations.destination_pinecone.destination_pinecone import Pinecone
 from conftest import *
+from connectors.destinations.destination_qdrant.destination_qdrant import Qdrant
 from pydantic_models.dat_message import (DatMessage, DatDocumentMessage,
-                                         Data, DatStateMessage,
-                                         StreamState, StreamStatus,
-                                         DatDocumentStream, Type)
+                                         Data, DatStateMessage, StreamState,
+                                         StreamStatus, DatDocumentStream,
+                                         Type)
 from pydantic_models.dat_catalog import DatCatalog
 
-class TestPinecone:
+
+class TestQdrant:
+
+    DESTINATION_CONFIG_FILE = "./connectors/destinations/destination_qdrant/destination_config.json"
 
     def test_spec(self, ):
         """
@@ -19,8 +21,8 @@ class TestPinecone:
         WHEN spec() is called on a valid Destination class
         THEN spec stated in ./specs/ConnectorSpecification.yml is returned
         """
-        spec = Pinecone().spec()
-        with open('./connectors/destinations/destination_pinecone/specs.yml') as yaml_in:
+        spec = Qdrant().spec()
+        with open('./connectors/destinations/destination_qdrant/specs.yml') as yaml_in:
             schema = yaml.safe_load(yaml_in)
             assert schema == spec
 
@@ -30,31 +32,29 @@ class TestPinecone:
         WHEN check() is called on a valid Destination class
         THEN no error is raised
         """
-        destination_config_file = "./connectors/destinations/destination_pinecone/destination_config.json"
         config = ConnectorSpecification.model_validate_json(
-            open(destination_config_file).read(), )
-        check = Pinecone().check(
+            open(self.DESTINATION_CONFIG_FILE).read(), )
+        check = Qdrant().check(
             config=config)
         print(check)
         assert check.status == Status.SUCCEEDED
-
+    
     def test_write(self, ):
         """
-        GIVEN a valid connectionSpecification JSON config
+        Given a valid connectionSpecification JSON config
         WHEN write() is called on a valid Destination class
         THEN no error is raised
         """
-        destination_config_file = "./connectors/destinations/destination_pinecone/destination_config.json"
         config = ConnectorSpecification.model_validate_json(
-            open(destination_config_file).read(), )
+            open(self.DESTINATION_CONFIG_FILE).read(), )
         configured_catalog = DatCatalog.model_validate_json(
-            open('./connectors/destinations/destination_pinecone/configured_catalog.json').read(), )
+            open('./connectors/destinations/destination_qdrant/configured_catalog.json').read(), )
         first_record = DatMessage(
                 type=Type.RECORD,
                 record=DatDocumentMessage(
                     data=Data(
                         document_chunk='foo',
-                        vectors=[0.1] * 1536,
+                        vectors=[0.0] * 1536,
                         metadata={"meta": "Objective", "dat_source": "S3",
                                   "dat_stream": "PDF", "dat_document_entity": "DBT/DBT Overview.pdf"},
                     ),
@@ -72,7 +72,7 @@ class TestPinecone:
                 record=DatDocumentMessage(
                     data=Data(
                         document_chunk='bar',
-                        vectors=[1.0] * 1536,
+                        vectors=[0.0] * 1536,
                         metadata={"meta": "Arbitrary", "dat_source": "S3",
                                   "dat_stream": "PDF", "dat_document_entity": "Apple/DBT/DBT Overview.pdf"},
                     ),
@@ -89,7 +89,12 @@ class TestPinecone:
             first_record,
             second_record,
         ]
-        docs = Pinecone().write(
+        check  = Qdrant().check(
+            config=config)
+        # import pdb;pdb.set_trace()
+        assert check.status == Status.SUCCEEDED
+
+        docs = Qdrant().write(
             config=config,
             configured_catalog=configured_catalog,
             input_messages=mocked_input
@@ -104,17 +109,16 @@ class TestPinecone:
         WHEN write() is called on a valid Destination class
         THEN no error is raised
         """
-        destination_config_file = "./connectors/destinations/destination_pinecone/destination_config.json"
         config = ConnectorSpecification.model_validate_json(
-            open(destination_config_file).read(), )
+            open(self.DESTINATION_CONFIG_FILE).read(), )
         configured_catalog = DatCatalog.model_validate_json(
-            open('./connectors/destinations/destination_pinecone/configured_catalog.json').read(), )
+            open('./connectors/destinations/destination_qdrant/configured_catalog.json').read(), )
         first_record = DatMessage(
                 type=Type.RECORD,
                 record=DatDocumentMessage(
                     data=Data(
                         document_chunk='foo',
-                        vectors=[1.0] * 1536,
+                        vectors=[0.0] * 1536,
                         metadata={"meta": "Objective", "dat_source": "S3",
                                   "dat_stream": "PDF", "dat_document_entity": "DBT/DBT Overview.pdf"},
                     ),
@@ -132,14 +136,14 @@ class TestPinecone:
                 record=DatDocumentMessage(
                     data=Data(
                         document_chunk='bar',
-                        vectors=[1.1] * 1536,
+                        vectors=[0.0] * 1536,
                         metadata={"meta": "Arbitrary", "dat_source": "S3",
                                   "dat_stream": "PDF", "dat_document_entity": "Apple/DBT/DBT Overview.pdf"},
                     ),
                     emitted_at=2,
                     namespace="pytest_seeder",
                     stream=DatDocumentStream(
-                        name="GCS",
+                        name="S3",
                         namespace="pytest_seeder",
                         sync_mode="incremental",
                     )
@@ -166,7 +170,7 @@ class TestPinecone:
                 type=Type.STATE,
                 state=DatStateMessage(
                     stream=DatDocumentStream(
-                        name="GCS",
+                        name="S3",
                         namespace="pytest_seeder",
                         sync_mode="incremental",
                     ),
@@ -193,11 +197,17 @@ class TestPinecone:
                 ),
             ),
         ]
-        docs = Pinecone().write(
+        check  = Qdrant().check(
+            config=config)
+        # import pdb;pdb.set_trace()
+        assert check.status == Status.SUCCEEDED
+
+        docs = Qdrant().write(
             config=config,
             configured_catalog=configured_catalog,
             input_messages=mocked_input
         )
+
         for doc in docs:
             print(f"doc: {doc}")
             assert isinstance(doc, DatMessage)

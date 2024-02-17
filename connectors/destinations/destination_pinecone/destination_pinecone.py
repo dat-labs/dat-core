@@ -6,6 +6,8 @@ from pydantic_models.dat_catalog import DatCatalog
 from pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data
 from connectors.destinations.destination_pinecone.seeder import PineconeSeeder
 from connectors.destinations.vector_db_helpers.data_processor import DataProcessor
+from pydantic_models.dat_document_stream import DatDocumentStream, SyncMode
+
 
 
 BATCH_SIZE = 1000
@@ -32,18 +34,6 @@ class Pinecone(Destination):
         processor = DataProcessor(config, self.seeder, BATCH_SIZE)
         yield from processor.processor(configured_catalog, input_messages)
 
-    # def spec(self, *args: Any, **kwargs: Any) -> ConnectorSpecification:
-    #     return ConnectorSpecification(
-    #         supportsIncremental=True,
-    #         supported_destination_sync_modes=[
-    #             DestinationSyncMode.upsert, DestinationSyncMode.append, DestinationSyncMode.replace],
-    #         connectionSpecification={"pinecone_api_key": {"type": "string", "title": "Pinecone API Key", "description": "Pinecone API Key", "minLength": 1, "examples": ["1234567890"]},
-    #                                  "pinecone_index": {"type": "string", "title": "Pinecone Index", "description": "Pinecone Index", "minLength": 1, "examples": ["my_index"]},
-    #                                  "pinecone_environment": {"type": "string", "title": "Pinecone Environment", "description": "Pinecone Environment", "minLength": 1, "examples": ["us-west1-gcp"]},
-    #                                  "pinecone_batch_size": {"type": "integer", "title": "Pinecone Batch Size", "description": "Pinecone Batch Size", "minimum": 1, "maximum": 10000, "examples": [1000]},
-    #                                  "pinecone_index_timeout": {"type": "integer", "title": "Pinecone Index Timeout", "description": "Pinecone Index Timeout", "minimum": 1, "maximum": 10000, "examples": [1000]}},
-    #     )
-
 
 if __name__ == '__main__':
     destination_config_file = os.path.join(os.path.dirname(
@@ -57,19 +47,21 @@ if __name__ == '__main__':
     print(f"spec: {_spec}")
     _dest = Pinecone().check(config=config)
     print(f"destination check: {_dest}")
-
     docs = Pinecone().write(config=config,configured_catalog=configured_catalog , input_messages=[
         DatMessage(
             type=Type.RECORD,
             record=DatDocumentMessage(
                 data=Data(
                     document_chunk='foo',
-                    vectors=[0.0] * 1536,
+                    vectors=[0.1] * 1536,
                     metadata={"meta": "Objective", "dat_source": "S3", "dat_stream": "PDF", "dat_document_entity": "DBT/DBT Overview.pdf"},
                 ),
                 emitted_at=1,
                 namespace="Seeder",
-                stream="S3",
+                stream=DatDocumentStream(
+                    name="S3",
+                    namespace="Seeder",
+                    sync_mode=SyncMode.INCREMENTAL),
             ),
         ),
         DatMessage(
@@ -77,12 +69,15 @@ if __name__ == '__main__':
             record=DatDocumentMessage(
                 data=Data(
                     document_chunk='bar',
-                    vectors=[0.0] * 1536,
+                    vectors=[1.0] * 1536,
                     metadata={"meta": "Arbitrary", "dat_source": "S3", "dat_stream": "PDF", "dat_document_entity": "DBT/DBT Overview.pdf"},
                 ),
                 emitted_at=2,
                 namespace="Seeder",
-                stream="S3",
+                stream=DatDocumentStream(
+                    name="S3",
+                    namespace="Seeder",
+                    sync_mode=SyncMode.INCREMENTAL),
             ),
         ),
     ])

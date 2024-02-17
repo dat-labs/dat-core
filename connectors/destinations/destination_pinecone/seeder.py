@@ -4,6 +4,8 @@ import pinecone
 from typing import Any, List, Optional, Tuple, Iterator, Iterable, Dict
 from connectors.destinations.vector_db_helpers.seeder import Seeder
 from connectors.destinations.vector_db_helpers.utils import create_chunks
+from pydantic_models.dat_message import DatDocumentMessage
+from pydantic_models.stream_metadata import StreamMetadata
 
 PINECONE_BATCH_SIZE = 40
 
@@ -20,11 +22,13 @@ class PineconeSeeder(Seeder):
         self.pinecone_index = pinecone.Index(config.connectionSpecification.get('pinecone_index'))
         self.embedding_dimensions = embedding_dimensions
 
-    def seed(self, document_chunks: List, namespace: str, stream: str) -> None:
+    def seed(self, document_chunks: List[DatDocumentMessage], namespace: str, stream: str) -> None:
         pinecone_docs = []
         for document_chunk in document_chunks:
-            metadata = document_chunk.data.metadata
-            pinecone_docs.append((str(uuid.uuid4()), document_chunk.data.vectors, metadata.model_dump()))
+            metadata = document_chunk.data.metadata.model_dump()
+            metadata = self._normalize_metadata(metadata)
+            chunk = document_chunk.data.vectors
+            pinecone_docs.append((str(uuid.uuid4()), chunk, metadata))
         serial_batches = create_chunks(pinecone_docs, batch_size=PINECONE_BATCH_SIZE * PARALLELISM_LIMIT)
         for batch in serial_batches:
             async_results = [
@@ -34,13 +38,14 @@ class PineconeSeeder(Seeder):
             [async_result.get() for async_result in async_results]
 
     def delete(self, filter, namespace=None):
+        meta_filter = self.metadata_filter(filter)
         _pod_type = pinecone.describe_index(self.config.connectionSpecification.get('pinecone_index')).pod_type
         if _pod_type == "starter":
             # Starter pod types have a maximum of 100000 rows
             top_k = 10000
-            self.delete_by_metadata(filter, top_k, namespace)
+            self.delete_by_metadata(meta_filter, top_k, namespace)
         else:
-            self.pinecone_index.delete(filter=filter, namespace=namespace)
+            self.pinecone_index.delete(filter=meta_filter, namespace=namespace)
 
     def delete_by_metadata(self, filter, top_k, namespace=None):
         zero_vector = [0.0] * self.embedding_dimensions
@@ -70,3 +75,17 @@ class PineconeSeeder(Seeder):
         except Exception as e:
             raise e
         return True, description
+
+    def metadata_filter(self, metadata: StreamMetadata) -> Any:
+        meta_filter = {}
+        for key, value in metadata.model_dump().items():
+            if key in self.METADATA_FILTER_FIELDS:
+                meta_filter[key] = {"$eq": value}
+        
+        return meta_filter
+
+    def _normalize_metadata(self, metadata: dict) -> dict:
+        for key, value in metadata.items():
+            if value is None:
+                metadata[key] = ""  # Set value to empty string if None
+        return metadata
