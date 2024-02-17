@@ -46,8 +46,8 @@ class QdrantSeeder(Seeder):
                 ),
             )
         )
-        # scroll = self.scroll(scroll_filter=should_filter)
-        # for point in scroll[0]:
+        # scroll_records = self.scroll(scroll_filter=should_filter)
+        # for point in scroll_records:
         #     delete_ids.append(point.id)
 
 
@@ -79,13 +79,13 @@ class QdrantSeeder(Seeder):
         self._client = QdrantClient(url)
     
     def scroll(self, scroll_filter: List[models.FieldCondition]):
-        scroll = self._client.scroll(
+        scroll_records = self._client.scroll(
             collection_name=self.config.connectionSpecification.get('collection'),
             scroll_filter=models.Filter(
                 should=scroll_filter
             ),
         )
-        return scroll
+        return scroll_records[0]
 
     def metadata_filter(self, metadata: Dict[Any, str]) -> Any:
         should_fields = []
