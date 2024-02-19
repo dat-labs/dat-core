@@ -11,26 +11,26 @@ class BaseOauth2Authenticator:
             token_refresh_endpoint: str,
             token_refresh_grant_type: str = 'refresh_token',
             scopes: List[str] = None,
+            redirect_uri: str = None,
             access_token_name: str = 'access_token',
             refresh_token_name: str = 'refresh_token',
             expires_in_name: str = 'expires_in',
             token_exchange_endpoint: str = None,
             token_exchange_grant_type: str = 'authorization_code',
             scopes_delimiter: str = ' ', # Could be a "," also
-            oauth2_url_template: str = None,
     ) -> None:
         self._client_id = client_id
         self._client_secret = client_secret
         self._token_refresh_endpoint = token_refresh_endpoint
         self._token_refresh_grant_type = token_refresh_grant_type
         self._scopes = scopes if scopes is not None else []
+        self._redirect_uri = redirect_uri
         self._access_token_name = access_token_name
         self._refresh_token_name = refresh_token_name
         self._expires_in_name = expires_in_name
         self._token_exchange_endpoint = token_exchange_endpoint
         self._token_exchange_grant_type = token_exchange_grant_type
         self._scopes_delimiter = scopes_delimiter
-        self._oauth2_url_template = oauth2_url_template
 
     @property
     def access_token(self) -> str:
@@ -94,6 +94,7 @@ class BaseOauth2Authenticator:
         if res.status_code == 200:
             return res.json()
         else:
+            print(res.text)
             raise Exception('Failed to exchange token') # TODO: Raise specific exception
     
     def token_refresh(self, request_method: str='POST') -> Mapping[str, Any]:
@@ -129,20 +130,21 @@ class BaseOauth2Authenticator:
         """
         url_format_payload = {
             'client_id': self._client_id,
-            'redirect_url': self._redirect_uri,
-            'scopes': self._scopes_delimiter.join(self._scopes),
+            'redirect_uri': self._redirect_uri,
+            'scope': self._scopes_delimiter.join(self._scopes),
         }
         url_format_payload.update(optional_kwargs)
         url = url_template.format(**url_format_payload)
         return url
     
-    def run_oauth2_webflow(self) -> None:
+    def run_oauth2_webflow(self, oauth2_url_template) -> None:
         """
         Call this to start OAuth2 flow
         """
-        oauth_url = self._get_oauth2_url(url_template=self._oauth2_url_template)
+        oauth_url = self._get_oauth2_url(url_template=oauth2_url_template)
         message = f"""Please open {oauth_url} in your Web Browser
-        and paste the authorization code here."""
+        and paste the authorization code here.
+        """
         auth_code = input(message)
         auth_response = self.exchange_token(auth_code=auth_code)
         if auth_response:
