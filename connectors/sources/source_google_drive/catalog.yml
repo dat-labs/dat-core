@@ -1,0 +1,23 @@
+type: object
+properties:
+  streams:
+    type: array
+    items:
+      - type: object
+        properties:
+          name: agents
+          json_schema:
+            type: object
+            properties:
+              roles:
+                type: object
+                properties:
+                  administrator:
+                    type: string
+                  owner:
+                    type: string
+          supported_sync_modes:
+            type: string
+            enum:
+              - incremental
+              - full

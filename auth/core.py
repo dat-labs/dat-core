@@ -4,7 +4,12 @@
 from abc import ABC, abstractmethod
 from typing import Any, Mapping
 
-class HttpAuthenticator(ABC):
+class AuthBase(ABC):
+    """
+    Base class for all authenticators
+    """
+    pass
+class HttpAuthenticator(AuthBase, ABC):
     """
     Base abstract class for various HTTP Authentication strategies. Authentication strategies are generally
     expected to provide security credentials via HTTP headers.

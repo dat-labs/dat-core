@@ -1,0 +1,21 @@
+# ConnectorSpecification:
+description: Specification of a connector (source/embeddingsgenerator/destination)
+type: object
+required:
+  - connectionSpecification
+additionalProperties: true
+properties:
+  protocol_version: 1.0
+  documentationUrl: 'https://developers.google.com/drive/api/guides/about-sdk'
+  changelogUrl: 'www.example.com'
+  connectionSpecification:
+    description: ConnectorDefinition specific blob. Must be a valid JSON string.
+    type: object
+    required:
+      - client_id
+      - client_secret
+    properties:
+      client_id:
+        type: string
+      client_secret:
+        type: string
