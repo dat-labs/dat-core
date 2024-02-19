@@ -4,6 +4,13 @@ pydantic==2.5.2
 click==8.1.7
 pytest==7.4.3
 coverage==7.3.2
-requests==2.31.0
-pinecone-client==2.2.4
 lxml==4.9.3
+langchain
+
+##### TODO #####
+##### Connector specific libs below #####
+##### Need to follow more streamlined installation process #####
+openai
+pinecone-client==2.2.4
+requests==2.31.0
+langchain-openai
