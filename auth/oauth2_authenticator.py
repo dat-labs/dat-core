@@ -5,8 +5,6 @@ class BaseOauth2Authenticator:
     """
     Base class for all Oauth2 authenticators
     """
-    SCOPES_DELIMETER = ' ' # Could be a "," also
-
     def __init__(self,
             client_id: str ,
             client_secret: str,
@@ -17,19 +15,20 @@ class BaseOauth2Authenticator:
             refresh_token_name: str = 'refresh_token',
             expires_in_name: str = 'expires_in',
             token_exchange_endpoint: str = None,
-            token_exchange_grant_type: str = 'authorization_code'
-
+            token_exchange_grant_type: str = 'authorization_code',
+            scopes_delimiter: str = ' ', # Could be a "," also
     ) -> None:
         self._client_id = client_id
         self._client_secret = client_secret
-        self._token_exchange_endpoint = token_exchange_endpoint
-        self._token_refresh_grant_type = token_refresh_endpoint
-        self._grant_type_refresh_token = token_refresh_grant_type
-        self._token_exchange_grant_type = token_exchange_grant_type
+        self._token_refresh_endpoint = token_refresh_endpoint
+        self._token_refresh_grant_type = token_refresh_grant_type
         self._scopes = scopes
         self._access_token_name = access_token_name
         self._refresh_token_name = refresh_token_name
         self._expires_in_name = expires_in_name
+        self._token_exchange_endpoint = token_exchange_endpoint
+        self._token_exchange_grant_type = token_exchange_grant_type
+        self._scopes_delimiter = scopes_delimiter
 
     @property
     def access_token(self) -> str:
@@ -70,7 +69,7 @@ class BaseOauth2Authenticator:
         url_format_payload = {
             'client_id': self._client_id,
             'redirect_url': self._redirect_uri,
-            'scopes': self.SCOPES_DELIMETER.join(self._scopes),
+            'scopes': self._scopes_delimiter.join(self._scopes),
         }
         url_format_payload.update(optional_kwargs)
         url = url_template.format(**url_format_payload)
