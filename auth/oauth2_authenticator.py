@@ -1,11 +1,26 @@
 # Base class for Oauth2 authenticator
-from typing import Mapping, Dict, List, Any
+from typing import Mapping, Tuple, List, Any
 import requests
 import pendulum
 
+
 class BaseOauth2Authenticator:
     """
-    Base class for all Oauth2 authenticators
+    Base class for all Oauth2 authenticators.
+
+    Args:
+        client_id (str): The client ID for OAuth authentication.
+        client_secret (str): The client secret for OAuth authentication.
+        token_refresh_endpoint (str): The endpoint for refreshing access tokens.
+        token_refresh_grant_type (str, optional): The grant type for token refresh. Defaults to 'refresh_token'.
+        scopes (List[str], optional): The list of scopes for the OAuth token. Defaults to None.
+        redirect_uri (str, optional): The URI to redirect after authentication. Defaults to None.
+        access_token_name (str, optional): The name of the access token parameter. Defaults to 'access_token'.
+        refresh_token_name (str, optional): The name of the refresh token parameter. Defaults to 'refresh_token'.
+        expires_in_name (str, optional): The name of the parameter indicating token expiration time. Defaults to 'expires_in'.
+        token_exchange_endpoint (str, optional): The endpoint for exchanging tokens. Defaults to None.
+        token_exchange_grant_type (str, optional): The grant type for token exchange. Defaults to 'authorization_code'.
+        scopes_delimiter (str, optional): The delimiter used for separating scopes. Defaults to ','.
     """
 
     def __init__(self,
@@ -41,7 +56,7 @@ class BaseOauth2Authenticator:
     @property
     def access_token(self) -> str:
         return self._access_token
-    
+
     @access_token.setter
     def access_token(self, value) -> None:
         self._access_token = value
@@ -49,33 +64,54 @@ class BaseOauth2Authenticator:
     @property
     def refresh_token(self) -> str:
         return self._refresh_token
-    
+
     @refresh_token.setter
     def refresh_token(self, value) -> None:
         self._refresh_token = value
 
     def get_auth_header(self) -> Mapping[str, Any]:
         return {"Authorization": f"Bearer {self.get_access_token()}"}
-    
+
     def is_token_expired(self) -> bool:
+        """
+        Checks if the access token has expired.
+
+        Returns:
+            bool: True if the access token has expired, False otherwise.
+        """
         return pendulum.now() > self._token_expiry_date
-    
+
     def get_access_token(self) -> str:
+        """
+        Retrieves the access token, refreshing it if necessary.
+
+        If the current access token is expired, this method refreshes it using the token refresh mechanism
+        provided by the OAuth2 provider. Otherwise, it returns the current access token.
+
+        Returns:
+            str: The current access token.
+
+        Raises:
+            Exception: If the access token retrieval or refresh fails.
+        """
         if self.is_token_expired():
             access_token, expires_in = self.token_refresh()
             self.access_token = access_token
             self.set_token_expiry_date(expires_in=expires_in)
         return self.access_token
-    
+
     def set_token_expiry_date(self, expires_in) -> None:
         self._token_expiry_date = pendulum.now().add(seconds=expires_in)
 
     def _build_token_exchange_request_body(self, auth_code: str) -> Mapping[str, Any]:
         """
-        Returns the request body for OAuth2 flow
+        Builds the request body for token exchange.
+
+        Args:
+            auth_code (str): The authorization code obtained from the OAuth2 provider.
 
         Returns:
-            Mapping[str, Any]: request body
+            Mapping[str, Any]: A dictionary containing the request parameters for token exchange.
         """
         payload = {
             'client_id': self._client_id,
@@ -88,10 +124,10 @@ class BaseOauth2Authenticator:
 
     def _build_token_refresh_request_body(self) -> Mapping[str, Any]:
         """
-        Returns the request body for token refresh
+        Builds the request body for refreshing the access token.
 
         Returns:
-            Mapping[str, Any]: request body
+            Mapping[str, Any]: A dictionary containing the request parameters for token refresh.
         """
         payload = {
             'client_id': self._client_id,
@@ -103,15 +139,19 @@ class BaseOauth2Authenticator:
 
         return payload
 
-    def exchange_token(self, auth_code: str, request_method: str = 'POST') -> Mapping[str, Any]:
+    def exchange_token(self, auth_code: str, request_method: str = 'POST') -> Tuple[Any]:
         """
-        Use the auth_code to exchange it for refresh_token
+        Exchanges an authorization code for access and refresh tokens.
 
         Args:
-            auth_code (str): authorization code from oauth2 web flow
+            auth_code (str): The authorization code obtained from the OAuth2 provider.
+            request_method (str, optional): The HTTP method to use for the token exchange request. Defaults to 'POST'.
 
         Returns:
-            Mapping[str, Any]: response from token exchange
+            Tuple[Any]: A tuple containing the access token, refresh token, and expiration time.
+
+        Raises:
+            Exception: If the token exchange fails.
         """
         payload = self._build_token_exchange_request_body(auth_code)
         res = requests.request(
@@ -128,15 +168,18 @@ class BaseOauth2Authenticator:
             # TODO: Raise specific exception
             raise Exception('Failed to exchange token')
 
-    def token_refresh(self, request_method: str = 'POST') -> Mapping[str, Any]:
+    def token_refresh(self, request_method: str = 'POST') -> Tuple[Any]:
         """
-        Use the auth_code to exchange it for refresh_token
+        Refreshes the access token using the refresh token.
 
         Args:
-            auth_code (str): authorization code from oauth2 web flow
+            request_method (str, optional): The HTTP method to use for the token refresh request. Defaults to 'POST'.
 
         Returns:
-            Mapping[str, Any]: response from token exchange
+            Tuple[Any]: A tuple containing the refreshed access token and its expiration time.
+
+        Raises:
+            Exception: If the token refresh fails.
         """
         payload = self._build_token_refresh_request_body()
         res = requests.request(
@@ -174,14 +217,30 @@ class BaseOauth2Authenticator:
 
     def run_oauth2_webflow(self, oauth2_url_template) -> None:
         """
-        Call this to start OAuth2 flow
+        Initiates the OAuth2 authorization flow.
+
+        This method generates an OAuth2 URL based on the provided template, prompts the user to open it in their
+        web browser, and input the authorization code returned by the OAuth2 provider. It then exchanges the
+        authorization code for access and refresh tokens, updating the instance's access and refresh tokens
+        accordingly.
+
+        Args:
+            oauth2_url_template (str): The template URL for OAuth2 authorization, typically containing placeholders
+                for client ID, redirect URI, and scopes.
+
+        Returns:
+            None
+
+        Raises:
+            Exception: If the OAuth2 authorization or token exchange fails.
         """
         oauth_url = self._get_oauth2_url(url_template=oauth2_url_template)
         message = f"""Please open {oauth_url} in your Web Browser
         and paste the authorization code here.
         """
         auth_code = input(message)
-        access_token, refresh_token, expires_in = self.exchange_token(auth_code=auth_code)
+        access_token, refresh_token, expires_in = self.exchange_token(
+            auth_code=auth_code)
         self.access_token = access_token
         self.refresh_token = refresh_token
         self.set_token_expiry_date(expires_in=expires_in)
