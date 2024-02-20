@@ -23,14 +23,19 @@ class Stream(ABC):
     @property
     def sync_mode(self) -> SyncMode:
         # TODO: Fix return
-        return SyncMode.incremental
+        return SyncMode.INCREMENTAL
     
     @property
     def json_schema(self) -> Mapping[str, Any]:
         return self._schema
     
     def as_pydantic_model(self) -> DatDocumentStream:
-        return DatDocumentStream(name=self.name, sync_mode=self.sync_mode, json_schema=self.json_schema)
+        return DatDocumentStream(
+            name=self.name,
+            namespace='test_1',
+            sync_mode=self.sync_mode,
+            json_schema=self.json_schema,
+        )
     
     def get_schema_json(self) -> Dict:
         """

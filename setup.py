@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 project_path = os.path.dirname(os.path.abspath(__file__))
 
 setup(
-    name='dat-core',
+    name='dat_core',
     packages=['dat-core'],
     package_dir={'dat-core': '..'},
     version='0.1',
