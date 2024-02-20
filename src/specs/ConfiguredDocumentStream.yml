@@ -2,11 +2,15 @@ type: object
 additionalProperties: true
 required:
   - stream
+  - namespace
   - sync_mode
   - destination_sync_mode
 properties:
   stream:
     "$ref": "./DatDocumentStream.yml"
+  namespace:
+    description: "namespace the data is associated with"
+    type: string
   sync_mode:
     type: string
     enum:

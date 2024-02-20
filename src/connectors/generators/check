@@ -5,7 +5,8 @@ import yaml
 import click
 import openai
 from jsonschema import validate
-from langchain.embeddings.openai import OpenAIEmbeddings
+# from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 # from .utils import get_config, schema_validate
 # from base import GeneratorsBase
 

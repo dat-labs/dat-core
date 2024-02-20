@@ -48,7 +48,7 @@ class DataProcessor(ABC):
     def processor(self, configured_catalog: DatCatalog, input_messages: Iterable[DatMessage]) -> Iterable[DatMessage]:
         print(f"Processing {len(input_messages)} messages.")
         for message in input_messages:
-            print(f"Processing message: {message}")
+            # print(f"Processing message: {message}")
             if message.type == Type.STATE:
                 if message.state.stream_state.stream_status == StreamStatus.STARTED:
                     if "upsert":

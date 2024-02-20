@@ -2,19 +2,18 @@
 Setup file to install dat-core as a library.
 """
 import os
-from setuptools import setup, find_packages
+from setuptools import setup
 
 project_path = os.path.dirname(os.path.abspath(__file__))
 
 setup(
-    name='dat_core',
-    packages=['dat-core'],
-    package_dir={'dat-core': '..'},
+    name='dat-core',
+    packages=['src'],
+    # package_dir={'dat_core': 'src'},
     version='0.1',
     description=('Core library for Data Activation Tool'),
     url='https://datachannel.co/',
     license='MIT',
-    # packages=find_packages(where=project_path),
     zip_safe=False,
     install_requires=[],
 )

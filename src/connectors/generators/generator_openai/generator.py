@@ -1,7 +1,8 @@
 import os
 from typing import Any, Tuple, Iterator
 import openai
-from langchain.embeddings.openai import OpenAIEmbeddings
+# from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
 
 from pydantic_models.dat_message import DatMessage, Type
 from pydantic_models.connector_specification import ConnectorSpecification
