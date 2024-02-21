@@ -24,7 +24,7 @@ requires = ["setuptools", "wheel"]
 # ]
 
 [tool.setuptools.packages.find]
-exclude = ["Executables*", "Orchestrator*", ]  # exclude packages matching these glob patterns (empty by default)
+exclude = ["Orchestrator*", ]  # exclude packages matching these glob patterns (empty by default)
 
 # [tool.setuptools]
 # py-modules = []
