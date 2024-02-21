@@ -1,0 +1,30 @@
+# Defines Python build system settings.
+# [build-system]
+# requires = [
+#     "setuptools",
+#     "wheel"
+# ]
+
+# build-backend = "setuptools.build_meta"
+
+[project]
+name = "dat-core"
+version = "0.1.0"
+description = "A short description of your package"
+license = {text = "Elastic License 2.0"}
+
+[build-system]
+requires = ["setuptools", "wheel"]
+# build-backend = "setuptools.build_meta"
+
+
+# packages = [{include = "dat_core"}]
+# packages = [
+#     {exclude = ["Orchestrator", "Executables"]}
+# ]
+
+[tool.setuptools.packages.find]
+exclude = ["Executables*", "Orchestrator*", ]  # exclude packages matching these glob patterns (empty by default)
+
+# [tool.setuptools]
+# py-modules = []

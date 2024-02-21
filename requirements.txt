@@ -14,3 +14,4 @@ openai
 pinecone-client==2.2.4
 requests==2.31.0
 langchain-openai
+qdrant-client==1.7.3
