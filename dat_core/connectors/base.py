@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import (Any, Dict, Optional, Tuple)
 import yaml
-from utils import schema_validate
 from pydantic_models.connector_specification import ConnectorSpecification
 from pydantic_models.dat_connection_status import DatConnectionStatus, Status
 
