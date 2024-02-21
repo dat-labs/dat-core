@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import (Any, Dict, Optional, Tuple)
 import yaml
-from pydantic_models.connector_specification import ConnectorSpecification
-from pydantic_models.dat_connection_status import DatConnectionStatus, Status
+from dat_core.pydantic_models.connector_specification import ConnectorSpecification
+from dat_core.pydantic_models.dat_connection_status import DatConnectionStatus, Status
 
 
 class ConnectorBase(ABC):
