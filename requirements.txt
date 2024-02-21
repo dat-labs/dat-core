@@ -10,7 +10,6 @@ langchain
 ##### TODO #####
 ##### Connector specific libs below #####
 ##### Need to follow more streamlined installation process #####
-openai
 pinecone-client==2.2.4
 requests==2.31.0
 langchain-openai
