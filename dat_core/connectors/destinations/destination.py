@@ -4,9 +4,9 @@ from abc import ABC, abstractmethod
 from loguru import logger
 from typing import Any, Iterable, List, Mapping
 from pydantic import ValidationError
-from pydantic_models.dat_message import DatMessage
-from pydantic_models.dat_catalog import DatCatalog
-from connectors.base import ConnectorBase
+from dat_core.pydantic_models.dat_message import DatMessage
+from dat_core.pydantic_models.dat_catalog import DatCatalog
+from dat_core.connectors.base import ConnectorBase
 
 
 class Destination(ConnectorBase):

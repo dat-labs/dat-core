@@ -2,10 +2,10 @@ from collections import defaultdict
 from dataclasses import dataclass
 from abc import ABC
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple, TypeVar
-from connectors.destinations.vector_db_helpers.seeder import Seeder
-from pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data, StreamStatus
-from pydantic_models.dat_catalog import DatCatalog
-from pydantic_models.stream_metadata import StreamMetadata
+from dat_core.connectors.destinations.vector_db_helpers.seeder import Seeder
+from dat_core.pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data, StreamStatus
+from dat_core.pydantic_models.dat_catalog import DatCatalog
+from dat_core.pydantic_models.stream_metadata import StreamMetadata
 
 
 class DataProcessor(ABC):
