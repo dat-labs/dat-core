@@ -8,11 +8,11 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from pydantic import AnyUrl, BaseModel, Extra, Field
-from pydantic_models.dat_catalog import DatCatalog
-from pydantic_models.dat_log_message import DatLogMessage
-from pydantic_models.stream_metadata import StreamMetadata
-from pydantic_models.connector_specification import ConnectorSpecification
-from pydantic_models.dat_document_stream import DatDocumentStream
+from dat_core.pydantic_models.dat_catalog import DatCatalog
+from dat_core.pydantic_models.dat_log_message import DatLogMessage
+from dat_core.pydantic_models.stream_metadata import StreamMetadata
+from dat_core.pydantic_models.connector_specification import ConnectorSpecification
+from dat_core.pydantic_models.dat_document_stream import DatDocumentStream
 
 class Type(Enum):
     RECORD = 'RECORD'

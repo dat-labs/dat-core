@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import Any, List, Optional
 
 from pydantic import BaseModel, Field
-from pydantic_models.dat_document_stream import DatDocumentStream, SyncMode
+from dat_core.pydantic_models.dat_document_stream import DatDocumentStream, SyncMode
 
 
 class ConfiguredDocumentStream(BaseModel):

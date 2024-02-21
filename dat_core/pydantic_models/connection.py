@@ -6,8 +6,8 @@ from __future__ import annotations
 from typing import Optional
 
 from pydantic import BaseModel, Field
-from pydantic_models.connector_specification import ConnectorSpecification
-from pydantic_models.dat_catalog import DatCatalog
+from dat_core.pydantic_models.connector_specification import ConnectorSpecification
+from dat_core.pydantic_models.dat_catalog import DatCatalog
 
 
 class Generator(BaseModel):

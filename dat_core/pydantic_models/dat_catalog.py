@@ -8,7 +8,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
-from pydantic_models.dat_document_stream import DatDocumentStream
+from dat_core.pydantic_models.dat_document_stream import DatDocumentStream
 
 class DatCatalog(BaseModel):
     document_streams: List[DatDocumentStream]
