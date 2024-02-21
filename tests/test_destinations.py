@@ -3,7 +3,7 @@ import argparse
 import io
 import json
 from conftest import *
-from connectors.destinations.vector_db_helpers.utils import create_chunks
+from dat_core.connectors.destinations.vector_db_helpers.utils import create_chunks
 
 
 class TestDestination:

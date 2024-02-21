@@ -3,7 +3,7 @@ from abc import abstractmethod
 from typing import (Any, Dict, Iterable, Iterator, List,
     Mapping, MutableMapping, Optional, Tuple, Union)
 import yaml
-from pydantic_models.dat_message import (
+from dat_core.pydantic_models.dat_message import (
     DatMessage,
     DatStateMessage,
     StreamState,
@@ -11,11 +11,11 @@ from pydantic_models.dat_message import (
     Type,
 )
 
-from pydantic_models.dat_catalog import DatCatalog
-from pydantic_models.connector_specification import ConnectorSpecification
-from pydantic_models.dat_catalog import DatCatalog
-from connectors.base import ConnectorBase
-from connectors.sources.stream import Stream
+from dat_core.pydantic_models.dat_catalog import DatCatalog
+from dat_core.pydantic_models.connector_specification import ConnectorSpecification
+from dat_core.pydantic_models.dat_catalog import DatCatalog
+from dat_core.connectors.base import ConnectorBase
+from dat_core.connectors.sources.stream import Stream
 
 class SourceBase(ConnectorBase):
     """

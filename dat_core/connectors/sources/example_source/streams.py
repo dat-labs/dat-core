@@ -2,11 +2,11 @@ import time
 import json
 import requests
 from typing import Any, Dict, Iterable, List, Mapping, Optional
-from connectors.sources.stream import Stream
-from pydantic_models.connector_specification import ConnectorSpecification
-from pydantic_models.dat_catalog import SyncMode
-from pydantic_models.dat_message import DatMessage
-from pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data
+from dat_core.connectors.sources.stream import Stream
+from dat_core.pydantic_models.connector_specification import ConnectorSpecification
+from dat_core.pydantic_models.dat_catalog import SyncMode
+from dat_core.pydantic_models.dat_message import DatMessage
+from dat_core.pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data
 
 class ZendeskStream(Stream):
     """

@@ -1,10 +1,21 @@
 from typing import Dict, List, Optional, Iterable, Mapping, Any
 from abc import ABC, abstractmethod, abstractclassmethod
-from pydantic_models.connector_specification import ConnectorSpecification
-from pydantic_models.dat_document_stream import DatDocumentStream, SyncMode
-from pydantic_models.dat_message import DatMessage
-from pydantic_models.stream_metadata import StreamMetadata
-from utils import to_snake_case
+from dat_core.pydantic_models.connector_specification import ConnectorSpecification
+from dat_core.pydantic_models.dat_document_stream import DatDocumentStream, SyncMode
+from dat_core.pydantic_models.dat_message import DatMessage
+from dat_core.pydantic_models.stream_metadata import StreamMetadata
+
+def to_snake_case(_str):
+    """
+    Given a camel_case string, convert it
+    to snake case.
+    E.g
+    ThisIsCamel ---> this_is_camel
+    thisIsCamel ---> this_is_camel
+    """
+    import re
+    a = re.compile('((?<=[a-z0-9])[A-Z]|(?!^)[A-Z](?=[a-z]))')
+    return a.sub(r'_\1', _str).lower()
 
 class Stream(ABC):
     """
