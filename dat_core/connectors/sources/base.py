@@ -1,4 +1,4 @@
-import os
+import urllib.request
 from abc import abstractmethod
 from typing import (Any, Dict, Iterable, Iterator, List,
     Mapping, MutableMapping, Optional, Tuple, Union)
@@ -25,9 +25,8 @@ class SourceBase(ConnectorBase):
         """
         Read the catalog file and return the json contents
         """
-        with open(self._catalog_file, 'r') as _f:
-            catalog_json = yaml.safe_load(_f)
-            return catalog_json
+        with urllib.request.urlopen(self._catalog_file) as response:
+            return yaml.safe_load(response.read().decode())
         
     def discover(self, config: ConnectorSpecification) -> DatCatalog:
         """
