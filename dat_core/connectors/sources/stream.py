@@ -81,7 +81,7 @@ class Stream(ABC):
         sync_mode: str,
         cursor_field: Optional[List[str]] = None,
         stream_state: Optional[Mapping[str, Any]] = None
-    ) -> Generator[DatMessage]:
+    ) -> Generator[DatMessage, Any, Any]:
         pass
 
     @property

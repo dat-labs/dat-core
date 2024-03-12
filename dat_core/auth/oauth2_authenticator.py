@@ -131,6 +131,7 @@ class BaseOauth2Authenticator:
         """
         payload = {
             'client_id': self._client_id,
+            'client_secret': self._client_secret,
             'grant_type': self._token_refresh_grant_type,
             'refresh_token': self.refresh_token
         }
@@ -183,7 +184,7 @@ class BaseOauth2Authenticator:
         """
         payload = self._build_token_refresh_request_body()
         res = requests.request(
-            method=request_method, url=self._token_exchange_endpoint, json=payload)
+            method=request_method, url=self._token_refresh_endpoint, json=payload)
         if res.status_code == 200:
             resp_json = res.json()
             return (
@@ -192,6 +193,7 @@ class BaseOauth2Authenticator:
             )
         else:
             # TODO: Raise specific exception
+            print(res.text)
             raise Exception('Failed to exchange token')
 
     def _get_oauth2_url(self, url_template, **optional_kwargs) -> str:
