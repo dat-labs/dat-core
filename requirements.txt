@@ -6,3 +6,4 @@ pytest==7.4.3
 coverage==7.3.2
 lxml==4.9.3
 alembic==1.13.1
+psycopg2-binary==2.9.9
