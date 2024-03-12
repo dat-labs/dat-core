@@ -1,10 +1,10 @@
 from collections import defaultdict
-from dataclasses import dataclass
 from abc import ABC
-from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple, TypeVar
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 from dat_core.connectors.destinations.vector_db_helpers.seeder import Seeder
-from dat_core.pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data, StreamStatus
-from dat_core.pydantic_models.dat_catalog import DatCatalog
+from dat_core.pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, StreamStatus
+from dat_core.pydantic_models.configured_dat_catalog import ConfiguredDatCatalog
+from dat_core.pydantic_models.configured_document_stream import DestinationSyncMode
 from dat_core.pydantic_models.stream_metadata import StreamMetadata
 
 
@@ -21,22 +21,22 @@ class DataProcessor(ABC):
         self.batch_size = batch_size
         self._init_batch()
         self._init_class_vars()
-    
+
     def _init_class_vars(self) -> None:
-        self.number_of_documents: int = 0
         self.metadata_filter: Dict[str, Any] = {}
 
     def _init_batch(self) -> None:
-        self.document_chunks: List = []
-        self.documents: Dict[Tuple[str, str]: Dict[str, List]] = defaultdict(lambda: defaultdict(list))
-        self.document_deleted_cnt: Dict[Tuple[str, str]: Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+        self.number_of_documents: int = 0
+        self.documents: Dict[Tuple[str, str]: Dict[str, List[DatDocumentMessage]]] = defaultdict(
+            lambda: defaultdict(list[DatDocumentMessage]))
+        # self.document_deleted_cnt: Dict[Tuple[str, str]: Dict[str, int]] = defaultdict(lambda: defaultdict(int))
 
     def _process_batch(self) -> None:
         # if len(self.document_chunks) > 0:
         #     self.seeder.seed(self.document_chunks, self.document_chunks[0].record.namespace, self.document_chunks[0].record.stream)
         #     print(f"Processed {self.number_of_documents} documents.")
         for (namespace, stream), documents in self.documents.items():
-            for document_entity, chunks in documents.items():
+            for _, chunks in documents.items():
                 self.seeder.seed(chunks, namespace, stream)
         print(f"Processed {self.number_of_documents} documents.")
         self._init_batch()
@@ -45,13 +45,16 @@ class DataProcessor(ABC):
         print(f"Deleting documents with metadata: {metadata}")
         self.seeder.delete(filter=metadata, namespace=namespace)
 
-    def processor(self, configured_catalog: DatCatalog, input_messages: Iterable[DatMessage]) -> Iterable[DatMessage]:
+    def processor(self, configured_catalog: ConfiguredDatCatalog, input_messages: Iterable[DatMessage]) -> Iterable[DatMessage]:
         print(f"Processing {len(input_messages)} messages.")
+        self.pre_processor(configured_catalog)
         for message in input_messages:
-            # print(f"Processing message: {message}")
             if message.type == Type.STATE:
                 if message.state.stream_state.stream_status == StreamStatus.STARTED:
-                    if "upsert":
+                    if message.state.stream.name not in [stream.stream.name for stream in configured_catalog.document_streams]:
+                        raise ValueError(f"Stream {message.state.stream.name} not found in configured catalog.")
+                    idx = self._find_stream_idx(message.state.stream.name, configured_catalog)
+                    if configured_catalog.document_streams[idx].destination_sync_mode == DestinationSyncMode.UPSERT:
                         # self._prepare_metadata_filter(message.record.data.metadata)
                         self._process_delete(message.record.data.metadata, message.record.namespace)
                     yield message
@@ -67,6 +70,17 @@ class DataProcessor(ABC):
                 if self.number_of_documents >= self.batch_size:
                     self._process_batch()
         self._process_batch()
+
+    def pre_processor(self, config: ConfiguredDatCatalog) -> None:
+        for stream in config.document_streams:
+            if stream.destination_sync_mode == DestinationSyncMode.REPLACE:
+                self.seeder.dest_sync(stream.namespace)
+
+    def _find_stream_idx(self, stream_name: str, catalog: ConfiguredDatCatalog) -> Optional[int]:
+        for idx, stream in enumerate(catalog.document_streams):
+            if stream.stream.name == stream_name:
+                return idx
+        return None
 
     # def _prepare_metadata_filter(self, metadata: StreamMetadata) -> None:
     #     self.metadata_filter = self.seeder.metadata_filter(metadata)

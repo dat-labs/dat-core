@@ -4,10 +4,17 @@
 
 from __future__ import annotations
 
+from enum import Enum
 from typing import Any, List, Optional
 
 from pydantic import BaseModel, Field
 from dat_core.pydantic_models.dat_document_stream import DatDocumentStream, SyncMode
+
+
+class DestinationSyncMode(Enum):
+    UPSERT = 'upsert'
+    APPEND = 'append'
+    REPLACE = 'replace'
 
 
 class ConfiguredDocumentStream(BaseModel):
@@ -17,6 +24,7 @@ class ConfiguredDocumentStream(BaseModel):
     stream: DatDocumentStream
     namespace: str = Field(..., description='namespace the data is associated with')
     sync_mode: SyncMode
+    destination_sync_mode: DestinationSyncMode
     cursor_field: Optional[List[str]] = Field(
         None,
         description='Path to the field that will be used to determine if a record is new or modified since the last sync. This field is REQUIRED if `sync_mode` is `incremental`. Otherwise it is ignored.',

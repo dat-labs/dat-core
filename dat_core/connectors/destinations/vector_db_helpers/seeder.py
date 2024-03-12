@@ -33,6 +33,13 @@ class Seeder(ABC):
         pass
 
     @abstractmethod
+    def dest_sync(self, namespace: str) -> None:
+        """
+        This method should be used to sync the destination.
+        """
+        pass
+
+    @abstractmethod
     def metadata_filter(self, metadata: StreamMetadata) -> Dict[str, Any]:
         """
         This method should be used to filter documents by metadata.
