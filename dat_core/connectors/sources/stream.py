@@ -1,4 +1,4 @@
-from typing import Dict, List, Optional, Iterable, Mapping, Any
+from typing import Dict, List, Optional, Iterable, Mapping, Any, Generator
 from abc import ABC, abstractmethod, abstractclassmethod
 from dat_core.pydantic_models.connector_specification import ConnectorSpecification
 from dat_core.pydantic_models.dat_document_stream import DatDocumentStream, SyncMode
@@ -81,7 +81,7 @@ class Stream(ABC):
         sync_mode: str,
         cursor_field: Optional[List[str]] = None,
         stream_state: Optional[Mapping[str, Any]] = None
-    ) -> DatMessage:
+    ) -> Generator[DatMessage]:
         pass
 
     @property

@@ -7,3 +7,4 @@ coverage==7.3.2
 lxml==4.9.3
 alembic==1.13.1
 psycopg2-binary==2.9.9
+pendulum==3.0.0
