@@ -1,4 +1,3 @@
-import urllib.request
 from abc import ABC, abstractmethod
 from typing import (Any, Dict, Optional, Tuple)
 import yaml
@@ -29,8 +28,9 @@ class ConnectorBase(ABC):
         """
         Will return source specification
         """
-        with urllib.request.urlopen(self._spec_file) as response:
-            return yaml.safe_load(response.read().decode())
+        with open(self._spec_file, 'r') as f:
+            spec_json = yaml.safe_load(f)
+        return spec_json
 
     def check(self, config: ConnectorSpecification) -> DatConnectionStatus:
         """

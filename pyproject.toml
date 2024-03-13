@@ -1,30 +1,26 @@
-# Defines Python build system settings.
-# [build-system]
-# requires = [
-#     "setuptools",
-#     "wheel"
-# ]
-
-# build-backend = "setuptools.build_meta"
-
-[project]
+[tool.poetry]
 name = "dat-core"
 version = "0.1.0"
 description = "Core library for the dat project"
-license = {text = "Elastic License 2.0"}
+authors = ["Team <team@datlabs.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+jsonschema = "^4.21.1"
+pyyaml = "^6.0.1"
+pydantic = "^2.6.4"
+click = "^8.1.7"
+coverage = "^7.4.3"
+alembic = "^1.13.1"
+pendulum = "^3.0.0"
+psycopg2-binary = "^2.9.9"
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.1.1"
 
 [build-system]
-requires = ["setuptools", "wheel"]
-# build-backend = "setuptools.build_meta"
-
-
-# packages = [{include = "dat_core"}]
-# packages = [
-#     {exclude = ["Orchestrator", "Executables"]}
-# ]
-
-[tool.setuptools.packages.find]
-exclude = ["Orchestrator*", "alembic_migrations*"]  # exclude packages matching these glob patterns (empty by default)
-
-# [tool.setuptools]
-# py-modules = []
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
