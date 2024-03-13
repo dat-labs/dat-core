@@ -14,6 +14,7 @@ from dat_core.pydantic_models.dat_message import (
 from dat_core.pydantic_models.dat_catalog import DatCatalog
 from dat_core.pydantic_models.connector_specification import ConnectorSpecification
 from dat_core.pydantic_models.dat_catalog import DatCatalog
+from dat_core.pydantic_models.configured_dat_catalog import ConfiguredDatCatalog
 from dat_core.connectors.base import ConnectorBase
 from dat_core.connectors.sources.stream import Stream
 
@@ -28,7 +29,7 @@ class SourceBase(ConnectorBase):
         with urllib.request.urlopen(self._catalog_file) as response:
             return yaml.safe_load(response.read().decode())
         
-    def discover(self, config: ConnectorSpecification) -> DatCatalog:
+    def discover(self, config: ConnectorSpecification) -> Dict:
         """
         Should publish a connectors capabilities i.e it's catalog
 
@@ -40,10 +41,11 @@ class SourceBase(ConnectorBase):
             DatCatalog: Supported streams in the connector
         """
         catalog_json = self.read_catalog_file()
-        streams = catalog_json['properties']['streams']['items']
-        json_schemas = {_s['properties']['name']: _s['properties']['json_schema']['properties'] for _s in streams}
-        streams = [stream.as_pydantic_model() for stream in self.streams(config=config, json_schemas=json_schemas)]
-        return DatCatalog(document_streams=streams)
+        if catalog_json:
+            return catalog_json
+        else:
+            # TODO: Write logic to return available streams
+            return {}
 
     def read(
         self,
@@ -68,10 +70,9 @@ class SourceBase(ConnectorBase):
         for configured_stream in catalog.document_streams:
             stream_instance = stream_instances.get(configured_stream.name)
             records = stream_instance.read_records(
-                config=config,
-                sync_mode=configured_stream.sync_mode,
-                cursor_field=None, # TODO: To be implemented,
-                stream_state=state,
+                catalog=catalog,
+                configured_stream=configured_stream,
+                stream_state=state
             )
             try:
                 first_record = next(records)

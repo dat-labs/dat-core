@@ -3,7 +3,6 @@ description: Definition of Dat Document Stream
 additionalProperties: true
 required:
   - name
-  - namespace
   - sync_mode
 properties:
   name:
