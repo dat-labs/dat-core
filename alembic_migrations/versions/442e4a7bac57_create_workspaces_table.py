@@ -19,6 +19,7 @@ branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
 
+
 def upgrade() -> None:
     op.create_table(
         'workspaces',
@@ -27,11 +28,37 @@ def upgrade() -> None:
         sa.Column('name', sa.String(50), nullable=False),
         sa.Column('status', sa.Enum('active', 'inactive', name='workspaces_status_enum'), server_default='active'),
         sa.Column('created_at', sa.DateTime, server_default=func.now()),
-        sa.Column('updated_at', sa.DateTime, onupdate=func.now(), server_default=func.now()),  # Adding onupdate attribute
-
+        sa.Column('updated_at', sa.DateTime, server_default=func.now()),  # Adding onupdate attribute
     )
+
+    # Create the trigger function
+    op.execute(f'''
+        CREATE OR REPLACE FUNCTION update_workspaces_updated_at()
+        RETURNS TRIGGER AS $$
+        BEGIN
+            NEW.updated_at = CURRENT_TIMESTAMP;
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+    ''')
+
+    # Create the trigger
+    op.execute(f'''
+        CREATE TRIGGER trigger_update_workspaces_updated_at
+        BEFORE UPDATE ON workspaces
+        FOR EACH ROW
+        EXECUTE FUNCTION update_workspaces_updated_at();
+    ''')
 
 
 def downgrade() -> None:
+    # Drop the trigger
+    op.execute(f'DROP TRIGGER IF EXISTS trigger_update_workspaces_updated_at ON workspaces')
+
+    # Drop the trigger function
+    op.execute(f'DROP FUNCTION IF EXISTS update_workspaces_updated_at')
+
+    # Drop the table
     op.drop_table('workspaces')
+
     op.execute('DROP TYPE workspaces_status_enum')
