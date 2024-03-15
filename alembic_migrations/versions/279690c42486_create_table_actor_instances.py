@@ -34,7 +34,7 @@ def upgrade() -> None:
         sa.Column('actor_type', sa.Enum(
             'source', 'destination', 'generator', name='actor_type_enum')),
         sa.Column('status', sa.Enum(
-            'active', 'inactive', name='actor_status_enum')),
+            'active', 'inactive', name='actor_status_enum'), server_default='active'),
         sa.Column('created_at', sa.DateTime, server_default=sa.func.now()),
         sa.Column('updated_at', sa.DateTime,
                   server_default=sa.func.now(), onupdate=sa.func.now())
@@ -43,3 +43,4 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_table('actor_instances')
+    op.execute('DROP TYPE actor_status_enum')

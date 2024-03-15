@@ -34,7 +34,7 @@ def upgrade() -> None:
         sa.Column('catalog', sa.JSON),
         sa.Column('cron_string', sa.String(255)),
         sa.Column('status', sa.Enum('active', 'inactive',
-                  name='connection_status_enum')),
+                  name='connection_status_enum'), server_default='active'),
         sa.Column('created_at', sa.DateTime, server_default=sa.func.now()),
         sa.Column('updated_at', sa.DateTime,
                   server_default=sa.func.now(), onupdate=sa.func.now())
@@ -43,3 +43,4 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     op.drop_table('connections')
+    op.execute('DROP TYPE connection_status_enum')
