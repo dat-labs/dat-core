@@ -23,7 +23,7 @@ def upgrade() -> None:
         'organizations',
         sa.Column('id', sa.String(255), primary_key=True),
         sa.Column('name', sa.String(50), nullable=False),
-        sa.Column('status', sa.Enum('active', 'inactive', name='organizations_status_enum')),
+        sa.Column('status', sa.Enum('active', 'inactive', name='organizations_status_enum'), server_default='active'),
         sa.Column('created_at', sa.DateTime, server_default=func.now()),
         sa.Column('updated_at', sa.DateTime, onupdate=func.now()),
     )
