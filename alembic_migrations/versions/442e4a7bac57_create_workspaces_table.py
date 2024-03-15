@@ -10,6 +10,10 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.sql import func
+from utils.database_utils import (create_trigger,
+                                  create_trigger_function,
+                                  drop_trigger,
+                                  drop_trigger_function)
 
 
 # revision identifiers, used by Alembic.
@@ -18,11 +22,12 @@ down_revision: Union[str, None] = '15a8511a33ff'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
+TABLE_NAME = 'workspaces'
 
 
 def upgrade() -> None:
     op.create_table(
-        'workspaces',
+        TABLE_NAME,
         sa.Column('id', sa.String(255), primary_key=True),
         sa.Column('organization_id', sa.String(255), sa.ForeignKey('organizations.id')),
         sa.Column('name', sa.String(50), nullable=False),
@@ -32,33 +37,17 @@ def upgrade() -> None:
     )
 
     # Create the trigger function
-    op.execute(f'''
-        CREATE OR REPLACE FUNCTION update_workspaces_updated_at()
-        RETURNS TRIGGER AS $$
-        BEGIN
-            NEW.updated_at = CURRENT_TIMESTAMP;
-            RETURN NEW;
-        END;
-        $$ LANGUAGE plpgsql;
-    ''')
+    op.execute(create_trigger_function(TABLE_NAME))
 
     # Create the trigger
-    op.execute(f'''
-        CREATE TRIGGER trigger_update_workspaces_updated_at
-        BEFORE UPDATE ON workspaces
-        FOR EACH ROW
-        EXECUTE FUNCTION update_workspaces_updated_at();
-    ''')
+    op.execute(create_trigger(TABLE_NAME))
 
 
 def downgrade() -> None:
-    # Drop the trigger
-    op.execute(f'DROP TRIGGER IF EXISTS trigger_update_workspaces_updated_at ON workspaces')
-
-    # Drop the trigger function
-    op.execute(f'DROP FUNCTION IF EXISTS update_workspaces_updated_at')
-
-    # Drop the table
-    op.drop_table('workspaces')
-
     op.execute('DROP TYPE workspaces_status_enum')
+    # Drop the trigger
+    op.execute(drop_trigger(TABLE_NAME))
+    # Drop the trigger function
+    op.execute(drop_trigger_function(TABLE_NAME))
+    # Drop the table
+    op.drop_table(TABLE_NAME)

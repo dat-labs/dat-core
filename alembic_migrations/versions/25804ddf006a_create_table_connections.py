@@ -9,6 +9,10 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from utils.database_utils import (create_trigger,
+                                    create_trigger_function,
+                                    drop_trigger,
+                                    drop_trigger_function)
 
 
 # revision identifiers, used by Alembic.
@@ -17,11 +21,12 @@ down_revision: Union[str, None] = '279690c42486'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
+TABLE_NAME = 'connections'
 
 def upgrade() -> None:
     # Create connections table
     op.create_table(
-        'connections',
+        TABLE_NAME,
         sa.Column('id', sa.String(36), primary_key=True),
         sa.Column('name', sa.String(255)),
         sa.Column('source_instance_id', sa.String(36),
@@ -37,10 +42,20 @@ def upgrade() -> None:
                   name='connection_status_enum'), server_default='active'),
         sa.Column('created_at', sa.DateTime, server_default=sa.func.now()),
         sa.Column('updated_at', sa.DateTime,
-                  server_default=sa.func.now(), onupdate=sa.func.now())
+                  server_default=sa.func.now())
     )
 
+    # Create the trigger function
+    op.execute(create_trigger_function(TABLE_NAME))
+
+    # Create the trigger
+    op.execute(create_trigger(TABLE_NAME))
 
 def downgrade() -> None:
-    op.drop_table('connections')
     op.execute('DROP TYPE connection_status_enum')
+    # Drop the trigger
+    op.execute(drop_trigger(TABLE_NAME))
+    # Drop the trigger function
+    op.execute(drop_trigger_function(TABLE_NAME))
+    # Drop the table
+    op.drop_table('connections')

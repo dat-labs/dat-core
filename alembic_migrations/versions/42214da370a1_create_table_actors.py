@@ -9,6 +9,10 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from utils.database_utils import (create_trigger,
+                                    create_trigger_function,
+                                    drop_trigger,
+                                    drop_trigger_function)
 
 
 # revision identifiers, used by Alembic.
@@ -17,11 +21,12 @@ down_revision: Union[str, None] = 'db690d4218ea'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
+TABLE_NAME = 'actors'
 
 def upgrade() -> None:
     # Create actors table
     op.create_table(
-        'actors',
+        TABLE_NAME,
         sa.Column('id', sa.String(36), primary_key=True),
         sa.Column('name', sa.String(255), nullable=False),
         sa.Column('icon', sa.String(255)),
@@ -31,11 +36,22 @@ def upgrade() -> None:
             'active', 'inactive', name='actor_status_enum'), server_default='active'),
         sa.Column('created_at', sa.DateTime, server_default=sa.func.now()),
         sa.Column('updated_at', sa.DateTime,
-                  server_default=sa.func.now(), onupdate=sa.func.now())
+                  server_default=sa.func.now())
     )
 
+    # Create the trigger function
+    op.execute(create_trigger_function(TABLE_NAME))
+
+    # Create the trigger
+    op.execute(create_trigger(TABLE_NAME))
 
 def downgrade() -> None:
+    # Drop the trigger
+    op.execute(drop_trigger(TABLE_NAME))
+    # Drop the trigger function
+    op.execute(drop_trigger_function(TABLE_NAME))
+    # Drop the table
     op.drop_table('actors')
+    # Drop the enum types
     op.execute('DROP TYPE actor_type_enum')
     op.execute('DROP TYPE actor_status_enum')
