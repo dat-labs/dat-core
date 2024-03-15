@@ -10,7 +10,7 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 from sqlalchemy.sql import func
-from utils.database_utils import (create_trigger,
+from alembic_migrations.utils.database_utils import (create_trigger,
                                   create_trigger_function,
                                   drop_trigger,
                                   drop_trigger_function)
