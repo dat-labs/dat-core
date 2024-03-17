@@ -9,10 +9,12 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-from alembic_migrations.utils.database_utils import (create_trigger,
-                                    create_trigger_function,
-                                    drop_trigger,
-                                    drop_trigger_function)
+from alembic_migrations.utils.database_utils import (
+    create_trigger,
+    create_trigger_function,
+    drop_trigger,
+    drop_trigger_function
+)
 
 
 # revision identifiers, used by Alembic.
@@ -46,17 +48,17 @@ def upgrade() -> None:
     )
 
     # Create the trigger function
-    op.execute(create_trigger_function(TABLE_NAME))
+    op.execute(create_trigger_function(TABLE_NAME, "updated_at"))
 
     # Create the trigger
-    op.execute(create_trigger(TABLE_NAME))
+    op.execute(create_trigger(TABLE_NAME, "updated_at"))
 
 def downgrade() -> None:
     # Drop the trigger
-    op.execute(drop_trigger(TABLE_NAME))
+    op.execute(drop_trigger(TABLE_NAME, "updated_at"))
     # Drop the trigger function
-    op.execute(drop_trigger_function(TABLE_NAME))
+    op.execute(drop_trigger_function(TABLE_NAME, "updated_at"))
     # Drop the table
-    op.drop_table('actor_instances')
+    op.drop_table(TABLE_NAME)
     # Drop the enum types
     op.execute('DROP TYPE actor_instances_status_enum')
