@@ -29,13 +29,15 @@ def upgrade() -> None:
     # Create actors table
     op.create_table(
         TABLE_NAME,
-        sa.Column('id', sa.String(36), primary_key=True),
+        sa.Column('id', sa.String(36), primary_key=True,
+                  nullable=False, server_default=sa.text("uuid_generate_v4()")),
         sa.Column('name', sa.String(255), nullable=False),
         sa.Column('icon', sa.String(255)),
         sa.Column('actor_type', sa.Enum(
             'source', 'destination', 'generator', name='actor_type_enum')),
         sa.Column('status', sa.Enum(
-            'active', 'inactive', name='actor_status_enum'), server_default='active'),
+            'active', 'inactive', name='actor_status_enum'),
+            server_default='active', nullable=False),
         sa.Column('created_at', sa.DateTime, server_default=sa.func.now()),
         sa.Column('updated_at', sa.DateTime,
                   server_default=sa.func.now())

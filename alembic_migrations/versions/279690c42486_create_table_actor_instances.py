@@ -29,7 +29,8 @@ def upgrade() -> None:
     # Create actor_instances table
     op.create_table(
         TABLE_NAME,
-        sa.Column('id', sa.String(36), primary_key=True),
+        sa.Column('id', sa.String(36), primary_key=True,
+                  nullable=False, server_default=sa.text("uuid_generate_v4()")),
         sa.Column('workspace_id', sa.String(36), sa.ForeignKey(
             'workspaces.id'), nullable=False),
         sa.Column('actor_id', sa.String(36), sa.ForeignKey(
@@ -41,7 +42,8 @@ def upgrade() -> None:
         sa.Column('actor_type', sa.Enum(
             'source', 'destination', 'generator', name='actor_type_enum')),
         sa.Column('status', sa.Enum(
-            'active', 'inactive', name='actor_instances_status_enum'), server_default='active'),
+            'active', 'inactive', name='actor_instances_status_enum'),
+            server_default='active', nullable=False),
         sa.Column('created_at', sa.DateTime, server_default=sa.func.now()),
         sa.Column('updated_at', sa.DateTime,
                   server_default=sa.func.now(), onupdate=sa.func.now())

@@ -30,7 +30,8 @@ def upgrade() -> None:
     # Create users table
     op.create_table(
         TABLE_NAME,
-        sa.Column('id', sa.String(36), primary_key=True),
+        sa.Column('id', sa.String(36), primary_key=True,
+                  nullable=False, server_default=sa.text("uuid_generate_v4()")),
         sa.Column('email', sa.String(255), nullable=False, unique=True),
         sa.Column('created_at', sa.DateTime, server_default=func.now()),
         sa.Column('updated_at', sa.DateTime, server_default=func.now())

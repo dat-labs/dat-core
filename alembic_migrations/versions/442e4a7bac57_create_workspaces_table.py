@@ -30,10 +30,12 @@ TABLE_NAME = 'workspaces'
 def upgrade() -> None:
     op.create_table(
         TABLE_NAME,
-        sa.Column('id', sa.String(255), primary_key=True),
-        sa.Column('organization_id', sa.String(255), sa.ForeignKey('organizations.id')),
+        sa.Column('id', sa.String(36), nullable=False,
+                  primary_key=True, server_default=sa.text("uuid_generate_v4()")),
+        sa.Column('organization_id', sa.String(36), sa.ForeignKey('organizations.id')),
         sa.Column('name', sa.String(50), nullable=False),
-        sa.Column('status', sa.Enum('active', 'inactive', name='workspaces_status_enum'), server_default='active'),
+        sa.Column('status', sa.Enum('active', 'inactive', name='workspaces_status_enum'),
+                  server_default='active', nullable=False),
         sa.Column('created_at', sa.DateTime, server_default=func.now()),
         sa.Column('updated_at', sa.DateTime, server_default=func.now()),  # Adding onupdate attribute
     )
