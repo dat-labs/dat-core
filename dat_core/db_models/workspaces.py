@@ -18,7 +18,6 @@ class Workspace(Base):
 
     # Define relationships
     actor_instances = relationship(ActorInstance, backref="workspace")
-    actors = relationship(Actor, backref="workspace")
-
+    
     def __repr__(self):
         return f"<Workspace(id='{self.id}', name='{self.name}', status='{self.status}')>"
