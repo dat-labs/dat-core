@@ -2,7 +2,8 @@ from sqlalchemy import Column, String, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from dat_core.db_models import Base
-from .actor_instances import ActorInstance
+from dat_core.db_models.actors import Actor
+from dat_core.db_models.actor_instances import ActorInstance
 
 class Workspace(Base):
     __tablename__ = 'workspaces'
@@ -15,8 +16,9 @@ class Workspace(Base):
     updated_at = Column(DateTime, default=datetime.utcnow,
                         onupdate=datetime.utcnow)
 
-    # Define relationship with the ActorInstance model
-    actor_instances = relationship(ActorInstance, back_populates="workspace")
+    # Define relationships
+    actor_instances = relationship(ActorInstance, backref="workspace")
+    actors = relationship(Actor, backref="workspace")
 
     def __repr__(self):
         return f"<Workspace(id='{self.id}', name='{self.name}', status='{self.status}')>"
