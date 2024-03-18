@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, DateTime, Enum
-from db_models import Base
+from dat_core.db_models import Base
 
 
 class Actor(Base):

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, DateTime, ForeignKey, JSON
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from db_models import Base
+from dat_core.db_models import Base
 
 
 class ActorInstance(Base):
