@@ -54,10 +54,12 @@ def upgrade() -> None:
     op.execute(create_trigger(TABLE_NAME, "updated_at"))
 
 def downgrade() -> None:
-    op.execute('DROP TYPE connection_status_enum')
     # Drop the trigger
     op.execute(drop_trigger(TABLE_NAME, "updated_at"))
     # Drop the trigger function
     op.execute(drop_trigger_function(TABLE_NAME, "updated_at"))
     # Drop the table
     op.drop_table(TABLE_NAME)
+    # Drop the ENUM type
+    op.execute('DROP TYPE connection_status_enum')
+
