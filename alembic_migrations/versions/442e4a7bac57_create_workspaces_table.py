@@ -46,10 +46,10 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    op.execute('DROP TYPE workspaces_status_enum')
     # Drop the trigger
     op.execute(drop_trigger(TABLE_NAME, "updated_at"))
     # Drop the trigger function
     op.execute(drop_trigger_function(TABLE_NAME, "updated_at"))
     # Drop the table
     op.drop_table(TABLE_NAME)
+    op.execute('DROP TYPE workspaces_status_enum')
