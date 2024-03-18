@@ -16,6 +16,7 @@ coverage = "^7.4.3"
 alembic = "^1.13.1"
 pendulum = "^3.0.0"
 psycopg2-binary = "^2.9.9"
+pypdf = "^4.1.0"
 
 
 [tool.poetry.group.test.dependencies]
