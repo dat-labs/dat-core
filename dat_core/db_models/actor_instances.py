@@ -1,5 +1,4 @@
 from sqlalchemy import Column, String, DateTime, ForeignKey, JSON
-from sqlalchemy.orm import relationship
 from datetime import datetime
 from dat_core.db_models import Base
 
@@ -21,12 +20,6 @@ class ActorInstance(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow,
                         onupdate=datetime.utcnow)
-
-    # Define relationship with the Workspace model
-    workspace = relationship('Workspace', back_populates="actor_instances")
-
-    # Define relationship with the Actor model
-    # actor = relationship("Actor", back_populates="actor_instances")
 
     def __repr__(self):
         return f"<ActorInstance(id='{self.id}', name='{self.name}', actor_type='{self.actor_type}', status='{self.status}')>"
