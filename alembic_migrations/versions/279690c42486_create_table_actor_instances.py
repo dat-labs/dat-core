@@ -40,7 +40,7 @@ def upgrade() -> None:
         sa.Column('name', sa.String(255)),
         sa.Column('configuration', sa.JSON),
         sa.Column('actor_type', sa.Enum(
-            'source', 'destination', 'generator', name='actor_type_enum')),
+            'source', 'destination', 'generator', name='actor_instances_actor_type_enum')),
         sa.Column('status', sa.Enum(
             'active', 'inactive', name='actor_instances_status_enum'),
             server_default='active', nullable=False),
@@ -64,3 +64,4 @@ def downgrade() -> None:
     op.drop_table(TABLE_NAME)
     # Drop the enum types
     op.execute('DROP TYPE actor_instances_status_enum')
+    op.execute('DROP TYPE actor_instances_actor_type_enum')
