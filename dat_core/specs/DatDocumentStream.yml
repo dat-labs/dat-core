@@ -21,3 +21,6 @@ properties:
     enum:
       - full_refresh
       - incremental
+  cursor_field:
+    description: Path to the field that will be used to determine if a record is new or modified since the last sync. This field is REQUIRED if `sync_mode` is `incremental`. Otherwise it is ignored.
+    type: string

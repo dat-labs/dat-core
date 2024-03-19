@@ -1,7 +1,7 @@
 import urllib.request
 from abc import abstractmethod
 from typing import (Any, Dict, Iterable, Iterator, List,
-    Mapping, MutableMapping, Optional, Tuple, Union)
+    Mapping, MutableMapping, Optional, Tuple, Union, Generator)
 import yaml
 from dat_core.pydantic_models.dat_message import (
     DatMessage,
@@ -52,7 +52,7 @@ class SourceBase(ConnectorBase):
         config: ConnectorSpecification,
         catalog: DatCatalog,
         state: Optional[Union[List[Dict], MutableMapping[str, Any]]] = None,
-    ) -> Iterator[DatMessage]:
+    ) -> Generator[DatMessage, Any, Any]:
         """
         The read operation which will read from the source based on the configured streams
 
@@ -66,6 +66,8 @@ class SourceBase(ConnectorBase):
         Yields:
             Iterator[Dict]: Each row should be wrapped around a DatMessage obj
         """
+        from dat_core.connectors.state_managers import LocalStateManager
+        state_manager = LocalStateManager()
         stream_instances = {s.name: s for s in self.streams(config)}
         for configured_stream in catalog.document_streams:
             stream_instance = stream_instances.get(configured_stream.name)
@@ -89,7 +91,18 @@ class SourceBase(ConnectorBase):
                 )
                 yield start_msg
                 yield first_record
+                state = {
+                    configured_stream.namespace: {
+                        configured_stream.cursor_field: stream_instance._get_cursor_value_from_record(configured_stream.cursor_field, first_record)
+                    }
+                }
+                yield stream_instance._checkpoint_stream_state(configured_stream, state, state_manager)
+                _record_count = 1
                 for record in records:
+                    _record_count += 1
+                    if stream_instance._should_checkpoint_state(configured_stream.cursor_field, state, record, _record_count):
+                        state[configured_stream.name][configured_stream.cursor_field] = stream_instance._get_cursor_value_from_record(configured_stream.cursor_field, record)
+                        yield stream_instance._checkpoint_stream_state(configured_stream, state, state_manager)
                     yield record
             except Exception as exc:
                 # TODO: Add specific exception

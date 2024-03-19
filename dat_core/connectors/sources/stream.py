@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from dat_core.pydantic_models.connector_specification import ConnectorSpecification
 from dat_core.pydantic_models.dat_document_stream import DatDocumentStream, SyncMode
 from dat_core.pydantic_models.dat_catalog import DatCatalog
-from dat_core.pydantic_models.dat_message import DatMessage
+from dat_core.pydantic_models.dat_message import DatMessage, DatDocumentMessage, Data, Type, DatStateMessage
 from dat_core.pydantic_models.stream_metadata import StreamMetadata
 
 def to_snake_case(_str):
@@ -23,6 +23,8 @@ class Stream(ABC):
     """
     Base abstract class for a Dat Stream
     """
+    _state_checkpoint_interval = None
+
     @classmethod
     @property
     def name(cls) -> str:
@@ -59,6 +61,25 @@ class Stream(ABC):
             sync_mode=self.sync_mode
         )
     
+    def as_record_message(self, doc_chunk: str, data_entity: str, configured_stream: DatDocumentStream) -> DatMessage:
+        doc_msg = DatDocumentMessage(
+                stream=self.as_pydantic_model(),
+                data=Data(
+                    document_chunk=doc_chunk,
+                    metadata=self.get_metadata(
+                        specs=self._config,
+                        document_chunk=doc_chunk,
+                        data_entity=data_entity
+                    )
+                ),
+                emitted_at=int(time.time()),
+                namespace=configured_stream.namespace
+            )
+        return DatMessage(
+            type=Type.RECORD,
+            record=doc_msg
+        )
+    
     def get_metadata(self, specs: ConnectorSpecification, document_chunk: str, data_entity: str) -> StreamMetadata:
         """
         Get necessary metadata to be published which will give a
@@ -89,7 +110,41 @@ class Stream(ABC):
         stream_state: Optional[Mapping[str, Any]] = None
     ) -> Generator[DatMessage, Any, Any]:
         pass
-
-    @property
-    def model_dict(self, ):
-        return self.model_dict
+    
+    def _should_checkpoint_state(self, cursor_field: str, stream_state: Mapping[Any, Any], record: DatMessage, _record_count: int) -> bool:
+        if self._state_checkpoint_interval and _record_count >= self._state_checkpoint_interval:
+            return True
+        elif stream_state and self._compare_cursor_values(
+            old_cursor_value=stream_state[cursor_field],
+            current_cursor_value=self._get_cursor_value_from_record(cursor_field, record)
+            ):
+            return True
+        else:
+            return False
+    
+    def _compare_cursor_values(old_cursor_value: Any, current_cursor_value: Any) -> bool:
+        # Should be implemented by streams
+        return False
+    
+    def _get_cursor_value_from_record(self, cursor_field: str | None, record: DatMessage) -> Any:
+        if not cursor_field:
+            return None
+        
+        if record.record.data:
+            cursor_value = self._cursor_value_from_record_data(cursor_field, record.record.data)\
+                or self._get_cursor_value_from_metadata(cursor_field, record.record.data.metadata)
+            return cursor_value
+    
+    def _cursor_value_from_record_data(self, cursor_field: str, record_data: Data) -> Any:
+        return getattr(record_data, cursor_field, None)
+    
+    def _get_cursor_value_from_metadata(self, cursor_field: str, metadata: StreamMetadata) -> Any:
+        return getattr(metadata, cursor_field, None)
+    
+    def _checkpoint_stream_state(self, configured_stream: DatDocumentStream ,stream_state: Mapping[Any, Any], state_manager: Any) -> DatMessage:
+        state_manager.save_stream_state(stream=configured_stream, stream_state=stream_state)
+        state_msg = DatStateMessage(
+            stream=self.as_pydantic_model(),
+            stream_state=stream_state
+        )
+        return DatMessage(type=Type.STATE, state=state_msg)
