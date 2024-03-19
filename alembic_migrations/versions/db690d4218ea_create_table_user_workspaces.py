@@ -29,7 +29,8 @@ def upgrade() -> None:
     # Create workspace_users table
     op.create_table(
         TABLE_NAME,
-        sa.Column('id', sa.String(36), primary_key=True),
+        sa.Column('id', sa.String(36), primary_key=True,
+                  nullable=False, server_default=sa.text("uuid_generate_v4()")),
         sa.Column('workspace_id', sa.String(36), sa.ForeignKey(
             'workspaces.id'), nullable=False),
         sa.Column('user_id', sa.String(36), sa.ForeignKey(
