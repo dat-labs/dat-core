@@ -29,7 +29,8 @@ def upgrade() -> None:
     # Create connections table
     op.create_table(
         TABLE_NAME,
-        sa.Column('id', sa.String(36), primary_key=True),
+        sa.Column('id', sa.String(36), primary_key=True,
+                  nullable=False, server_default=sa.text("uuid_generate_v4()")),
         sa.Column('name', sa.String(255)),
         sa.Column('source_instance_id', sa.String(36),
                   sa.ForeignKey('actor_instances.id'), nullable=False),
@@ -41,7 +42,7 @@ def upgrade() -> None:
         sa.Column('catalog', sa.JSON),
         sa.Column('cron_string', sa.String(255)),
         sa.Column('status', sa.Enum('active', 'inactive',
-                  name='connection_status_enum'), server_default='active'),
+                  name='connection_status_enum'), server_default='active', nullable=False),
         sa.Column('created_at', sa.DateTime, server_default=sa.func.now()),
         sa.Column('updated_at', sa.DateTime,
                   server_default=sa.func.now())
