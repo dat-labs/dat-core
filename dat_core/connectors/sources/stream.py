@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from dat_core.pydantic_models.connector_specification import ConnectorSpecification
 from dat_core.pydantic_models.dat_document_stream import DatDocumentStream, SyncMode
 from dat_core.pydantic_models.dat_catalog import DatCatalog
-from dat_core.pydantic_models.dat_message import DatMessage, DatDocumentMessage, Data, Type, DatStateMessage
+from dat_core.pydantic_models.dat_message import DatMessage, DatDocumentMessage, Data, Type, DatStateMessage, StreamState
 from dat_core.pydantic_models.stream_metadata import StreamMetadata
 
 def to_snake_case(_str):
@@ -107,22 +107,22 @@ class Stream(ABC):
     def read_records(self,
         catalog: DatCatalog,
         configured_stream: DatDocumentStream,
-        stream_state: Optional[Mapping[str, Any]] = None
+        stream_state: StreamState = None
     ) -> Generator[DatMessage, Any, Any]:
         pass
     
-    def _should_checkpoint_state(self, cursor_field: str, stream_state: Mapping[Any, Any], record: DatMessage, _record_count: int) -> bool:
+    def _should_checkpoint_state(self, cursor_field: str, stream_state: StreamState, record: DatMessage, _record_count: int) -> bool:
         if self._state_checkpoint_interval and _record_count >= self._state_checkpoint_interval:
             return True
-        elif stream_state and self._compare_cursor_values(
-            old_cursor_value=stream_state[cursor_field],
+        elif stream_state.data and self._compare_cursor_values(
+            old_cursor_value=stream_state.data.get(cursor_field),
             current_cursor_value=self._get_cursor_value_from_record(cursor_field, record)
-            ):
+        ):
             return True
         else:
             return False
     
-    def _compare_cursor_values(old_cursor_value: Any, current_cursor_value: Any) -> bool:
+    def _compare_cursor_values(self, old_cursor_value: Any, current_cursor_value: Any) -> bool:
         # Should be implemented by streams
         return False
     

@@ -78,31 +78,33 @@ class SourceBase(ConnectorBase):
             )
             try:
                 first_record = next(records)
-                start_msg = DatMessage(
-                    type=Type.STATE,
-                    state=DatStateMessage(
-                        stream=configured_stream,
-                        stream_state=StreamState(
-                            data={},
-                            stream_status=StreamStatus.STARTED
-                        )
-                    ),
-                    record=first_record.record
-                )
-                yield start_msg
-                yield first_record
-                state = {
-                    configured_stream.namespace: {
-                        configured_stream.cursor_field: stream_instance._get_cursor_value_from_record(configured_stream.cursor_field, first_record)
+                if state:
+                    stream_state = state.get(configured_stream.namespace)
+                    stream_state_data = stream_state.data
+                else:
+                    stream_state_data = {
+                        configured_stream.cursor_field: stream_instance._get_cursor_value_from_record(
+                            configured_stream.cursor_field, first_record)
                     }
-                }
-                yield stream_instance._checkpoint_stream_state(configured_stream, state, state_manager)
+                    stream_state = StreamState(
+                        data=stream_state_data,
+                        stream_status=StreamStatus.STARTED
+                    )
+                yield stream_instance._checkpoint_stream_state(configured_stream, stream_state, state_manager)
+                yield first_record
                 _record_count = 1
                 for record in records:
                     _record_count += 1
-                    if stream_instance._should_checkpoint_state(configured_stream.cursor_field, state, record, _record_count):
-                        state[configured_stream.name][configured_stream.cursor_field] = stream_instance._get_cursor_value_from_record(configured_stream.cursor_field, record)
-                        yield stream_instance._checkpoint_stream_state(configured_stream, state, state_manager)
+                    if stream_instance._should_checkpoint_state(configured_stream.cursor_field, stream_state, record, _record_count):
+                        stream_state_data = {
+                            configured_stream.cursor_field: stream_instance._get_cursor_value_from_record(
+                                configured_stream.cursor_field, first_record)
+                        }
+                        stream_state = StreamState(
+                            data=stream_state_data,
+                            stream_status=StreamStatus.STARTED
+                        )
+                        yield stream_instance._checkpoint_stream_state(configured_stream, stream_state, state_manager)
                     yield record
             except Exception as exc:
                 # TODO: Add specific exception
