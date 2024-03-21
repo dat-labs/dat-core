@@ -13,6 +13,7 @@ from dat_core.pydantic_models.dat_log_message import DatLogMessage
 from dat_core.pydantic_models.stream_metadata import StreamMetadata
 from dat_core.pydantic_models.connector_specification import ConnectorSpecification
 from dat_core.pydantic_models.dat_document_stream import DatDocumentStream
+from dat_core.pydantic_models.dat_connection_status import DatConnectionStatus
 
 class Type(Enum):
     RECORD = 'RECORD'
@@ -22,19 +23,6 @@ class Type(Enum):
     CONNECTION_STATUS = 'CONNECTION_STATUS'
     CATALOG = 'CATALOG'
     TRACE = 'TRACE'
-
-class Status(Enum):
-    SUCCEEDED = 'SUCCEEDED'
-    FAILED = 'FAILED'
-
-
-class DatConnectionStatus(BaseModel):
-    class Config:
-        extra = 'allow'
-
-    status: Status
-    message: Optional[str] = None
-
 
 
 class StreamStatus(Enum):

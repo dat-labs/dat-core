@@ -7,7 +7,7 @@ from __future__ import annotations
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, Extra
+from pydantic import BaseModel
 
 
 class Status(Enum):
@@ -17,7 +17,7 @@ class Status(Enum):
 
 class DatConnectionStatus(BaseModel):
     class Config:
-        extra = Extra.allow
+        extra = 'allow'
 
     status: Status
     message: Optional[str] = None
