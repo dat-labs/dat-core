@@ -3,18 +3,14 @@ from abc import abstractmethod
 from typing import (Any, Dict, Iterable, Iterator, List,
     Mapping, MutableMapping, Optional, Tuple, Union, Generator)
 import yaml
-from dat_core.pydantic_models.dat_message import (
+from dat_core.pydantic_models import (
     DatMessage,
-    DatStateMessage,
     StreamState,
     StreamStatus,
-    Type,
+    DatCatalog,
+    ConnectorSpecification,
+    DatDocumentStream
 )
-
-from dat_core.pydantic_models.dat_catalog import DatCatalog
-from dat_core.pydantic_models.connector_specification import ConnectorSpecification
-from dat_core.pydantic_models.dat_catalog import DatCatalog
-from dat_core.pydantic_models.configured_dat_catalog import ConfiguredDatCatalog
 from dat_core.connectors.base import ConnectorBase
 from dat_core.connectors.sources.stream import Stream
 
@@ -51,7 +47,7 @@ class SourceBase(ConnectorBase):
         self,
         config: ConnectorSpecification,
         catalog: DatCatalog,
-        state: Optional[Union[List[Dict], MutableMapping[str, Any]]] = None,
+        state: Optional[Mapping[str, StreamState]] = None,
     ) -> Generator[DatMessage, Any, Any]:
         """
         The read operation which will read from the source based on the configured streams
@@ -71,17 +67,16 @@ class SourceBase(ConnectorBase):
         stream_instances = {s.name: s for s in self.streams(config)}
         for configured_stream in catalog.document_streams:
             stream_instance = stream_instances.get(configured_stream.name)
-            records = stream_instance.read_records(
-                catalog=catalog,
-                configured_stream=configured_stream,
-                stream_state=state
-            )
+            stream_state = None
+            if state:
+                stream_state = state.get(configured_stream.namespace)
+            if stream_state:
+                records = self._read_incremental(stream_instance, catalog, configured_stream, stream_state)
+            else:
+                records = self._read_full_refresh(stream_instance, catalog, configured_stream)
             try:
                 first_record = next(records)
-                if state:
-                    stream_state = state.get(configured_stream.namespace)
-                    stream_state_data = stream_state.data
-                else:
+                if not stream_state:
                     stream_state_data = {
                         configured_stream.cursor_field: stream_instance._get_cursor_value_from_record(
                             configured_stream.cursor_field, first_record)
@@ -109,6 +104,37 @@ class SourceBase(ConnectorBase):
             except Exception as exc:
                 # TODO: Add specific exception
                 raise
+    
+    def _read_incremental(self,
+        stream_instance: Stream,
+        catalog: DatCatalog,
+        configured_stream: DatDocumentStream,
+        stream_state: StreamState
+    ) -> Generator[DatMessage, Any, Any]:
+        """
+        If stream_state is available, pass the cursor value so that data can
+        be fetched incrementally
+        """
+        _cursor_value = stream_state.data.get(configured_stream.cursor_field)
+        yield from stream_instance.read_records(
+                catalog=catalog,
+                configured_stream=configured_stream,
+                cursor_value=_cursor_value
+            )
+    
+    def _read_full_refresh(self,
+        stream_instance: Stream,
+        catalog: DatCatalog,
+        configured_stream: DatDocumentStream,
+    ) -> Generator[DatMessage, Any, Any]:
+        """
+        Fetch the entire data
+        """
+        yield from stream_instance.read_records(
+                catalog=catalog,
+                configured_stream=configured_stream,
+                cursor_value=None
+            )
 
 
     @abstractmethod
