@@ -13,6 +13,7 @@ from dat_core.pydantic_models import (
 )
 from dat_core.connectors.base import ConnectorBase
 from dat_core.connectors.sources.stream import Stream
+from dat_core.connectors.state_managers import LocalStateManager, StateManager
 
 class SourceBase(ConnectorBase):
     """
@@ -42,6 +43,21 @@ class SourceBase(ConnectorBase):
         else:
             # TODO: Write logic to return available streams
             return {}
+    
+    @abstractmethod
+    def streams(self, config: Mapping[str, Any], json_schemas: Mapping[str, Mapping[str, Any]]=None) -> List[Stream]:
+        """
+        Will return the supported streams
+
+        Args:
+            config (Mapping[str, Any]): User provided connector specs
+            json_schemas (Mapping[str, Mapping[str, Any]]): List of json schemas with each item a dictionary
+                with it's key as stream name
+
+        Returns:
+            List[Dict]: #TODO return Stream object
+        """
+        pass
 
     def read(
         self,
@@ -50,26 +66,27 @@ class SourceBase(ConnectorBase):
         state: Optional[Mapping[str, StreamState]] = None,
     ) -> Generator[DatMessage, Any, Any]:
         """
-        The read operation which will read from the source based on the configured streams
+        Reads data from a data stream based on the provided configuration and catalog.
 
-        Args:
-            config (ConnectorSpecification): The user-provided configuration as specified by
-              the source's spec.
-            catalog (DatCatalog): User provided configured catalog
-            state (Optional[Union[List[Dict], MutableMapping[str, Any]]], optional): If the
-              source supports state maintenance. Defaults to None.
+        Parameters:
+            config (ConnectorSpecification): The configuration object specifying the connector details.
+            catalog (DatCatalog): The catalog containing information about the data streams.
+            state (Optional[Mapping[str, StreamState]], optional): A mapping of stream names to their current state. Defaults to None.
 
         Yields:
-            Iterator[Dict]: Each row should be wrapped around a DatMessage obj
+            Generator[DatMessage, Any, Any]: A generator yielding DatMessage objects containing the read data.
+
+        Raises:
+            Exception: If an error occurs during the reading process.
+
+        Returns:
+            Generator[DatMessage, Any, Any]: A generator yielding DatMessage objects with the read data.
         """
-        from dat_core.connectors.state_managers import LocalStateManager
         state_manager = LocalStateManager()
         stream_instances = {s.name: s for s in self.streams(config)}
         for configured_stream in catalog.document_streams:
             stream_instance = stream_instances.get(configured_stream.name)
-            stream_state = None
-            if state:
-                stream_state = state.get(configured_stream.namespace)
+            stream_state = state.get(configured_stream.namespace) if state else None
             if stream_state:
                 records = self._read_incremental(stream_instance, catalog, configured_stream, stream_state)
             else:
@@ -77,20 +94,16 @@ class SourceBase(ConnectorBase):
             try:
                 first_record = next(records)
                 if not stream_state:
-                    stream_state_data = {
-                        configured_stream.cursor_field: stream_instance._get_cursor_value_from_record(
-                            configured_stream.cursor_field, first_record)
-                    }
-                    stream_state = StreamState(
-                        data=stream_state_data,
-                        stream_status=StreamStatus.STARTED
-                    )
+                    stream_state = self._build_stream_state_from_record(stream_instance, configured_stream, first_record) 
+                
                 yield stream_instance._checkpoint_stream_state(configured_stream, stream_state, state_manager)
                 yield first_record
+
                 _record_count = 1
                 for record in records:
                     _record_count += 1
-                    if stream_instance._should_checkpoint_state(configured_stream.cursor_field, stream_state, record, _record_count):
+                    if stream_instance._should_checkpoint_state(
+                        configured_stream.cursor_field, stream_state, record, _record_count):
                         stream_state_data = {
                             configured_stream.cursor_field: stream_instance._get_cursor_value_from_record(
                                 configured_stream.cursor_field, first_record)
@@ -101,10 +114,28 @@ class SourceBase(ConnectorBase):
                         )
                         yield stream_instance._checkpoint_stream_state(configured_stream, stream_state, state_manager)
                     yield record
+                
+                # Once all the records are done for a particular stream, clear it's state information
+                state_manager.cleanup_stream_state(configured_stream)
             except Exception as exc:
                 # TODO: Add specific exception
                 raise
     
+    def _build_stream_state_from_record(self,
+        stream_instance: Stream,
+        configured_stream: DatDocumentStream,
+        record: DatMessage
+    ) -> StreamState:
+        stream_state_data = {
+            configured_stream.cursor_field: stream_instance._get_cursor_value_from_record(
+                configured_stream.cursor_field, record)
+        }
+        stream_state = StreamState(
+            data=stream_state_data,
+            stream_status=StreamStatus.STARTED
+        )
+        return stream_state
+
     def _read_incremental(self,
         stream_instance: Stream,
         catalog: DatCatalog,
@@ -135,19 +166,3 @@ class SourceBase(ConnectorBase):
                 configured_stream=configured_stream,
                 cursor_value=None
             )
-
-
-    @abstractmethod
-    def streams(self, config: Mapping[str, Any], json_schemas: Mapping[str, Mapping[str, Any]]=None) -> List[Stream]:
-        """
-        Will return the supported streams
-
-        Args:
-            config (Mapping[str, Any]): User provided connector specs
-            json_schemas (Mapping[str, Mapping[str, Any]]): List of json schemas with each item a dictionary
-                with it's key as stream name
-
-        Returns:
-            List[Dict]: #TODO return Stream object
-        """
-        pass
