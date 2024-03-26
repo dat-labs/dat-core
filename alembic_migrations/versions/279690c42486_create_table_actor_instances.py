@@ -25,6 +25,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 TABLE_NAME = 'actor_instances'
 
+
 def upgrade() -> None:
     # Create actor_instances table
     op.create_table(
@@ -40,9 +41,9 @@ def upgrade() -> None:
         sa.Column('name', sa.String(255)),
         sa.Column('configuration', sa.JSON),
         sa.Column('actor_type', sa.Enum(
-            'source', 'destination', 'generator', name='actor_instances_actor_type_enum')),
+            'source', 'destination', 'generator', name=f'{TABLE_NAME}_actor_type_enum')),
         sa.Column('status', sa.Enum(
-            'active', 'inactive', name='actor_instances_status_enum'),
+            'active', 'inactive', name=f'{TABLE_NAME}_status_enum'),
             server_default='active', nullable=False),
         sa.Column('created_at', sa.DateTime, server_default=sa.func.now()),
         sa.Column('updated_at', sa.DateTime,
@@ -55,6 +56,7 @@ def upgrade() -> None:
     # Create the trigger
     op.execute(create_trigger(TABLE_NAME, "updated_at"))
 
+
 def downgrade() -> None:
     # Drop the trigger
     op.execute(drop_trigger(TABLE_NAME, "updated_at"))
@@ -63,5 +65,5 @@ def downgrade() -> None:
     # Drop the table
     op.drop_table(TABLE_NAME)
     # Drop the enum types
-    op.execute('DROP TYPE actor_instances_status_enum')
-    op.execute('DROP TYPE actor_instances_actor_type_enum')
+    op.execute(f'DROP TYPE {TABLE_NAME}_status_enum')
+    op.execute(f'DROP TYPE {TABLE_NAME}_actor_type_enum')
