@@ -21,7 +21,6 @@ class Connection(BaseModel):
     namespace_format: str = Field(
         None,
         description='The namespace format of the connection.',
-        default="${SOURCE_NAMESPACE}"
     )
     prefix: Optional[str] = Field(
         None,
