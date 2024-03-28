@@ -25,7 +25,9 @@ class DatDocumentStream(BaseModel):
     )
     json_schema: Optional[Dict[str, Any]] = None
     dir_uris: Optional[List[str]] = None
-    sync_mode: SyncMode
+    supported_sync_modes: List[SyncMode] = Field(
+        ..., description='List of sync modes supported by this stream.', min_items=1
+    )
     cursor_field: Optional[str] = Field(
         None,
         description='Path to the field that will be used to determine if a record is new or modified since the last sync. This field is REQUIRED if `sync_mode` is `incremental`. Otherwise it is ignored.',

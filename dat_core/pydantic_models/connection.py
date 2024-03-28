@@ -10,35 +10,36 @@ from dat_core.pydantic_models.connector_specification import ConnectorSpecificat
 from dat_core.pydantic_models.dat_catalog import DatCatalog
 
 
-class Generator(BaseModel):
-    spec: ConnectorSpecification
-
-
-class Destination(BaseModel):
-    spec: ConnectorSpecification
-    catalog: Optional[DatCatalog] = None
-
-
-class Source(BaseModel):
-    spec: ConnectorSpecification
-    catalog: DatCatalog
-
-
-class Spec(BaseModel):
-    source: Source
-    generator: Generator
-    destination: Destination
-
-
 class Connection(BaseModel):
     class Config:
         extra = 'allow'
 
-    protocol_version: Optional[str] = Field(
+    name: Optional[str] = Field(
         None,
-        description='the Vectorize Protocol version supported by the connector. Protocol versioning uses SemVer.',
+        description='The name of the connection.',
     )
-    spec: Spec = Field(
+    namespace_format: str = Field(
+        None,
+        description='The namespace format of the connection.',
+        default="${SOURCE_NAMESPACE}"
+    )
+    prefix: Optional[str] = Field(
+        None,
+        description='The prefix of the connection.',
+    )
+    catalog: Optional[DatCatalog] = Field(
+        None,
+        description='The catalog of the connection.',
+    )
+    source: ConnectorSpecification = Field(
         ...,
-        description='ConnectorDefinition specific blob. Must be a valid JSON string.',
+        description='The source connector specification.',
+    )
+    generator: ConnectorSpecification = Field(
+        ...,
+        description='The generator connector specification.',
+    )
+    destination: ConnectorSpecification = Field(
+        ...,
+        description='The destination connector specification.',
     )

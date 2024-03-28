@@ -1,26 +1,37 @@
+# DatDocumentStream.yml
+description: |-
+  A Pydantic model representing a document stream with various properties.
 type: object
-description: Definition of Dat Document Stream
-additionalProperties: true
-required:
-  - name
-  - sync_mode
 properties:
   name:
+    description: The name of the document stream.
     type: string
   namespace:
-    description: "namespace the data is associated with"
+    description: The namespace the data is associated with.
     type: string
+    nullable: true
   json_schema:
-    type: object
+    description: The JSON schema for the document stream.
+    type: dict
+    nullable: true
   dir_uris:
-    type: array
+    description: A list of directory URIs associated with the stream.
+    type: list
     items:
       type: string
-  sync_mode:
-    type: string
-    enum:
-      - full_refresh
-      - incremental
+    nullable: true
+  supported_sync_modes:
+    description: A list of supported sync modes for the stream.
+    type: list
+    items:
+      type: string
+      enum:
+        - full_refresh
+        - incremental
+    minItems: 1
   cursor_field:
-    description: Path to the field that will be used to determine if a record is new or modified since the last sync. This field is REQUIRED if `sync_mode` is `incremental`. Otherwise it is ignored.
+    description: |-
+      The path to the field used to determine if a record is new or modified.
+      REQUIRED for incremental sync mode.
     type: string
+    nullable: true

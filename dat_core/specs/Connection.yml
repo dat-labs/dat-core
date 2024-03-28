@@ -1,44 +1,36 @@
-description: Will define the Connection between Source(s), Generator(s) and Destination(s)
+description: Will define the Connection between Source(s), Generator(s), and Destination(s)
 type: object
 required:
-  - spec
-additionalProperties: true
+  - name
+  - namespace_format
+  - source
+  - generator
+  - destination
 properties:
-  protocol_version:
-    description: "the Vectorize Protocol version supported by the connector. Protocol versioning uses SemVer."
+  name:
+    description: "The name of the connection."
     type: string
-  spec:
-    description: ConnectorDefinition specific blob. Must be a valid JSON string.
+  namespace_format:
+    description: "The namespace format of the connection."
+    type: string
+    default: "${SOURCE_NAMESPACE}"
+  prefix:
+    description: "The prefix of the connection."
+    type: string
+  catalog:
+    description: "The catalog of the connection."
     type: object
-    required:
-      - source
-      - generator
-      - destination
-    properties:
-      source:
-        type: object
-        required:
-          - spec
-          - catalog
-        properties:
-          spec:
-            "$ref": "./ConnectorSpecification.yml"
-          catalog:
-            "$ref": "./DatCatalog.yml"
-      generator:
-        type: object
-        required:
-          - spec
-        properties:
-          spec:
-            "$ref": "./ConnectorSpecification.yml"
-      destination:
-        type: object
-        required:
-          - spec
-        properties:
-          spec:
-            "$ref": "./ConnectorSpecification.yml"
-          catalog:
-            "$ref": "./DatCatalog.yml"
-        
+    items:
+      "$ref": "./DatCatalog.yml"
+  source:
+    description: "The source connector specification."
+    type: object
+    "$ref": "./ConnectorSpecification.yml"
+  generator:
+    description: "The generator connector specification."
+    type: object
+    "$ref": "./ConnectorSpecification.yml"
+  destination:
+    description: "The destination connector specification."
+    type: object
+    "$ref": "./ConnectorSpecification.yml"

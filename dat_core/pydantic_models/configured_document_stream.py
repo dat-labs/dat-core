@@ -22,7 +22,6 @@ class ConfiguredDocumentStream(BaseModel):
         extra = 'allow'
 
     stream: DatDocumentStream
-    namespace: str = Field(..., description='namespace the data is associated with')
     sync_mode: SyncMode
     destination_sync_mode: DestinationSyncMode
     cursor_field: Optional[List[str]] = Field(
