@@ -37,7 +37,7 @@ def upgrade() -> None:
         sa.Column('status', sa.Enum('active', 'inactive', name='workspaces_status_enum'),
                   server_default='active', nullable=False),
         sa.Column('created_at', sa.DateTime, server_default=func.now()),
-        sa.Column('updated_at', sa.DateTime, server_default=func.now()),  # Adding onupdate attribute
+        sa.Column('updated_at', sa.DateTime)
     )
 
     # Create the trigger function

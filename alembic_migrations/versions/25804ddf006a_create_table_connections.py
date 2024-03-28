@@ -40,7 +40,6 @@ def upgrade() -> None:
                   sa.ForeignKey('actor_instances.id'), nullable=False),
         sa.Column('configuration', sa.JSON),
         sa.Column('catalog', sa.JSON),
-        sa.Column('cron_string', sa.String(255)),
         sa.Column('status', sa.Enum('active', 'inactive',
                   name='connection_status_enum'), server_default='active', nullable=False),
         sa.Column('created_at', sa.DateTime, server_default=sa.func.now()),
