@@ -4,6 +4,7 @@ type: object
 required:
   - connectionSpecification
   - name
+  - module_name
 additionalProperties: true
 properties:
   # General Properties (Common to all connectors)
@@ -18,6 +19,9 @@ properties:
     format: uri
   name:
     description: "The name of the specific connector to which this ConnectorSpecification belongs."
+    type: string
+  module_name:
+    description: "Name of the python module for this connector"
     type: string
   connectionSpecification:
     description: ConnectorDefinition specific blob. Must be a valid JSON string.

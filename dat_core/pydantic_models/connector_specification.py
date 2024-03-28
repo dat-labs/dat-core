@@ -29,6 +29,10 @@ class ConnectorSpecification(BaseModel):
         ...,
         description='The name of the specific connector to which this ConnectorSpecification belongs.',
     )
+    module_name: str = Field(
+        ...,
+        description='Name of the python module for this connector',
+    )
     connectionSpecification: Dict[str, Any] = Field(
         ...,
         description='ConnectorDefinition specific blob. Must be a valid JSON string.',
