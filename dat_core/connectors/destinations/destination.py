@@ -1,12 +1,9 @@
-import io
-import sys
 from abc import ABC, abstractmethod
-from loguru import logger
-from typing import Any, Iterable, List, Mapping
-from pydantic import ValidationError
-from dat_core.pydantic_models.dat_message import DatMessage
-from dat_core.pydantic_models.dat_catalog import DatCatalog
+from typing import Any, Iterable, Mapping
 from dat_core.connectors.base import ConnectorBase
+from dat_core.pydantic_models import (
+    DatMessage, DatCatalog
+)
 
 
 class Destination(ConnectorBase):
