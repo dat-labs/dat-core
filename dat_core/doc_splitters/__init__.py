@@ -1,0 +1,2 @@
+from dat_core.doc_splitters.pdf_splitter import PdfSplitter
+from dat_core.doc_splitters.txt_splitter import TxtSplitter, BaseSplitter
