@@ -4,14 +4,14 @@
 
 from __future__ import annotations
 
-from enum import Enum
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, Field
 from dat_core.pydantic_models.dat_document_stream import DatDocumentStream, SyncMode
+from dat_core.pydantic_models.base import EnumWithStr
 
 
-class DestinationSyncMode(Enum):
+class DestinationSyncMode(EnumWithStr):
     UPSERT = 'upsert'
     APPEND = 'append'
     REPLACE = 'replace'

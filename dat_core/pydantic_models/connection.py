@@ -7,7 +7,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 from dat_core.pydantic_models.connector_specification import ConnectorSpecification
-from dat_core.pydantic_models.dat_catalog import DatCatalog
+from dat_core.pydantic_models.configured_dat_catalog import ConfiguredDatCatalog
 
 
 class Connection(BaseModel):
@@ -26,7 +26,7 @@ class Connection(BaseModel):
         None,
         description='The prefix of the connection.',
     )
-    catalog: Optional[DatCatalog] = Field(
+    catalog: Optional[ConfiguredDatCatalog] = Field(
         None,
         description='The catalog of the connection.',
     )
