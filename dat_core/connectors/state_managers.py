@@ -24,7 +24,7 @@ class LocalStateManager(StateManager):
         return os.path.join(_path, 'stream_state.json')
     
     def save_stream_state(self, stream: DatDocumentStream, stream_state: StreamState) -> None:
-        with open(self._local_path_from_stream(stream), 'w') as _state_file:
+        with open(self._local_path_from_stream(stream), 'w+') as _state_file:
             return _state_file.write(stream_state.model_dump_json())
 
     def get_stream_state(self, stream: DatDocumentStream) -> Mapping[Any, Any]:
@@ -36,6 +36,13 @@ class LocalStateManager(StateManager):
             os.remove(self._local_path_from_stream(stream))
     
     def _get_state_file_content(self, stream: DatDocumentStream) -> Mapping[Any, Any]:
-        with open(self._local_path_from_stream(stream), 'r') as _state_file:
-            state_file_content = json.loads(_state_file.read())
-            return state_file_content or {}
+        state_file_content = {'data': {}}
+        try:
+            with open(self._local_path_from_stream(stream), 'r') as _state_file:
+                state_file_content = json.loads(_state_file.read())
+                return state_file_content
+        except:
+            # TODO: raise proper exception
+            pass
+        
+        return state_file_content

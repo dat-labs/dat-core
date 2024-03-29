@@ -13,7 +13,6 @@ from dat_core.pydantic_models import (
 )
 from dat_core.connectors.base import ConnectorBase
 from dat_core.connectors.sources.stream import Stream
-from dat_core.connectors.state_managers import LocalStateManager, StateManager
 
 class SourceBase(ConnectorBase):
     """
@@ -82,21 +81,22 @@ class SourceBase(ConnectorBase):
         Returns:
             Generator[DatMessage, Any, Any]: A generator yielding DatMessage objects with the read data.
         """
-        state_manager = LocalStateManager()
         stream_instances = {s.name: s for s in self.streams(config)}
         for configured_stream in catalog.document_streams:
             stream_instance = stream_instances.get(configured_stream.name)
+            if not configured_stream.cursor_field:
+                configured_stream.cursor_field = stream_instance._default_cursor
             stream_state = state.get(configured_stream.namespace) if state else None
-            if stream_state:
+            if stream_state.data:
                 records = self._read_incremental(stream_instance, catalog, configured_stream, stream_state)
             else:
                 records = self._read_full_refresh(stream_instance, catalog, configured_stream)
             try:
                 first_record = next(records)
-                if not stream_state:
+                if not stream_state.data:
                     stream_state = self._build_stream_state_from_record(stream_instance, configured_stream, first_record) 
                 
-                yield stream_instance._checkpoint_stream_state(configured_stream, stream_state, state_manager)
+                yield stream_instance._checkpoint_stream_state(configured_stream, stream_state)
                 yield first_record
 
                 _record_count = 1
@@ -106,17 +106,15 @@ class SourceBase(ConnectorBase):
                         configured_stream.cursor_field, stream_state, record, _record_count):
                         stream_state_data = {
                             configured_stream.cursor_field: stream_instance._get_cursor_value_from_record(
-                                configured_stream.cursor_field, first_record)
+                                configured_stream.cursor_field, record)
                         }
                         stream_state = StreamState(
                             data=stream_state_data,
                             stream_status=StreamStatus.STARTED
                         )
-                        yield stream_instance._checkpoint_stream_state(configured_stream, stream_state, state_manager)
+                        yield stream_instance._checkpoint_stream_state(configured_stream, stream_state)
                     yield record
-                
-                # Once all the records are done for a particular stream, clear it's state information
-                state_manager.cleanup_stream_state(configured_stream)
+
             except Exception as exc:
                 # TODO: Add specific exception
                 raise

@@ -49,6 +49,9 @@ class DatStateMessage(BaseModel):
 
 
 class Data(BaseModel):
+    class Config:
+        extra = 'allow'
+
     document_chunk: Optional[str] = Field(
         None, description='document chunks emitted by source'
     )

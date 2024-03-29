@@ -23,7 +23,9 @@ class Stream(ABC):
     """
     Base abstract class for a Dat Stream
     """
+    _name = None
     _state_checkpoint_interval = None
+    _default_cursor = None
 
     @classmethod
     @property
@@ -33,7 +35,7 @@ class Stream(ABC):
         camel case string matching the class name.
         """
         # TODO: Make a function for camel case
-        return to_snake_case(cls.__name__)
+        return cls._name or to_snake_case(cls.__name__)
 
     @property
     def sync_mode(self) -> SyncMode:
@@ -58,20 +60,35 @@ class Stream(ABC):
     def as_pydantic_model(self) -> DatDocumentStream:
         return DatDocumentStream(
             name=self.name,
-            sync_mode=self.sync_mode
+            sync_mode=self.sync_mode,
+            supported_sync_modes=[SyncMode.full_refresh, SyncMode.incremental]
         )
     
-    def as_record_message(self, doc_chunk: str, data_entity: str, configured_stream: DatDocumentStream) -> DatMessage:
-        doc_msg = DatDocumentMessage(
-                stream=self.as_pydantic_model(),
-                data=Data(
+    def as_record_message(self,
+        configured_stream: DatDocumentStream,
+        doc_chunk: str,
+        data_entity: str,
+        dat_last_modified: int = None,
+        extra_data: Mapping[Any, Any] = None,
+        extra_metadata: Mapping[Any, Any] = None) -> DatMessage:
+        if extra_data is None:
+            extra_data = {}
+        if extra_metadata is None:
+            extra_metadata = {}
+        data = Data(
                     document_chunk=doc_chunk,
                     metadata=self.get_metadata(
                         specs=self._config,
                         document_chunk=doc_chunk,
-                        data_entity=data_entity
-                    )
-                ),
+                        data_entity=data_entity,
+                        dat_last_modified=dat_last_modified,
+                        **extra_metadata
+                    ),
+                    **extra_data
+                )
+        doc_msg = DatDocumentMessage(
+                stream=self.as_pydantic_model(),
+                data=data,
                 emitted_at=int(time.time()),
                 namespace=configured_stream.namespace
             )
@@ -80,7 +97,12 @@ class Stream(ABC):
             record=doc_msg
         )
     
-    def get_metadata(self, specs: ConnectorSpecification, document_chunk: str, data_entity: str) -> StreamMetadata:
+    def get_metadata(self,
+        specs: ConnectorSpecification,
+        document_chunk: str,
+        data_entity: str,
+        dat_last_modified: int = None,
+        **extra_metadata: Any) -> StreamMetadata:
         """
         Get necessary metadata to be published which will give a
         hint about the nature of data that is being published
@@ -95,11 +117,12 @@ class Stream(ABC):
             StreamMetadata: Object of this class
         """
         metadata = StreamMetadata(
-            dat_source=specs.name,
+            dat_source=specs.module_name,
             dat_stream=self.name,
             dat_document_entity=data_entity,
-            dat_last_modified=int(time.time()),
-            dat_document_chunk=document_chunk
+            dat_last_modified=dat_last_modified or int(time.time()), #Populate current time if not already provided
+            dat_document_chunk=document_chunk,
+            **extra_metadata
         )
         return metadata
     
@@ -141,10 +164,9 @@ class Stream(ABC):
     def _get_cursor_value_from_metadata(self, cursor_field: str, metadata: StreamMetadata) -> Any:
         return getattr(metadata, cursor_field, None)
     
-    def _checkpoint_stream_state(self, configured_stream: DatDocumentStream ,stream_state: Mapping[Any, Any], state_manager: Any) -> DatMessage:
-        state_manager.save_stream_state(stream=configured_stream, stream_state=stream_state)
+    def _checkpoint_stream_state(self, configured_stream: DatDocumentStream , stream_state: Mapping[Any, Any]) -> DatMessage:
         state_msg = DatStateMessage(
-            stream=self.as_pydantic_model(),
+            stream=configured_stream,
             stream_state=stream_state
         )
         return DatMessage(type=Type.STATE, state=state_msg)

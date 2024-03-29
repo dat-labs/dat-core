@@ -15,6 +15,7 @@ properties:
   data:
     description: "record data"
     type: object
+    additionalProperties: true
     properties:
       document_chunk:
         description: "document chunks emitted by source"
