@@ -21,7 +21,7 @@ properties:
     description: "The catalog of the connection."
     type: object
     items:
-      "$ref": "./DatCatalog.yml"
+      "$ref": "./ConfiguredDatCatalog.yml"
   source:
     description: "The source connector specification."
     type: object
