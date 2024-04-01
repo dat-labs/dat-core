@@ -4,7 +4,7 @@ import requests
 from typing import Any, Dict, Iterable, List, Mapping, Optional
 from dat_core.connectors.sources.stream import Stream
 from dat_core.pydantic_models.connector_specification import ConnectorSpecification
-from dat_core.pydantic_models.dat_catalog import SyncMode
+from dat_core.pydantic_models.dat_catalog import ReadSyncMode
 from dat_core.pydantic_models.dat_message import DatMessage
 from dat_core.pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data
 
@@ -19,7 +19,7 @@ class ZendeskStream(Stream):
     
     def read_records(self,
         config: ConnectorSpecification,
-        read_sync_mode: SyncMode,
+        read_sync_mode: ReadSyncMode,
         cursor_field: List[str] | None = None,
         stream_state: Mapping[str, Any] | None = None
     ) -> DatMessage:

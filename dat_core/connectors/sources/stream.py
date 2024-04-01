@@ -2,7 +2,7 @@ import time
 from typing import Dict, List, Optional, Iterable, Mapping, Any, Generator
 from abc import ABC, abstractmethod
 from dat_core.pydantic_models.connector_specification import ConnectorSpecification
-from dat_core.pydantic_models.dat_document_stream import DatDocumentStream, SyncMode
+from dat_core.pydantic_models.dat_document_stream import DatDocumentStream, ReadSyncMode
 from dat_core.pydantic_models.dat_catalog import DatCatalog
 from dat_core.pydantic_models.dat_message import DatMessage, DatDocumentMessage, Data, Type, DatStateMessage, StreamState
 from dat_core.pydantic_models.stream_metadata import StreamMetadata
@@ -38,9 +38,9 @@ class Stream(ABC):
         return cls._name or to_snake_case(cls.__name__)
 
     @property
-    def read_sync_mode(self) -> SyncMode:
+    def read_sync_mode(self) -> ReadSyncMode:
         # TODO: Fix return
-        return SyncMode.incremental
+        return ReadSyncMode.incremental
     
     @property
     def json_schema(self) -> Mapping[str, Any]:
@@ -61,7 +61,7 @@ class Stream(ABC):
         return DatDocumentStream(
             name=self.name,
             read_sync_mode=self.read_sync_mode,
-            supported_sync_modes=[SyncMode.full_refresh, SyncMode.incremental]
+            supported_sync_modes=[ReadSyncMode.full_refresh, ReadSyncMode.incremental]
         )
     
     def as_record_message(self,

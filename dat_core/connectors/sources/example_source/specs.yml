@@ -2,14 +2,14 @@
 description: Specification of a connector (source/embeddingsgenerator/destination)
 type: object
 required:
-  - connectionSpecification
+  - connection_specification
 additionalProperties: true
 properties:
   # General Properties (Common to all connectors)
   protocol_version: 1.0
-  documentationUrl: 'www.example.com'
+  documentation_url: 'www.example.com'
   changelogUrl: 'www.example.com'
-  connectionSpecification:
+  connection_specification:
     description: ConnectorDefinition specific blob. Must be a valid JSON string.
     type: object
     required:

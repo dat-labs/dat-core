@@ -4,7 +4,7 @@ from dat_core.connectors.sources.base import SourceBase
 from dat_core.connectors.sources.stream import Stream
 from dat_core.connectors.sources.example_source.streams import Agent
 from dat_core.pydantic_models.connector_specification import ConnectorSpecification
-from dat_core.pydantic_models.dat_catalog import SyncMode
+from dat_core.pydantic_models.dat_catalog import ReadSyncMode
 from auth.token_authenticator import BasicHttpAuthenticator
 
 class Zendesk(SourceBase):
@@ -21,12 +21,12 @@ class Zendesk(SourceBase):
         to Zendesk or not
         """
         auth = BasicHttpAuthenticator(
-            username=config.connectionSpecification['zendesk_username'],
-            password=config.connectionSpecification['zendesk_password']
+            username=config.connection_specification['zendesk_username'],
+            password=config.connection_specification['zendesk_password']
             )
         agent_stream = Agent(config, authenticator=auth)
         try:
-            for record in agent_stream.read_records(config=config, read_sync_mode=SyncMode.incremental):
+            for record in agent_stream.read_records(config=config, read_sync_mode=ReadSyncMode.incremental):
                 print(record)
         except: #TODO: Catch an AuthenticationError
             return False, False
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     # config_json = Zendesk().spec()
     # print(config_json)
     config = ConnectorSpecification(
-        connectionSpecification={'zendesk_username': os.environ.get('zendesk_username'), 'zendesk_password': os.environ.get('zendesk_password')}
+        connection_specification={'zendesk_username': os.environ.get('zendesk_username'), 'zendesk_password': os.environ.get('zendesk_password')}
     )
     print(config.model_dump_json())
     Zendesk().check(config=config)

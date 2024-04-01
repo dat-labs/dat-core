@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
-from dat_core.pydantic_models.dat_document_stream import DatDocumentStream, SyncMode
+from dat_core.pydantic_models.dat_document_stream import DatDocumentStream, ReadSyncMode
 from dat_core.pydantic_models.base import EnumWithStr
 
 
@@ -22,7 +22,7 @@ class ConfiguredDocumentStream(BaseModel):
         extra = 'allow'
 
     stream: DatDocumentStream
-    read_sync_mode: SyncMode
+    read_sync_mode: ReadSyncMode
     write_sync_mode: DestinationSyncMode
     cursor_field: Optional[List[str]] = Field(
         None,
