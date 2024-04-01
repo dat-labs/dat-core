@@ -71,6 +71,19 @@ class Stream(ABC):
         dat_last_modified: int = None,
         extra_data: Mapping[Any, Any] = None,
         extra_metadata: Mapping[Any, Any] = None) -> DatMessage:
+        """Generates a DatMessage containing a DatDocumentMessage representing a record.
+
+        Args:
+            configured_stream (DatDocumentStream): The configured document stream.
+            doc_chunk (str): The document chunk to include in the message.
+            data_entity (str): The data entity associated with the document chunk.
+            dat_last_modified (int, optional): The last modified timestamp. Defaults to None.
+            extra_data (Mapping[Any, Any], optional): Extra data to include. Defaults to None.
+            extra_metadata (Mapping[Any, Any], optional): Extra metadata to include. Defaults to None.
+
+        Returns:
+            DatMessage: A DatMessage containing a DatDocumentMessage representing a record.
+        """
         if extra_data is None:
             extra_data = {}
         if extra_metadata is None:
@@ -135,6 +148,17 @@ class Stream(ABC):
         pass
     
     def _should_checkpoint_state(self, cursor_field: str, stream_state: StreamState, record: DatMessage, _record_count: int) -> bool:
+        """Determines whether to checkpoint the stream state based on the provided parameters.
+
+        Args:
+            cursor_field (str): The field used for cursor comparison.
+            stream_state (StreamState): The current stream state.
+            record (DatMessage): The record to compare.
+            _record_count (int): The current record count.
+
+        Returns:
+            bool: True if the stream state should be checkpointed, False otherwise.
+        """
         if self._state_checkpoint_interval and _record_count >= self._state_checkpoint_interval:
             return True
         elif stream_state.data and self._compare_cursor_values(
@@ -146,10 +170,28 @@ class Stream(ABC):
             return False
     
     def _compare_cursor_values(self, old_cursor_value: Any, current_cursor_value: Any) -> bool:
+        """Compares old and current cursor values.
+
+        Args:
+            old_cursor_value (Any): The old cursor value.
+            current_cursor_value (Any): The current cursor value.
+
+        Returns:
+            bool: True if the cursor values are the same, False otherwise.
+        """
         # Should be implemented by streams
         return False
     
     def _get_cursor_value_from_record(self, cursor_field: str | None, record: DatMessage) -> Any:
+        """Extracts the cursor value from a record.
+
+        Args:
+            cursor_field (str | None): The cursor field if available.
+            record (DatMessage): The record to extract the cursor value from.
+
+        Returns:
+            Any: The cursor value extracted from the record.
+        """
         if not cursor_field:
             return None
         
@@ -159,12 +201,39 @@ class Stream(ABC):
             return cursor_value
     
     def _cursor_value_from_record_data(self, cursor_field: str, record_data: Data) -> Any:
+        """Extracts the cursor value from record data.
+
+        Args:
+            cursor_field (str): The cursor field.
+            record_data (Data): The record data containing the cursor field.
+
+        Returns:
+            Any: The cursor value extracted from the record data.
+        """
         return getattr(record_data, cursor_field, None)
     
     def _get_cursor_value_from_metadata(self, cursor_field: str, metadata: StreamMetadata) -> Any:
+        """Extracts the cursor value from metadata.
+
+        Args:
+            cursor_field (str): The cursor field.
+            metadata (StreamMetadata): The metadata containing the cursor field.
+
+        Returns:
+            Any: The cursor value extracted from the metadata.
+        """
         return getattr(metadata, cursor_field, None)
     
     def _checkpoint_stream_state(self, configured_stream: DatDocumentStream , stream_state: Mapping[Any, Any]) -> DatMessage:
+        """Creates a DatMessage containing the checkpointed stream state.
+
+        Args:
+            configured_stream (DatDocumentStream): The configured document stream.
+            stream_state (Mapping[Any, Any]): The stream state to checkpoint.
+
+        Returns:
+            DatMessage: A DatMessage containing the checkpointed stream state.
+        """
         state_msg = DatStateMessage(
             stream=configured_stream,
             stream_state=stream_state
