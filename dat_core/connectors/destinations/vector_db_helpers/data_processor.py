@@ -5,7 +5,7 @@ from dat_core.connectors.destinations.vector_db_helpers.seeder import Seeder
 from dat_core.pydantic_models import (
     DatMessage, Type, DatDocumentMessage,
     StreamStatus, DatCatalog,
-    StreamMetadata, DestinationSyncMode
+    StreamMetadata, WriteSyncMode
 )
 
 
@@ -55,7 +55,7 @@ class DataProcessor(ABC):
                     if message.state.stream.name not in [stream.stream.name for stream in configured_catalog.document_streams]:
                         raise ValueError(f"Stream {message.state.stream.name} not found in configured catalog.")
                     idx = self._find_stream_idx(message.state.stream.name, configured_catalog)
-                    if configured_catalog.document_streams[idx].write_sync_mode == DestinationSyncMode.UPSERT:
+                    if configured_catalog.document_streams[idx].write_sync_mode == WriteSyncMode.UPSERT:
                         # self._prepare_metadata_filter(message.record.data.metadata)
                         self._process_delete(message.record.data.metadata, message.record.namespace)
                     yield message
@@ -74,7 +74,7 @@ class DataProcessor(ABC):
 
     def pre_processor(self, config: DatCatalog) -> None:
         for stream in config.document_streams:
-            if stream.write_sync_mode == DestinationSyncMode.REPLACE:
+            if stream.write_sync_mode == WriteSyncMode.REPLACE:
                 self.seeder.dest_sync(stream.namespace)
 
     def _find_stream_idx(self, stream_name: str, catalog: DatCatalog) -> Optional[int]:

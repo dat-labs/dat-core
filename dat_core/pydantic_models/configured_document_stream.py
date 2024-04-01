@@ -11,7 +11,7 @@ from dat_core.pydantic_models.dat_document_stream import DatDocumentStream, Read
 from dat_core.pydantic_models.base import EnumWithStr
 
 
-class DestinationSyncMode(EnumWithStr):
+class WriteSyncMode(EnumWithStr):
     UPSERT = 'upsert'
     APPEND = 'append'
     REPLACE = 'replace'
@@ -23,7 +23,7 @@ class ConfiguredDocumentStream(BaseModel):
 
     stream: DatDocumentStream
     read_sync_mode: ReadSyncMode
-    write_sync_mode: DestinationSyncMode
+    write_sync_mode: WriteSyncMode
     cursor_field: Optional[List[str]] = Field(
         None,
         description='Path to the field that will be used to determine if a record is new or modified since the last sync. This field is REQUIRED if `read_sync_mode` is `incremental`. Otherwise it is ignored.',
