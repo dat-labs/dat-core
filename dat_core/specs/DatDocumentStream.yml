@@ -4,7 +4,6 @@ description: |-
 type: object
 required:
   - name
-  - sync_mode
 properties:
   name:
     description: The name of the document stream.
@@ -17,12 +16,21 @@ properties:
     description: The JSON schema for the document stream.
     type: object
     nullable: true
-  sync_mode:
-    description: A list of supported sync modes for the stream.
+  read_sync_mode:
+    description: A list of supported sync modes for the stream while reading.
     type: string
+    default: incremental
     enum:
       - full_refresh
       - incremental
+  write_sync_mode:
+    description: A list of supported sync modes for the stream while writing.
+    type: string
+    default: append
+    enum:
+      - append
+      - upsert
+      - replace
   cursor_field:
     description: |-
       The path to the field used to determine if a record is new or modified.

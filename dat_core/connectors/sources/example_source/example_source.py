@@ -26,7 +26,7 @@ class Zendesk(SourceBase):
             )
         agent_stream = Agent(config, authenticator=auth)
         try:
-            for record in agent_stream.read_records(config=config, sync_mode=SyncMode.incremental):
+            for record in agent_stream.read_records(config=config, read_sync_mode=SyncMode.incremental):
                 print(record)
         except: #TODO: Catch an AuthenticationError
             return False, False

@@ -38,7 +38,7 @@ class Stream(ABC):
         return cls._name or to_snake_case(cls.__name__)
 
     @property
-    def sync_mode(self) -> SyncMode:
+    def read_sync_mode(self) -> SyncMode:
         # TODO: Fix return
         return SyncMode.incremental
     
@@ -60,7 +60,7 @@ class Stream(ABC):
     def as_pydantic_model(self) -> DatDocumentStream:
         return DatDocumentStream(
             name=self.name,
-            sync_mode=self.sync_mode,
+            read_sync_mode=self.read_sync_mode,
             supported_sync_modes=[SyncMode.full_refresh, SyncMode.incremental]
         )
     

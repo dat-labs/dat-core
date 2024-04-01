@@ -22,13 +22,13 @@ class ConfiguredDocumentStream(BaseModel):
         extra = 'allow'
 
     stream: DatDocumentStream
-    sync_mode: SyncMode
-    destination_sync_mode: DestinationSyncMode
+    read_sync_mode: SyncMode
+    write_sync_mode: DestinationSyncMode
     cursor_field: Optional[List[str]] = Field(
         None,
-        description='Path to the field that will be used to determine if a record is new or modified since the last sync. This field is REQUIRED if `sync_mode` is `incremental`. Otherwise it is ignored.',
+        description='Path to the field that will be used to determine if a record is new or modified since the last sync. This field is REQUIRED if `read_sync_mode` is `incremental`. Otherwise it is ignored.',
     )
     primary_key: Optional[List[List[str]]] = Field(
         None,
-        description='Paths to the fields that will be used as primary key. This field is REQUIRED if `destination_sync_mode` is `*_dedup`. Otherwise it is ignored.',
+        description='Paths to the fields that will be used as primary key. This field is REQUIRED if `write_sync_mode` is `*_dedup`. Otherwise it is ignored.',
     )
