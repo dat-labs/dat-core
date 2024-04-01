@@ -2,6 +2,9 @@
 description: |-
   A Pydantic model representing a document stream with various properties.
 type: object
+required:
+  - name
+  - sync_mode
 properties:
   name:
     description: The name of the document stream.
@@ -12,23 +15,14 @@ properties:
     nullable: true
   json_schema:
     description: The JSON schema for the document stream.
-    type: dict
+    type: object
     nullable: true
-  dir_uris:
-    description: A list of directory URIs associated with the stream.
-    type: list
-    items:
-      type: string
-    nullable: true
-  supported_sync_modes:
+  sync_mode:
     description: A list of supported sync modes for the stream.
-    type: list
-    items:
-      type: string
-      enum:
-        - full_refresh
-        - incremental
-    minItems: 1
+    type: string
+    enum:
+      - full_refresh
+      - incremental
   cursor_field:
     description: |-
       The path to the field used to determine if a record is new or modified.

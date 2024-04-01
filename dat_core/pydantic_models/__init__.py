@@ -1,4 +1,4 @@
-from dat_core.pydantic_models.configured_dat_catalog import ConfiguredDatCatalog
+# from dat_core.pydantic_models.configured_dat_catalog import ConfiguredDatCatalog
 from dat_core.pydantic_models.connector_specification import ConnectorSpecification, DestinationSyncMode
 from dat_core.pydantic_models.dat_catalog import DatCatalog
 from dat_core.pydantic_models.dat_document_stream import DatDocumentStream, SyncMode
@@ -10,7 +10,7 @@ from dat_core.pydantic_models.configured_document_stream import ConfiguredDocume
 from dat_core.pydantic_models.dat_connection_status import DatConnectionStatus, Status
 
 __all__ = [
-    'ConfiguredDatCatalog',
+    # 'ConfiguredDatCatalog',
     'ConnectorSpecification',
     'DestinationSyncMode',
     'DatCatalog',

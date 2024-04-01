@@ -54,7 +54,7 @@ The [dat Protocol](dat-protocol.md) describes a series of structs and interfaces
 spec() -> ConnectorSpecification
 check(Config) -> DatConnectionStatus
 discover(Config) -> DatCatalog
-read(Config, ConfiguredDatCatalog, State) -> Stream<DatRecordMessage | DatStateMessage>
+read(Config, DatCatalog, State) -> Stream<DatRecordMessage | DatStateMessage>
 ```
 
 ### Docker:

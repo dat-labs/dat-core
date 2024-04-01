@@ -1,4 +1,4 @@
-# VectorizeCatalog:
+# DEP VectorizeCatalog:
 description: Specification of Configured Dat Catalog
 type: object
 required:

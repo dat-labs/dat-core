@@ -1,4 +1,4 @@
-# ConfiguredDocumentStream.yml
+# DEP ConfiguredDocumentStream.yml
 
 description: |-
   A Pydantic model representing a configured document stream with additional properties.

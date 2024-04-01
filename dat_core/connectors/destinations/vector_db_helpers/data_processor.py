@@ -4,7 +4,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 from dat_core.connectors.destinations.vector_db_helpers.seeder import Seeder
 from dat_core.pydantic_models import (
     DatMessage, Type, DatDocumentMessage,
-    StreamStatus, ConfiguredDatCatalog,
+    StreamStatus, DatCatalog,
     StreamMetadata, DestinationSyncMode
 )
 
@@ -46,7 +46,7 @@ class DataProcessor(ABC):
         print(f"Deleting documents with metadata: {metadata}")
         self.seeder.delete(filter=metadata, namespace=namespace)
 
-    def processor(self, configured_catalog: ConfiguredDatCatalog, input_messages: Iterable[DatMessage]) -> Iterable[DatMessage]:
+    def processor(self, configured_catalog: DatCatalog, input_messages: Iterable[DatMessage]) -> Iterable[DatMessage]:
         print(f"Processing {len(input_messages)} messages.")
         self.pre_processor(configured_catalog)
         for message in input_messages:
@@ -72,12 +72,12 @@ class DataProcessor(ABC):
                     self._process_batch()
         self._process_batch()
 
-    def pre_processor(self, config: ConfiguredDatCatalog) -> None:
+    def pre_processor(self, config: DatCatalog) -> None:
         for stream in config.document_streams:
             if stream.destination_sync_mode == DestinationSyncMode.REPLACE:
                 self.seeder.dest_sync(stream.namespace)
 
-    def _find_stream_idx(self, stream_name: str, catalog: ConfiguredDatCatalog) -> Optional[int]:
+    def _find_stream_idx(self, stream_name: str, catalog: DatCatalog) -> Optional[int]:
         for idx, stream in enumerate(catalog.document_streams):
             if stream.stream.name == stream_name:
                 return idx

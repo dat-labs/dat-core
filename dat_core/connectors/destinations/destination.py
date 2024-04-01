@@ -25,7 +25,7 @@ class Destination(ConnectorBase):
 
         Args:
             config (Mapping[str, Any]): Configuration parameters for the destination.
-            configured_catalog (ConfiguredDatCatalog): Catalog describing the configured schema for the destination.
+            configured_catalog (DatCatalog): Catalog describing the configured schema for the destination.
             input_messages (Iterable[DatMessage]): Iterable of messages containing data to be written to the destination.
 
         Returns:
