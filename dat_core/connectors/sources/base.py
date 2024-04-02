@@ -93,7 +93,7 @@ class SourceBase(ConnectorBase):
                 records = self._read_full_refresh(stream_instance, catalog, configured_stream)
             try:
                 first_record = next(records)
-                if not stream_state.data:
+                if not stream_state or not stream_state.data:
                     stream_state = self._build_stream_state_from_record(stream_instance, configured_stream, first_record) 
                 
                 yield stream_instance._checkpoint_stream_state(configured_stream, stream_state)
