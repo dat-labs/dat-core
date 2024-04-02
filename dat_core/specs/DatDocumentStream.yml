@@ -4,6 +4,7 @@ description: |-
 type: object
 required:
   - name
+additionalProperties: true
 properties:
   name:
     description: The name of the document stream.

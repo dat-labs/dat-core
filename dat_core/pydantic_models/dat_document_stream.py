@@ -22,6 +22,9 @@ class WriteSyncMode(EnumWithStr):
 
 
 class DatDocumentStream(BaseModel):
+    class Config:
+        extra = 'allow'
+    
     name: str = Field(..., description='The name of the document stream.')
     namespace: Optional[str] = Field(
         None, description='The namespace the data is associated with.'
