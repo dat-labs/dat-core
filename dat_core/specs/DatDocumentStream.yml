@@ -19,18 +19,18 @@ properties:
   read_sync_mode:
     description: A list of supported sync modes for the stream while reading.
     type: string
-    default: incremental
+    default: INCREMENTAL
     enum:
-      - full_refresh
-      - incremental
+      - FULL_REFRESH
+      - INCREMENTAL
   write_sync_mode:
     description: A list of supported sync modes for the stream while writing.
     type: string
-    default: append
+    default: APPEND
     enum:
-      - append
-      - upsert
-      - replace
+      - APPEND
+      - UPSERT
+      - REPLACE
   cursor_field:
     description: |-
       The path to the field used to determine if a record is new or modified.
