@@ -29,7 +29,7 @@ class ZendeskStream(Stream):
         Args:
             config (ConnectorSpecification): The user-provided configuration as specified by
               the source's spec. 
-            read_sync_mode (str): incremental|full
+            read_sync_mode (str): INCREMENTAL|FULL
             cursor_field (List[str] | None, optional): The point from which data is to be fetched. Defaults to None.
             stream_state (Mapping[str, Any] | None, optional): Last watermark for the data fetched. Defaults to None.
 

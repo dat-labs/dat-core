@@ -40,7 +40,7 @@ class Stream(ABC):
     @property
     def read_sync_mode(self) -> ReadSyncMode:
         # TODO: Fix return
-        return ReadSyncMode.incremental
+        return ReadSyncMode.INCREMENTAL
     
     @property
     def json_schema(self) -> Mapping[str, Any]:
@@ -61,7 +61,7 @@ class Stream(ABC):
         return DatDocumentStream(
             name=self.name,
             read_sync_mode=self.read_sync_mode,
-            supported_sync_modes=[ReadSyncMode.full_refresh, ReadSyncMode.incremental]
+            supported_sync_modes=[ReadSyncMode.full_refresh, ReadSyncMode.INCREMENTAL]
         )
     
     def as_record_message(self,

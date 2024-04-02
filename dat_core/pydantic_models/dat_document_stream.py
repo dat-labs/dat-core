@@ -42,5 +42,5 @@ class DatDocumentStream(BaseModel):
     )
     cursor_field: Optional[str] = Field(
         None,
-        description='The path to the field used to determine if a record is new or modified.\nREQUIRED for incremental sync mode.',
+        description='The path to the field used to determine if a record is new or modified.\nREQUIRED for INCREMENTAL sync mode.',
     )

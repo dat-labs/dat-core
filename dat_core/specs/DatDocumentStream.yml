@@ -35,6 +35,6 @@ properties:
   cursor_field:
     description: |-
       The path to the field used to determine if a record is new or modified.
-      REQUIRED for incremental sync mode.
+      REQUIRED for INCREMENTAL sync mode.
     type: string
     nullable: true
