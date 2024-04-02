@@ -61,7 +61,7 @@ class Stream(ABC):
         return DatDocumentStream(
             name=self.name,
             read_sync_mode=self.read_sync_mode,
-            supported_sync_modes=[ReadSyncMode.full_refresh, ReadSyncMode.INCREMENTAL]
+            supported_sync_modes=[ReadSyncMode.FULL_REFRESH, ReadSyncMode.INCREMENTAL]
         )
     
     def as_record_message(self,

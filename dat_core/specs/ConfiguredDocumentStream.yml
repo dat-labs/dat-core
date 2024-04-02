@@ -9,10 +9,10 @@ properties:
     type:
       $ref: "./DatDocumentStream.yml"
   read_sync_mode:
-    description: The primary sync mode for the stream (full_refresh or INCREMENTAL).
+    description: The primary sync mode for the stream (FULL_REFRESH or INCREMENTAL).
     type: string
     enum:
-      - full_refresh
+      - FULL_REFRESH
       - INCREMENTAL
   write_sync_mode:
     description: The destination sync mode for the stream (upsert, append, replace).
