@@ -87,7 +87,7 @@ class SourceBase(ConnectorBase):
             if not configured_stream.cursor_field:
                 configured_stream.cursor_field = stream_instance._default_cursor
             stream_state = state.get(configured_stream.namespace) if state else None
-            if stream_state.data:
+            if stream_state and stream_state.data:
                 records = self._read_incremental(stream_instance, catalog, configured_stream, stream_state)
             else:
                 records = self._read_full_refresh(stream_instance, catalog, configured_stream)
