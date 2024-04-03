@@ -1,6 +1,9 @@
 # DatStateMessage:
 type: object
 additionalProperties: true
+required:
+  - stream
+  - stream_state
 properties:
   stream:
     "$ref": "./DatDocumentStream.yml"
@@ -18,3 +21,5 @@ properties:
         type: string
         enum:
           - STARTED
+          - RUNNING
+          - COMPLETED

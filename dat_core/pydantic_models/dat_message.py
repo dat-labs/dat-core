@@ -14,6 +14,7 @@ from dat_core.pydantic_models.stream_metadata import StreamMetadata
 from dat_core.pydantic_models.connector_specification import ConnectorSpecification
 from dat_core.pydantic_models.dat_document_stream import DatDocumentStream
 from dat_core.pydantic_models.dat_connection_status import DatConnectionStatus
+from dat_core.pydantic_models.dat_state_message import DatStateMessage
 
 class Type(Enum):
     RECORD = 'RECORD'
@@ -23,30 +24,6 @@ class Type(Enum):
     CONNECTION_STATUS = 'CONNECTION_STATUS'
     CATALOG = 'CATALOG'
     TRACE = 'TRACE'
-
-
-class StreamStatus(Enum):
-    STARTED = 'STARTED'
-    COMPLETED = 'COMPLETED'
-
-
-class StreamState(BaseModel):
-    class Config:
-        extra = 'allow'
-
-    data: Dict[str, Any] = Field(..., description='the state data')
-    stream_status: Optional[StreamStatus] = Field(None, description='the stream status')
-
-
-class DatStateMessage(BaseModel):
-    class Config:
-        extra = 'allow'
-
-    stream: Optional[DatDocumentStream] = None
-    stream_state: Optional[StreamState] = None
-
-
-
 
 class Data(BaseModel):
     class Config:

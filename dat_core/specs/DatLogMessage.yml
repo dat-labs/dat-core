@@ -1,5 +1,8 @@
 type: object
 additionalProperties: true
+required:
+  - level
+  - message
 properties:
   level:
     description: "log level of the log message"
