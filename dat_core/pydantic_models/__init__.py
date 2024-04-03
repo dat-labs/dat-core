@@ -1,4 +1,4 @@
-from pydantic_models.base import EnumWithStr
+from dat_core.pydantic_models.base import EnumWithStr
 from dat_core.pydantic_models.connector_specification import *
 from dat_core.pydantic_models.dat_catalog import *
 from dat_core.pydantic_models.dat_document_stream import *
