@@ -3,8 +3,10 @@ from typing import Any, Dict, List, Mapping, Optional, Tuple
 from dat_core.connectors.sources.base import SourceBase
 from dat_core.connectors.sources.stream import Stream
 from dat_core.connectors.sources.example_source.streams import Agent
-from dat_core.pydantic_models.connector_specification import ConnectorSpecification
-from dat_core.pydantic_models.dat_catalog import ReadSyncMode
+from dat_core.pydantic_models import (
+    ReadSyncMode,
+    ConnectorSpecification,
+)
 from auth.token_authenticator import BasicHttpAuthenticator
 
 class Zendesk(SourceBase):

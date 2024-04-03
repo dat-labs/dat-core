@@ -3,10 +3,14 @@ import json
 import requests
 from typing import Any, Dict, Iterable, List, Mapping, Optional
 from dat_core.connectors.sources.stream import Stream
-from dat_core.pydantic_models.connector_specification import ConnectorSpecification
-from dat_core.pydantic_models.dat_catalog import ReadSyncMode
-from dat_core.pydantic_models.dat_message import DatMessage
-from dat_core.pydantic_models.dat_message import DatMessage, Type, DatDocumentMessage, Data
+from dat_core.pydantic_models import (
+    ConnectorSpecification,
+    ReadSyncMode,
+    DatMessage,
+    Type,
+    DatDocumentMessage,
+    Data,
+)
 
 class ZendeskStream(Stream):
     """

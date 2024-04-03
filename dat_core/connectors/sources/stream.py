@@ -1,12 +1,19 @@
 import time
 from typing import Dict, List, Optional, Iterable, Mapping, Any, Generator
 from abc import ABC, abstractmethod
-from dat_core.pydantic_models.connector_specification import ConnectorSpecification
-from dat_core.pydantic_models.dat_document_stream import DatDocumentStream, ReadSyncMode
-from dat_core.pydantic_models.dat_catalog import DatCatalog
-from dat_core.pydantic_models.dat_message import DatMessage, DatDocumentMessage, Data, Type, DatStateMessage, StreamState
-from dat_core.pydantic_models.stream_metadata import StreamMetadata
-
+from dat_core.pydantic_models import (
+    ConnectorSpecification,
+    DatDocumentStream,
+    ReadSyncMode,
+    DatCatalog,
+    DatMessage,
+    DatDocumentMessage,
+    Data,
+    Type,
+    DatStateMessage,
+    StreamState,
+    StreamMetadata,
+)
 def to_snake_case(_str):
     """
     Given a camel_case string, convert it

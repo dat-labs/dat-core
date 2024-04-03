@@ -1,8 +1,10 @@
 import os
 import json
 from typing import Mapping, Any
-from dat_core.pydantic_models.dat_document_stream import DatDocumentStream
-from dat_core.pydantic_models.dat_message import StreamState
+from dat_core.pydantic_models import (
+    DatDocumentStream,
+    StreamState,
+)
 
 class StateManager:
 

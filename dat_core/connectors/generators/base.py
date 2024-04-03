@@ -3,8 +3,10 @@ import os
 from typing import Iterator
 from abc import abstractmethod
 from dat_core.connectors.base import ConnectorBase
-from dat_core.pydantic_models.connector_specification import ConnectorSpecification
-from dat_core.pydantic_models.dat_message import DatMessage, Type
+from dat_core.pydantic_models import (
+    ConnectorSpecification,
+    DatMessage,
+)
 
 
 class GeneratorBase(ConnectorBase):
