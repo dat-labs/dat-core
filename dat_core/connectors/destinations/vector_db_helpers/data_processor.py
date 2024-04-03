@@ -79,7 +79,7 @@ class DataProcessor(ABC):
 
     def _find_stream_idx(self, stream_name: str, catalog: DatCatalog) -> Optional[int]:
         for idx, stream in enumerate(catalog.document_streams):
-            if stream.stream.name == stream_name:
+            if stream.name == stream_name:
                 return idx
         return None
 
