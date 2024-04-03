@@ -52,7 +52,7 @@ class DataProcessor(ABC):
         for message in input_messages:
             if message.type == Type.STATE:
                 if message.state.stream_state.stream_status == StreamStatus.STARTED:
-                    if message.state.stream.name not in [stream.stream.name for stream in configured_catalog.document_streams]:
+                    if message.state.stream.name not in [stream.name for stream in configured_catalog.document_streams]:
                         raise ValueError(f"Stream {message.state.stream.name} not found in configured catalog.")
                     idx = self._find_stream_idx(message.state.stream.name, configured_catalog)
                     if configured_catalog.document_streams[idx].write_sync_mode == WriteSyncMode.UPSERT:
