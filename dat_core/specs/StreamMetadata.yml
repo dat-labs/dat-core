@@ -1,0 +1,17 @@
+description: Extra metadata to be published by the source stream
+type: object
+additionalProperties: true
+required:
+  - dat_source
+  - dat_stream
+properties:
+  dat_source:
+    type: string
+  dat_stream:
+    type: string
+  dat_document_entity:
+    type: string
+  dat_last_modified:
+    type: integer
+  dat_document_chunk:
+    type: string

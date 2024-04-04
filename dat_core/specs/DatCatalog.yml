@@ -1,0 +1,10 @@
+# VectorizeCatalog:
+description: Specification of VectorizeCatalog
+type: object
+required:
+  - document_streams
+properties:
+  document_streams:
+    type: array
+    items:
+      "$ref": "./DatDocumentStream.yml"

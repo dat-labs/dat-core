@@ -1,0 +1,37 @@
+# DatMessage:
+type: object
+description: "Wrapper message for all outputs"
+additionalProperties: true
+required:
+  - type
+properties:
+  type:
+    description: "Message type"
+    type: string
+    enum:
+      - RECORD
+      - STATE
+      - LOG
+      - SPEC
+      - CONNECTION_STATUS
+      - CATALOG
+      - TRACE
+  log:
+    description: "log message: any kind of logging you want the platform to know about."
+    "$ref": "./DatLogMessage.yml"
+  spec:
+    "$ref": "./ConnectorSpecification.yml"
+  connectionStatus:
+    "$ref": "./DatConnectionStatus.yml"
+  catalog:
+    description: "catalog message: the catalog"
+    "$ref": "./DatCatalog.yml"
+  record:
+    description: "record message: the record"
+    "$ref": "./DatDocumentMessage.yml"
+  state:
+    description: "schema message: the state. Must be the last message produced. The platform uses this information"
+    "$ref": "./DatStateMessage.yml"
+  # trace:
+  #   description: "trace message: a message to communicate information about the status and performance of a connector"
+  #   "$ref": "#/definitions/VectorizeTraceMessage"

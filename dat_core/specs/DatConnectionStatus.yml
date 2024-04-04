@@ -1,0 +1,14 @@
+# DatConnectionStatus:
+description: Dat connection status
+type: object
+additionalProperties: true
+required:
+  - status
+properties:
+  status:
+    type: string
+    enum:
+      - SUCCEEDED
+      - FAILED
+  message:
+    type: string

@@ -1,0 +1,41 @@
+# DEP ConfiguredDocumentStream.yml
+
+description: |-
+  A Pydantic model representing a configured document stream with additional properties.
+type: object
+properties:
+  stream:
+    description: The DatDocumentStream reference.
+    type:
+      $ref: "./DatDocumentStream.yml"
+  read_sync_mode:
+    description: The primary sync mode for the stream (FULL_REFRESH or INCREMENTAL).
+    type: string
+    enum:
+      - FULL_REFRESH
+      - INCREMENTAL
+  write_sync_mode:
+    description: The destination sync mode for the stream (upsert, append, replace).
+    type: string
+    enum:
+      - upsert
+      - append
+      - replace
+  cursor_field:
+    description: |-
+      Path(s) to the field(s) used for record newness/modification in INCREMENTAL sync.
+      REQUIRED for INCREMENTAL sync mode.
+    type: list
+    items:
+      type: string
+    nullable: true
+  primary_key:
+    description: |-
+      Path(s) to the field(s) used as primary key for deduplication.
+      REQUIRED for upsert destination sync mode.
+    type: list
+    items:
+      type: list
+      items:
+        type: string
+    nullable: true
