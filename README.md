@@ -30,14 +30,7 @@ When self-managing dat, your data never leaves your premises. Get started immedi
 - After Docker is installed, you can immediately get started locally by running:
 
 ```bash
-# clone dat from GitHub
-git clone --depth=1 https://github.com/dat-labs/dat-core.git
-
-# switch into dat directory
-cd dat-core
-
-# start dat
-./run-dat-platform.sh
+curl -sSL https://gist.githubusercontent.com/riju-dc/0abdddfc7e70c3e5216171588537cbd0/raw/4169ff516295f92f7847ed78af272034f528f087/run-dat-platform.sh | bash
 ```
 
 # dat Protocol Docker Interface
