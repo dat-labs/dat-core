@@ -1,6 +1,3 @@
-#
-# Copyright (c) 2023 Airbyte, Inc., all rights reserved.
-#
 from abc import ABC, abstractmethod
 from typing import Any, Mapping
 
