@@ -1,8 +1,3 @@
-import os
-import argparse
-import io
-import json
-from conftest import *
 from dat_core.connectors.destinations.vector_db_helpers.utils import create_chunks
 
 
