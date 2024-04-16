@@ -1,41 +1,41 @@
-from typing import Generator, Any
+from typing import Generator, Any, List, Optional, Iterator
+from langchain_text_splitters import TextSplitter
+from dat_core.doc_splitters import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders.base import BaseLoader
 
 class BaseSplitter:
-    """
-    Base class for splitting files into chunks based on a specified strategy.
 
-    Args:
-        filepath (str): The path to the file to be split.
-        strategy (str, optional): The splitting strategy. Defaults to 'page'.
-        delimeter_regex (str, optional): The regex pattern used as the delimiter for splitting. Defaults to r'\n{1,}'.
+    def __init__(self, file_path: str) -> None:
+        self.file_path = file_path
+        self._default_splitter = None
+        self._default_loader = None
+    
+    def register_document_loader(self, loader_object: Any) -> None:
+        self._default_loader = loader_object
+    
+    def register_document_splitter(self, splitter_object: Any) -> None:
+        self._default_splitter = splitter_object
+    
+    def load(self) -> Generator[Document, Any, Any]:
+        if not self._default_loader:
+            raise Exception('Please register a document loader first using register_document_loader()')
+        
+        for doc in self._default_loader.load():
+            yield doc
 
-    Attributes:
-        filepath (str): The path to the file being split.
-        _strategy (str): The splitting strategy.
-        _delimeter_regex (str): The regex pattern used as the delimiter for splitting.
 
-    Methods:
-        yield_chunks(self) -> Generator[Any, Any, Any]: Abstract method to yield chunks of data from the file.
-    """
+    def load_and_chunk(self, doc_loader: Optional[Any] = None, text_splitter: Optional[Any] = None) -> Generator[str, Any, Any]:
+        if not self._default_loader:
+            raise Exception('Please register a document loader first using register_document_loader()')
+        if not self._default_splitter:
+            raise Exception('Please register a document splitter first using register_document_splitter()')
 
-    def __init__(self, filepath: str, strategy: str = 'page', delimeter_regex: str = r'\n{1,}') -> None:
-        """
-        Initialize the BaseSplitter instance.
+        docs = self.load()
 
-        Args:
-            filepath (str): The path to the file to be split.
-            strategy (str, optional): The splitting strategy. Defaults to 'page'.
-            delimeter_regex (str, optional): The regex pattern used as the delimiter for splitting. Defaults to r'\n{1,}'.
-        """
-        self.filepath = filepath
-        self._strategy = strategy
-        self._delimeter_regex = delimeter_regex
-            
-    def yield_chunks(self) -> Generator[Any, Any, Any]:
-        """
-        Abstract method to yield chunks of data from the file.
-
-        Raises:
-            NotImplementedError: This method must be implemented in subclasses.
-        """
-        raise NotImplementedError()
+        for doc in self._default_splitter.split_documents(docs):
+            yield from self._default_splitter.split_text(doc.page_content)
+    
+    def split_text(self, text: str) -> Generator[str, Any, Any]:
+        for txt in self._default_splitter.split_text(text):
+            yield txt
