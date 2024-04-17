@@ -1,23 +1,75 @@
-from typing import Generator, Any, List, Optional, Iterator
-from langchain_text_splitters import TextSplitter
+"""
+Module: base_splitter_module
+
+This module contains the definition of the BaseSplitter class, which is used for document splitting.
+
+Classes:
+    BaseSplitter: A class for document splitting operations.
+
+Dependencies:
+    - typing: Used for type hints.
+    - langchain_text_splitters.TextSplitter: A text splitter class from the langchain_text_splitters module.
+    - dat_core.doc_splitters.Document: A document class from the dat_core.doc_splitters module.
+    - langchain_text_splitters.RecursiveCharacterTextSplitter: A recursive character text splitter class from langchain_text_splitters module.
+    - langchain_community.document_loaders.base.BaseLoader: A base document loader class from the langchain_community.document_loaders.base module.
+"""
+
+from typing import Generator, Any, Optional
 from dat_core.doc_splitters import Document
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.document_loaders.base import BaseLoader
 
 class BaseSplitter:
+    """
+    BaseSplitter class for document splitting operations.
+
+    Attributes:
+        file_path (str): The file path of the document to be processed.
+        _default_splitter (Any): The default splitter object.
+        _default_loader (Any): The default loader object.
+
+    Methods:
+        register_document_loader: Registers a document loader object.
+        register_document_splitter: Registers a document splitter object.
+        load: Loads documents using the registered loader.
+        load_and_chunk: Loads and chunks documents using the registered loader and splitter.
+        split_text: Splits text using the registered splitter.
+    """
 
     def __init__(self, file_path: str) -> None:
+        """
+        Initializes a new BaseSplitter object.
+
+        Parameters:
+            file_path (str): The file path of the document to be processed.
+        """
         self.file_path = file_path
         self._default_splitter = None
         self._default_loader = None
     
     def register_document_loader(self, loader_object: Any) -> None:
+        """
+        Registers a document loader object.
+
+        Parameters:
+            loader_object (Any): The document loader object to register.
+        """
         self._default_loader = loader_object
     
     def register_document_splitter(self, splitter_object: Any) -> None:
+        """
+        Registers a document splitter object.
+
+        Parameters:
+            splitter_object (Any): The document splitter object to register.
+        """
         self._default_splitter = splitter_object
     
     def load(self) -> Generator[Document, Any, Any]:
+        """
+        Loads documents using the registered loader.
+
+        Yields:
+            Generator[Document, Any, Any]: A generator yielding Document objects.
+        """
         if not self._default_loader:
             raise Exception('Please register a document loader first using register_document_loader()')
         
@@ -25,7 +77,17 @@ class BaseSplitter:
             yield doc
 
 
-    def load_and_chunk(self, doc_loader: Optional[Any] = None, text_splitter: Optional[Any] = None) -> Generator[str, Any, Any]:
+    def load_and_chunk(self) -> Generator[Document, Any, Any]:
+        """
+        Loads and chunks documents using the registered loader and splitter.
+
+        Parameters:
+            doc_loader (Optional[Any]): An optional document loader object.
+            text_splitter (Optional[Any]): An optional text splitter object.
+
+        Yields:
+            Generator[Document, Any, Any]: A generator yielding chunks of Document.
+        """
         if not self._default_loader:
             raise Exception('Please register a document loader first using register_document_loader()')
         if not self._default_splitter:
@@ -33,9 +95,18 @@ class BaseSplitter:
 
         docs = self.load()
 
-        for doc in self._default_splitter.split_documents(docs):
+        for doc in docs:
             yield from self._default_splitter.split_text(doc.page_content)
     
     def split_text(self, text: str) -> Generator[str, Any, Any]:
+        """
+        Splits text using the registered splitter.
+
+        Parameters:
+            text (str): The text to be split.
+
+        Yields:
+            Generator[str, Any, Any]: A generator yielding split text fragments.
+        """
         for txt in self._default_splitter.split_text(text):
             yield txt

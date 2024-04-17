@@ -1,18 +1,26 @@
 from typing import Any, Optional
 from langchain_text_splitters import (
     HTMLHeaderTextSplitter,
-    HTMLSectionSplitter,
+    # HTMLSectionSplitter,
     CharacterTextSplitter,
     RecursiveCharacterTextSplitter,
     MarkdownHeaderTextSplitter,
     RecursiveJsonSplitter,
-    SemanticChunker,
+    # SemanticChunker,
 )
 from langchain_community.document_loaders import (
     PyPDFLoader,
     OnlinePDFLoader,
     PDFMinerLoader,
     TextLoader,
+    S3FileLoader,
+    UnstructuredHTMLLoader,
+    UnstructuredURLLoader,
+    CSVLoader,
+    GoogleDriveLoader,
+    WebBaseLoader,
+    UnstructuredURLLoader,
+
 )
 from dat_core.doc_splitters.base_splitter import BaseSplitter
 
@@ -84,18 +92,25 @@ doc_splitter_factory.register_loader('pypdf', PyPDFLoader)
 doc_splitter_factory.register_loader('online_pdf', OnlinePDFLoader)
 doc_splitter_factory.register_loader('pdf_miner', PDFMinerLoader)
 doc_splitter_factory.register_loader('text', TextLoader)
+doc_splitter_factory.register_loader('s3', S3FileLoader)
+doc_splitter_factory.register_loader('html', UnstructuredHTMLLoader)
+doc_splitter_factory.register_loader('url', UnstructuredURLLoader)
+doc_splitter_factory.register_loader('csv', CSVLoader)
+doc_splitter_factory.register_loader('google_drive', GoogleDriveLoader)
+doc_splitter_factory.register_loader('web_crawler', WebBaseLoader)
+doc_splitter_factory.register_loader('unstructured_url_loader', UnstructuredURLLoader)
 
 
 
 # Register text splitters
 doc_splitter_factory.register_splitter('split_by_html_header', HTMLHeaderTextSplitter)
-doc_splitter_factory.register_splitter('split_by_html_section', HTMLSectionSplitter)
+# doc_splitter_factory.register_splitter('split_by_html_section', HTMLSectionSplitter)
 doc_splitter_factory.register_splitter('split_by_character', CharacterTextSplitter)
 doc_splitter_factory.register_splitter('split_code', RecursiveCharacterTextSplitter)
 doc_splitter_factory.register_splitter('markdown_header_text_splitter', MarkdownHeaderTextSplitter)
 doc_splitter_factory.register_splitter('recursively_split_json', RecursiveJsonSplitter)
-doc_splitter_factory.register_splitter('recursiverly_split_by_character', CharacterTextSplitter)
-doc_splitter_factory.register_splitter('semantic_chunking', SemanticChunker)
+doc_splitter_factory.register_splitter('recursiverly_split_by_character', RecursiveCharacterTextSplitter)
+# doc_splitter_factory.register_splitter('semantic_chunking', SemanticChunker)
 doc_splitter_factory.register_splitter('split_by_tokens', RecursiveCharacterTextSplitter)
 
 

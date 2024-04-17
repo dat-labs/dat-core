@@ -150,7 +150,7 @@ class Stream(ABC):
     def read_records(self,
         catalog: DatCatalog,
         configured_stream: DatDocumentStream,
-        stream_state: StreamState = None
+        cursor_value: Any = None
     ) -> Generator[DatMessage, Any, Any]:
         pass
     
@@ -189,7 +189,7 @@ class Stream(ABC):
         # Should be implemented by streams
         return False
     
-    def _get_cursor_value_from_record(self, cursor_field: str | None, record: DatMessage) -> Any:
+    def _get_cursor_value_from_record(self, cursor_field: Optional[str], record: DatMessage) -> Any:
         """Extracts the cursor value from a record.
 
         Args:
