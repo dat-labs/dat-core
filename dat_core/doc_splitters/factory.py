@@ -1,5 +1,6 @@
-from typing import Any, Optional
+from typing import Any, Optional, Union
 from enum import Enum
+from pydantic import BaseModel
 from langchain_text_splitters import (
     HTMLHeaderTextSplitter,
     # HTMLSectionSplitter,
@@ -82,10 +83,10 @@ class DocumentSplitterFactory:
 
     def create(self,
         filepath: str,
-        loader_key: str,
-        splitter_key: str,
-        loader_config: Optional[dict] = None,
-        splitter_config: Optional[dict] = None
+        loader_key: Union[str, Enum],
+        splitter_key: Union[str, Enum],
+        loader_config: Union[dict, BaseModel] = None,
+        splitter_config: Union[dict, BaseModel] = None
     ) -> BaseSplitter:
         """
         Creates a new document splitter instance based on the provided configuration.
@@ -104,6 +105,17 @@ class DocumentSplitterFactory:
             loader_config = {}
         if not splitter_config:
             splitter_config = {}
+
+        if isinstance(loader_key, Enum):
+            loader_key = loader_key.value
+        if isinstance(splitter_key, Enum):
+            loader_key = splitter_key.value
+        
+        if isinstance(loader_config, BaseModel):
+            loader_config = loader_config.model_dump()
+        if isinstance(splitter_config, BaseModel):
+            splitter_config = splitter_config.model_dump()
+        
         _loader = self._loaders.get(loader_key)(**loader_config)
         _splitter = self._splitters.get(splitter_key)(**splitter_config)
         doc_splitter = BaseSplitter(filepath)
