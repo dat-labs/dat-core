@@ -1,4 +1,5 @@
 from typing import Any, Optional
+from enum import Enum
 from langchain_text_splitters import (
     HTMLHeaderTextSplitter,
     # HTMLSectionSplitter,
@@ -24,6 +25,29 @@ from langchain_community.document_loaders import (
 )
 from dat_core.doc_splitters.base_splitter import BaseSplitter
 
+
+class DocLoaderType(Enum):
+    PYPDF = 'PYPDF'
+    ONLINE_PDF = 'ONLINE_PDF'
+    PDF_MINER = 'PDF_MINER'
+    TEXT = 'TEXT'
+    S3 = 'S3'
+    HTML = 'HTML'
+    URL = 'URL'
+    CSV = 'CSV'
+    GOOGLE_DRIVE = 'GOOGLE_DRIVE'
+    WEB_CRAWLER = 'WEB_CRAWLER'
+
+class TextSplitterType(Enum):
+    SPLIT_BY_HTML_HEADER = 'SPLIT_BY_HTML_HEADER'
+    SPLIT_BY_CHARACTER = 'SPLIT_BY_CHARACTER'
+    SPLIT_CODE = 'SPLIT_CODE'
+    SPLIT_BY_MARKDOWN_HEADER = 'SPLIT_BY_MARKDOWN_HEADER'
+    SPLIT_JSON_RECURSIVELY = 'SPLIT_JSON_RECURSIVELY'
+    SPLIT_BY_CHARACTER_RECURSIVELY = 'SPLIT_BY_CHARACTER_RECURSIVELY'
+    SPLIT_BY_TOKENS = 'SPLIT_BY_TOKENS'
+
+
 class DocumentSplitterFactory:
     """
     A factory class for creating document splitters using different loaders and splitters based on configuration keys.
@@ -36,7 +60,7 @@ class DocumentSplitterFactory:
         self._splitters = {}
         self._loaders = {}
 
-    def register_loader(self, key: str, loader_cls: Any) -> None:
+    def register_loader(self, key: Enum, loader_cls: Any) -> None:
         """
         Registers a document loader class with a specified key.
 
@@ -44,9 +68,9 @@ class DocumentSplitterFactory:
             key (str): The key to identify the loader.
             loader_cls (Any): The loader class to register.
         """
-        self._loaders[key] = loader_cls
+        self._loaders[key.value] = loader_cls
 
-    def register_splitter(self, key: str, splitter_cls: Any) -> None:
+    def register_splitter(self, key: Enum, splitter_cls: Any) -> None:
         """
         Registers a document splitter class with a specified key.
 
@@ -54,14 +78,14 @@ class DocumentSplitterFactory:
             key (str): The key to identify the splitter.
             splitter_cls (Any): The splitter class to register.
         """
-        self._splitters[key] = splitter_cls
+        self._splitters[key.value] = splitter_cls
 
     def create(self,
         filepath: str,
         loader_key: str,
         splitter_key: str,
-        loader_config: Optional[dict],
-        splitter_config: Optional[dict]
+        loader_config: Optional[dict] = None,
+        splitter_config: Optional[dict] = None
     ) -> BaseSplitter:
         """
         Creates a new document splitter instance based on the provided configuration.
@@ -76,6 +100,10 @@ class DocumentSplitterFactory:
         Returns:
             BaseSplitter: An instance of BaseSplitter configured with the specified loader and splitter.
         """
+        if not loader_config:
+            loader_config = {}
+        if not splitter_config:
+            splitter_config = {}
         _loader = self._loaders.get(loader_key)(**loader_config)
         _splitter = self._splitters.get(splitter_key)(**splitter_config)
         doc_splitter = BaseSplitter(filepath)
@@ -88,29 +116,28 @@ class DocumentSplitterFactory:
 doc_splitter_factory = DocumentSplitterFactory()
 
 # Register doc loaders
-doc_splitter_factory.register_loader('pypdf', PyPDFLoader)
-doc_splitter_factory.register_loader('online_pdf', OnlinePDFLoader)
-doc_splitter_factory.register_loader('pdf_miner', PDFMinerLoader)
-doc_splitter_factory.register_loader('text', TextLoader)
-doc_splitter_factory.register_loader('s3', S3FileLoader)
-doc_splitter_factory.register_loader('html', UnstructuredHTMLLoader)
-doc_splitter_factory.register_loader('url', UnstructuredURLLoader)
-doc_splitter_factory.register_loader('csv', CSVLoader)
-doc_splitter_factory.register_loader('google_drive', GoogleDriveLoader)
-doc_splitter_factory.register_loader('web_crawler', WebBaseLoader)
-doc_splitter_factory.register_loader('unstructured_url_loader', UnstructuredURLLoader)
+doc_splitter_factory.register_loader(DocLoaderType.PYPDF, PyPDFLoader)
+doc_splitter_factory.register_loader(DocLoaderType.ONLINE_PDF, OnlinePDFLoader)
+doc_splitter_factory.register_loader(DocLoaderType.PDF_MINER, PDFMinerLoader)
+doc_splitter_factory.register_loader(DocLoaderType.TEXT, TextLoader)
+doc_splitter_factory.register_loader(DocLoaderType.S3, S3FileLoader)
+doc_splitter_factory.register_loader(DocLoaderType.HTML, UnstructuredHTMLLoader)
+doc_splitter_factory.register_loader(DocLoaderType.URL, UnstructuredURLLoader)
+doc_splitter_factory.register_loader(DocLoaderType.CSV, CSVLoader)
+doc_splitter_factory.register_loader(DocLoaderType.GOOGLE_DRIVE, GoogleDriveLoader)
+doc_splitter_factory.register_loader(DocLoaderType.WEB_CRAWLER, WebBaseLoader)
 
 
 
 # Register text splitters
-doc_splitter_factory.register_splitter('split_by_html_header', HTMLHeaderTextSplitter)
+doc_splitter_factory.register_splitter(TextSplitterType.SPLIT_BY_HTML_HEADER, HTMLHeaderTextSplitter)
 # doc_splitter_factory.register_splitter('split_by_html_section', HTMLSectionSplitter)
-doc_splitter_factory.register_splitter('split_by_character', CharacterTextSplitter)
-doc_splitter_factory.register_splitter('split_code', RecursiveCharacterTextSplitter)
-doc_splitter_factory.register_splitter('markdown_header_text_splitter', MarkdownHeaderTextSplitter)
-doc_splitter_factory.register_splitter('recursively_split_json', RecursiveJsonSplitter)
-doc_splitter_factory.register_splitter('recursiverly_split_by_character', RecursiveCharacterTextSplitter)
+doc_splitter_factory.register_splitter(TextSplitterType.SPLIT_BY_CHARACTER, CharacterTextSplitter)
+doc_splitter_factory.register_splitter(TextSplitterType.SPLIT_CODE, RecursiveCharacterTextSplitter)
+doc_splitter_factory.register_splitter(TextSplitterType.SPLIT_BY_MARKDOWN_HEADER, MarkdownHeaderTextSplitter)
+doc_splitter_factory.register_splitter(TextSplitterType.SPLIT_JSON_RECURSIVELY, RecursiveJsonSplitter)
+doc_splitter_factory.register_splitter(TextSplitterType.SPLIT_BY_CHARACTER_RECURSIVELY, RecursiveCharacterTextSplitter)
 # doc_splitter_factory.register_splitter('semantic_chunking', SemanticChunker)
-doc_splitter_factory.register_splitter('split_by_tokens', RecursiveCharacterTextSplitter)
+doc_splitter_factory.register_splitter(TextSplitterType.SPLIT_BY_TOKENS, RecursiveCharacterTextSplitter)
 
 
