@@ -1,7 +1,9 @@
 import urllib.request
 from abc import abstractmethod
-from typing import (Any, Dict, Iterable, Iterator, List,
-    Mapping, MutableMapping, Optional, Tuple, Union, Generator)
+from typing import (
+    Any, Dict, List,
+    Mapping, Optional, Generator
+)
 import yaml
 from dat_core.pydantic_models import (
     DatMessage,
@@ -9,7 +11,8 @@ from dat_core.pydantic_models import (
     StreamStatus,
     DatCatalog,
     ConnectorSpecification,
-    DatDocumentStream
+    DatDocumentStream,
+    ReadSyncMode
 )
 from dat_core.connectors.base import ConnectorBase
 from dat_core.connectors.sources.stream import Stream
@@ -81,7 +84,6 @@ class SourceBase(ConnectorBase):
         Returns:
             Generator[DatMessage, Any, Any]: A generator yielding DatMessage objects with the read data.
         """
-        from dat_core.pydantic_models import ReadSyncMode
         stream_instances = {s.name: s for s in self.streams(config)}
         for configured_stream in catalog.document_streams:
             stream_instance = stream_instances.get(configured_stream.name)
