@@ -7,6 +7,7 @@ from langchain_text_splitters import (
     CharacterTextSplitter,
     RecursiveCharacterTextSplitter,
     MarkdownHeaderTextSplitter,
+    MarkdownTextSplitter,
     RecursiveJsonSplitter,
     # SemanticChunker,
 )
@@ -43,7 +44,7 @@ class TextSplitterType(Enum):
     SPLIT_BY_HTML_HEADER = 'SPLIT_BY_HTML_HEADER'
     SPLIT_BY_CHARACTER = 'SPLIT_BY_CHARACTER'
     SPLIT_CODE = 'SPLIT_CODE'
-    SPLIT_BY_MARKDOWN_HEADER = 'SPLIT_BY_MARKDOWN_HEADER'
+    SPLIT_BY_MARKDOWN = 'SPLIT_BY_MARKDOWN'
     SPLIT_JSON_RECURSIVELY = 'SPLIT_JSON_RECURSIVELY'
     SPLIT_BY_CHARACTER_RECURSIVELY = 'SPLIT_BY_CHARACTER_RECURSIVELY'
     SPLIT_BY_TOKENS = 'SPLIT_BY_TOKENS'
@@ -89,14 +90,14 @@ class DocumentSplitterFactory:
         splitter_config: Union[dict, BaseModel] = None
     ) -> BaseSplitter:
         """
-        Creates a new document splitter instance based on the provided configuration.
+        Creates a new BaseSplitter instance for document splitting.
 
         Parameters:
             filepath (str): The path to the document to be split.
-            loader_key (str): The key corresponding to the registered loader class.
-            splitter_key (str): The key corresponding to the registered splitter class.
-            loader_config (Optional[dict]): Configuration parameters for the loader (optional).
-            splitter_config (Optional[dict]): Configuration parameters for the splitter (optional).
+            loader_key (Union[str, Enum]): The key or enum representing the registered loader.
+            splitter_key (Union[str, Enum]): The key or enum representing the registered splitter.
+            loader_config (Union[dict, BaseModel], optional): Configuration parameters for the loader (default: None).
+            splitter_config (Union[dict, BaseModel], optional): Configuration parameters for the splitter (default: None).
 
         Returns:
             BaseSplitter: An instance of BaseSplitter configured with the specified loader and splitter.
@@ -146,7 +147,7 @@ doc_splitter_factory.register_splitter(TextSplitterType.SPLIT_BY_HTML_HEADER, HT
 # doc_splitter_factory.register_splitter('split_by_html_section', HTMLSectionSplitter)
 doc_splitter_factory.register_splitter(TextSplitterType.SPLIT_BY_CHARACTER, CharacterTextSplitter)
 doc_splitter_factory.register_splitter(TextSplitterType.SPLIT_CODE, RecursiveCharacterTextSplitter)
-doc_splitter_factory.register_splitter(TextSplitterType.SPLIT_BY_MARKDOWN_HEADER, MarkdownHeaderTextSplitter)
+doc_splitter_factory.register_splitter(TextSplitterType.SPLIT_BY_MARKDOWN, MarkdownTextSplitter)
 doc_splitter_factory.register_splitter(TextSplitterType.SPLIT_JSON_RECURSIVELY, RecursiveJsonSplitter)
 doc_splitter_factory.register_splitter(TextSplitterType.SPLIT_BY_CHARACTER_RECURSIVELY, RecursiveCharacterTextSplitter)
 # doc_splitter_factory.register_splitter('semantic_chunking', SemanticChunker)

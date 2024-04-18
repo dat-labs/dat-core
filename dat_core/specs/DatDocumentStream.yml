@@ -38,3 +38,86 @@ properties:
       REQUIRED for INCREMENTAL sync mode.
     type: string
     nullable: true
+  advanced:
+    description: "Additional optional settings"
+    type: object
+    properties:
+      splitter_settings:
+        type: object
+        oneOf:
+          - type: object
+            properties:
+              strategy:
+                type: string
+                default: SPLIT_BY_HTML_HEADER
+              config:
+                type: object
+                properties:
+                  headers_to_split_on:
+                    type: array
+                    description: "list of headers we want to track mapped to (arbitrary) keys for metadata. Allowed header values: h1, h2, h3, h4, h5, h6"
+                    default: ['h2', 'h3']
+                    items:
+                      - type: string
+                  
+          - type: object
+            properties:
+              strategy:
+                type: string
+                default: SPLIT_BY_CHARACTER
+              config:
+                type: object
+                properties:
+                  separator:
+                    type: string
+                    default: '\n\n'
+          
+          - type: object
+            properties:
+              strategy:
+                type: string
+                default: SPLIT_CODE
+              config:
+                type: object
+                properties:
+                  separators:
+                    type: array
+                    default: ['\nclass ', '\ndef '] # defaults to python code
+          - type: object
+            properties:
+              strategy:
+                type: string
+                default: SPLIT_BY_MARKDOWN
+              config:
+                type: object
+                default: {}
+          - type: object
+            properties:
+              strategy:
+                type: string
+                default: SPLIT_JSON_RECURSIVELY
+              config:
+                type: object
+                default: {}
+          - type: object
+            properties:
+              strategy:
+                type: string
+                default: SPLIT_BY_CHARACTER_RECURSIVELY
+              config:
+                type: object
+                properties:
+                  separators:
+                    type: array
+                    default: ["\n\n", "\n", " ", ""]
+          - type: object
+            properties:
+              strategy:
+                type: string
+                default: SPLIT_BY_TOKENS
+              config:
+                type: object
+                properties:
+                  separators:
+                    type: array
+                    default: ["\n\n", "\n", " ", ""]

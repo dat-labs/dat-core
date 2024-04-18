@@ -1,5 +1,5 @@
-# VectorizeCatalog:
-description: Specification of VectorizeCatalog
+# DatCatalog:
+description: Specification of DatCatalog
 type: object
 required:
   - document_streams
