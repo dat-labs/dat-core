@@ -81,16 +81,17 @@ class SourceBase(ConnectorBase):
         Returns:
             Generator[DatMessage, Any, Any]: A generator yielding DatMessage objects with the read data.
         """
+        from dat_core.pydantic_models import ReadSyncMode
         stream_instances = {s.name: s for s in self.streams(config)}
         for configured_stream in catalog.document_streams:
             stream_instance = stream_instances.get(configured_stream.name)
-            if not configured_stream.cursor_field:
-                configured_stream.cursor_field = stream_instance._default_cursor
-            stream_state = state.get(configured_stream.namespace) if state else None
-            if stream_state and stream_state.data:
+            stream_state = state.get(configured_stream.namespace, StreamState(data={})) if state else StreamState(data={})
+            if configured_stream.read_sync_mode == ReadSyncMode.INCREMENTAL:
+                configured_stream.cursor_field = configured_stream.cursor_field or stream_instance._default_cursor
                 records = self._read_incremental(stream_instance, catalog, configured_stream, stream_state)
             else:
                 records = self._read_full_refresh(stream_instance, catalog, configured_stream)
+
             try:
                 first_record = next(records)
                 if not stream_state or not stream_state.data:
@@ -102,8 +103,9 @@ class SourceBase(ConnectorBase):
                 _record_count = 1
                 for record in records:
                     _record_count += 1
-                    if stream_instance._should_checkpoint_state(
-                        configured_stream.cursor_field, stream_state, record, _record_count):
+                    if configured_stream.read_sync_mode == ReadSyncMode.INCREMENTAL and \
+                        stream_instance._should_checkpoint_state(
+                            configured_stream.cursor_field, stream_state, record, _record_count):
                         stream_state_data = {
                             configured_stream.cursor_field: stream_instance._get_cursor_value_from_record(
                                 configured_stream.cursor_field, record)
@@ -124,10 +126,10 @@ class SourceBase(ConnectorBase):
         configured_stream: DatDocumentStream,
         record: DatMessage
     ) -> StreamState:
-        stream_state_data = {
-            configured_stream.cursor_field: stream_instance._get_cursor_value_from_record(
+        stream_state_data = {}
+        if configured_stream.cursor_field:
+            stream_state_data[configured_stream.cursor_field] = stream_instance._get_cursor_value_from_record(
                 configured_stream.cursor_field, record)
-        }
         stream_state = StreamState(
             data=stream_state_data,
             stream_status=StreamStatus.STARTED

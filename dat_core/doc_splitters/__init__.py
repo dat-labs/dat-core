@@ -1,2 +1,6 @@
-from dat_core.doc_splitters.pdf_splitter import PdfSplitter
-from dat_core.doc_splitters.txt_splitter import TxtSplitter, BaseSplitter
+from pydantic import BaseModel, Field
+
+class Document(BaseModel):
+
+    page_content: str
+    metadata: dict = Field(default_factory=dict)
