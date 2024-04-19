@@ -25,8 +25,8 @@ class SourceBase(ConnectorBase):
         """
         Read the catalog file and return the json contents
         """
-        with urllib.request.urlopen(self._catalog_file) as response:
-            return yaml.safe_load(response.read().decode())
+        with open(self._catalog_file, 'r') as f:
+            return yaml.safe_load(f)
         
     def discover(self, config: ConnectorSpecification) -> Dict:
         """

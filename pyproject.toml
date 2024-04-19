@@ -19,7 +19,7 @@ psycopg2-binary = "^2.9.9"
 pypdf = "^4.1.0"
 langchain-text-splitters = "^0.0.1"
 langchain-community = "^0.0.32"
-beautifulsoup4 = "^4.12.3"
+llama-index-readers-s3 = "^0.1.7"
 
 
 [tool.poetry.group.test.dependencies]
