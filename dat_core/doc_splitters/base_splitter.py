@@ -73,9 +73,24 @@ class BaseSplitter:
         if not self._default_loader:
             raise Exception('Please register a document loader first using register_document_loader()')
         
-        for doc in self._default_loader.load():
-            yield doc
-
+        try:
+            docs = self._default_loader.lazy_load() # langchain loaders lazy_load
+        except NotImplementedError:
+            docs = self._default_loader.load() # langchain loaders default load
+        except AttributeError:
+            try:
+                docs = self._default_loader.lazy_load_data() # llama index loaders lazy_load
+            except NotImplementedError:
+                docs = self._default_loader.load_data() # llama index default load method
+        except Exception as exc:
+            raise Exception(f'Please use either langchain or llama index document loaders. Actual error: {repr(exc)}')
+                
+        
+        for doc in docs:
+            try:
+                yield Document.from_langchain_document(Document, doc)
+            except (AttributeError, KeyError):
+                yield Document.from_llama_index_document(Document, doc)
 
     def load_and_chunk(self) -> Generator[Document, Any, Any]:
         """
@@ -96,7 +111,7 @@ class BaseSplitter:
         docs = self.load()
 
         for doc in docs:
-            yield from self._default_splitter.split_text(doc.page_content)
+            yield from self.split_text(doc.page_content)
     
     def split_text(self, text: str) -> Generator[str, Any, Any]:
         """

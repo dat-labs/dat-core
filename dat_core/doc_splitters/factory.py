@@ -23,8 +23,10 @@ from langchain_community.document_loaders import (
     GoogleDriveLoader,
     WebBaseLoader,
     UnstructuredURLLoader,
+    S3DirectoryLoader,
 
 )
+from llama_index.readers.s3 import S3Reader
 from dat_core.doc_splitters.base_splitter import BaseSplitter
 
 
@@ -39,6 +41,7 @@ class DocLoaderType(Enum):
     CSV = 'CSV'
     GOOGLE_DRIVE = 'GOOGLE_DRIVE'
     WEB_CRAWLER = 'WEB_CRAWLER'
+    S3_DIR_LOADER = 'S3_DIR_LOADER'
 
 class TextSplitterType(Enum):
     SPLIT_BY_HTML_HEADER = 'SPLIT_BY_HTML_HEADER'
@@ -110,13 +113,13 @@ class DocumentSplitterFactory:
         if isinstance(loader_key, Enum):
             loader_key = loader_key.value
         if isinstance(splitter_key, Enum):
-            loader_key = splitter_key.value
+            splitter_key = splitter_key.value
         
         if isinstance(loader_config, BaseModel):
             loader_config = loader_config.model_dump()
         if isinstance(splitter_config, BaseModel):
             splitter_config = splitter_config.model_dump()
-        
+
         _loader = self._loaders.get(loader_key)(**loader_config)
         _splitter = self._splitters.get(splitter_key)(**splitter_config)
         doc_splitter = BaseSplitter(filepath)
@@ -139,6 +142,7 @@ doc_splitter_factory.register_loader(DocLoaderType.URL, UnstructuredURLLoader)
 doc_splitter_factory.register_loader(DocLoaderType.CSV, CSVLoader)
 doc_splitter_factory.register_loader(DocLoaderType.GOOGLE_DRIVE, GoogleDriveLoader)
 doc_splitter_factory.register_loader(DocLoaderType.WEB_CRAWLER, WebBaseLoader)
+doc_splitter_factory.register_loader(DocLoaderType.S3_DIR_LOADER, S3Reader)
 
 
 
