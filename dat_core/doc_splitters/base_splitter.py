@@ -82,15 +82,13 @@ class BaseSplitter:
                 docs = self._default_loader.lazy_load_data() # llama index loaders lazy_load
             except NotImplementedError:
                 docs = self._default_loader.load_data() # llama index default load method
-        except Exception as exc:
-            raise Exception(f'Please use either langchain or llama index document loaders. Actual error: {repr(exc)}')
                 
         
         for doc in docs:
             try:
-                yield Document.from_langchain_document(Document, doc)
+                yield Document.from_langchain_document(doc)
             except (AttributeError, KeyError):
-                yield Document.from_llama_index_document(Document, doc)
+                yield Document.from_llama_index_document(doc)
 
     def load_and_chunk(self) -> Generator[Document, Any, Any]:
         """
