@@ -22,7 +22,6 @@ class BaseSplitter:
     BaseSplitter class for document splitting operations.
 
     Attributes:
-        file_path (str): The file path of the document to be processed.
         _default_splitter (Any): The default splitter object.
         _default_loader (Any): The default loader object.
 
@@ -34,14 +33,10 @@ class BaseSplitter:
         split_text: Splits text using the registered splitter.
     """
 
-    def __init__(self, file_path: str) -> None:
+    def __init__(self) -> None:
         """
         Initializes a new BaseSplitter object.
-
-        Parameters:
-            file_path (str): The file path of the document to be processed.
         """
-        self.file_path = file_path
         self._default_splitter = None
         self._default_loader = None
     

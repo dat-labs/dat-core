@@ -86,7 +86,6 @@ class DocumentSplitterFactory:
         self._splitters[key.value] = splitter_cls
 
     def create(self,
-        filepath: str,
         loader_key: Union[str, Enum],
         splitter_key: Union[str, Enum],
         loader_config: Union[dict, BaseModel] = None,
@@ -96,7 +95,6 @@ class DocumentSplitterFactory:
         Creates a new BaseSplitter instance for document splitting.
 
         Parameters:
-            filepath (str): The path to the document to be split.
             loader_key (Union[str, Enum]): The key or enum representing the registered loader.
             splitter_key (Union[str, Enum]): The key or enum representing the registered splitter.
             loader_config (Union[dict, BaseModel], optional): Configuration parameters for the loader (default: None).
@@ -122,7 +120,7 @@ class DocumentSplitterFactory:
 
         _loader = self._loaders.get(loader_key)(**loader_config)
         _splitter = self._splitters.get(splitter_key)(**splitter_config)
-        doc_splitter = BaseSplitter(filepath)
+        doc_splitter = BaseSplitter()
         doc_splitter.register_document_loader(_loader)
         doc_splitter.register_document_splitter(_splitter)
         return doc_splitter
