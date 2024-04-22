@@ -168,7 +168,7 @@ class Stream(ABC):
         """
         if self._state_checkpoint_interval and _record_count >= self._state_checkpoint_interval:
             return True
-        elif stream_state.data and self._compare_cursor_values(
+        elif stream_state.data and not self._compare_cursor_values(
             old_cursor_value=stream_state.data.get(cursor_field),
             current_cursor_value=self._get_cursor_value_from_record(cursor_field, record)
         ):
@@ -187,7 +187,7 @@ class Stream(ABC):
             bool: True if the cursor values are the same, False otherwise.
         """
         # Should be implemented by streams
-        return False
+        return old_cursor_value == current_cursor_value
     
     def _get_cursor_value_from_record(self, cursor_field: Optional[str], record: DatMessage) -> Any:
         """Extracts the cursor value from a record.
