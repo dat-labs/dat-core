@@ -1,7 +1,7 @@
 from collections import defaultdict
 from abc import ABC
 from typing import Any, Dict, Iterable, List, Optional, Tuple
-from dat_core.connectors.destinations.vector_db_helpers.seeder import Seeder
+from dat_core.connectors.destinations.seeder import Seeder
 from dat_core.pydantic_models import (
     DatMessage, Type, DatDocumentMessage,
     StreamStatus, DatCatalog,
