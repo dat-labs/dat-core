@@ -6,7 +6,7 @@ from dat_core.pydantic_models import (
 )
 
 
-class Destination(ConnectorBase):
+class DestinationBase(ConnectorBase):
     """
     Abstract base class for defining a destination connector.
 
