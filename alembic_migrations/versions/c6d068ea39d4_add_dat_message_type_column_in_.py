@@ -20,7 +20,7 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.execute("CREATE TYPE connection_run_logs_message_type_enum as ENUM ('STATE', 'LOG', 'SPEC', 'CONNECTION_STATUS', 'CATALOG', 'TRACE')")
+    op.execute("CREATE TYPE connection_run_logs_message_type_enum as ENUM ('STATE', 'LOG')")
     op.add_column(TABLE_NAME, column=sa.Column(
         'message_type', sa.Enum(
             name='connection_run_logs_message_type_enum'),
