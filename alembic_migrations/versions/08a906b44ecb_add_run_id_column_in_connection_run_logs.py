@@ -23,7 +23,6 @@ def upgrade() -> None:
     op.add_column(TABLE_NAME, column=sa.Column(
         'run_id', sa.String(36),
         nullable=False,
-        server_default=sa.text("uuid_generate_v4()")
     ))
 
 
