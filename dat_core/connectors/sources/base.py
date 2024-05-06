@@ -11,7 +11,10 @@ from dat_core.pydantic_models import (
     DatCatalog,
     ConnectorSpecification,
     DatDocumentStream,
-    ReadSyncMode
+    ReadSyncMode,
+    DatLogMessage,
+    Level,
+    Type
 )
 from dat_core.connectors.base import ConnectorBase
 from dat_core.connectors.sources.stream import Stream
@@ -118,10 +121,16 @@ class SourceBase(ConnectorBase):
                         yield stream_instance._checkpoint_stream_state(configured_stream, stream_state)
                     yield record
 
-            except Exception as exc:
-                # TODO: Add specific exception
-                raise
-    
+            except StopIteration:
+                _log_msg = DatMessage(
+                    type=Type.LOG,
+                    log=DatLogMessage(
+                        level=Level.WARN,
+                        message='The source didnt return any data'
+                    )
+                )
+                print(_log_msg.model_dump_json(), flush=True)
+
     def _build_stream_state_from_record(self,
         stream_instance: Stream,
         configured_stream: DatDocumentStream,
