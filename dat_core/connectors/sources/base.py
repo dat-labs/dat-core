@@ -116,7 +116,7 @@ class SourceBase(ConnectorBase):
                         }
                         stream_state = StreamState(
                             data=stream_state_data,
-                            stream_status=StreamStatus.STARTED
+                            stream_status=StreamStatus.RUNNING
                         )
                         yield stream_instance._checkpoint_stream_state(configured_stream, stream_state)
                     yield record
