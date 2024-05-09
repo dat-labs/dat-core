@@ -14,7 +14,8 @@ from dat_core.pydantic_models import (
     ReadSyncMode,
     DatLogMessage,
     Level,
-    Type
+    Type,
+    DatStateMessage,
 )
 from dat_core.connectors.base import ConnectorBase
 from dat_core.connectors.sources.stream import Stream
@@ -98,13 +99,13 @@ class SourceBase(ConnectorBase):
 
             try:
                 first_record = next(records)
-                if not stream_state or not stream_state.data:
-                    stream_state = self._build_stream_state_from_record(stream_instance, configured_stream, first_record) 
+                stream_state = self._build_stream_state_from_record(stream_instance, configured_stream, first_record) 
                 
                 yield stream_instance._checkpoint_stream_state(configured_stream, stream_state)
                 yield first_record
 
                 _record_count = 1
+                stream_state_data = {}
                 for record in records:
                     _record_count += 1
                     if configured_stream.read_sync_mode == ReadSyncMode.INCREMENTAL and \
@@ -120,7 +121,16 @@ class SourceBase(ConnectorBase):
                         )
                         yield stream_instance._checkpoint_stream_state(configured_stream, stream_state)
                     yield record
-
+                yield DatMessage(
+                    type=Type.STATE,
+                    state=DatStateMessage(
+                        stream=configured_stream,
+                        stream_state=StreamState(
+                            data=stream_state_data,
+                            stream_status=StreamStatus.COMPLETED,
+                        ),
+                    )
+                )
             except StopIteration:
                 _log_msg = DatMessage(
                     type=Type.LOG,
