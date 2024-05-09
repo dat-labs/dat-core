@@ -9,7 +9,6 @@ properties:
     "$ref": "./DatDocumentStream.yml"
   stream_state:
     type: object
-    additionalProperties: true
     required:
       - data
     properties:
@@ -23,3 +22,6 @@ properties:
           - STARTED
           - RUNNING
           - COMPLETED
+      emitted_at:
+        description: "when the data was emitted from the source. epoch in millisecond."
+        type: integer
