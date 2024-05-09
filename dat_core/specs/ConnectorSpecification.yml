@@ -1,4 +1,3 @@
-# ConnectorSpecification:
 description: Specification of a connector (source/embeddingsgenerator/destination)
 type: object
 required:
@@ -18,6 +17,16 @@ properties:
     description: "Name of the python module for this connector"
     type: string
   connection_specification:
+    "$ref": "#/definitions/connection_specification"
+  
+definitions:
+  connection_specification:
     description: ConnectorDefinition specific blob. Must be a valid JSON string.
     type: object
-  # Connector Type Properties (Common to all connectors from same type)
+    required:
+      - name
+    properties:
+      dat_name:
+        type: string
+        title: "Name"
+        description: "Name of the actor instance."
