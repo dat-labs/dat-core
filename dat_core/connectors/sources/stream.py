@@ -109,7 +109,6 @@ class Stream(ABC):
         doc_msg = DatDocumentMessage(
                 stream=self.as_pydantic_model(),
                 data=data,
-                emitted_at=int(time.time()),
                 namespace=configured_stream.namespace
             )
         return DatMessage(

@@ -10,6 +10,9 @@ from pydantic import AnyUrl, BaseModel, Field
 
 
 class ConnectionSpecification(BaseModel):
+    class Config:
+        extra = 'allow'
+    
     dat_name: Optional[str] = Field(
         None, description='Name of the actor instance.', title='Name'
     )

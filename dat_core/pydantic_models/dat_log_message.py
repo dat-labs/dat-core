@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from enum import Enum
 from typing import Optional
-
+from datetime import datetime
 from pydantic import BaseModel, Field
 
 
@@ -29,3 +29,9 @@ class DatLogMessage(BaseModel):
         None,
         description='an optional stack trace if the log message corresponds to an exception',
     )
+    emitted_at: Optional[float] = Field(
+        ...,
+        description='when the data was emitted from the source. epoch in millisecond.',
+        default_factory=lambda: datetime.now().timestamp()
+    )
+    

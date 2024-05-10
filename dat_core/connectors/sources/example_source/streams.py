@@ -95,7 +95,7 @@ class Agent(ZendeskStream):
                 record=DatDocumentMessage(
                     stream=self.name,
                     data=Data(document_chunk=json.dumps(response), metadata=None),
-                    emitted_at=int(time.time())),
+                ),
             )
         yield dat_msg
     

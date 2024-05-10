@@ -3,6 +3,7 @@ from typing import (
     Any, Dict, List,
     Mapping, Optional, Generator
 )
+from datetime import datetime
 import yaml
 from dat_core.pydantic_models import (
     DatMessage,
@@ -89,6 +90,17 @@ class SourceBase(ConnectorBase):
         """
         stream_instances = {s.name: s for s in self.streams(config)}
         for configured_stream in catalog.document_streams:
+            stream_state_data = {}
+            yield DatMessage(
+                type=Type.STATE,
+                state=DatStateMessage(
+                    stream=configured_stream,
+                    stream_state=StreamState(
+                        data=stream_state_data,
+                        stream_status=StreamStatus.STARTED,
+                    ),
+                )
+            )
             stream_instance = stream_instances.get(configured_stream.name)
             stream_state = state.get(configured_stream.namespace, StreamState(data={})) if state else StreamState(data={})
             if configured_stream.read_sync_mode == ReadSyncMode.INCREMENTAL:
@@ -105,7 +117,6 @@ class SourceBase(ConnectorBase):
                 yield first_record
 
                 _record_count = 1
-                stream_state_data = {}
                 for record in records:
                     _record_count += 1
                     if configured_stream.read_sync_mode == ReadSyncMode.INCREMENTAL and \
@@ -117,7 +128,7 @@ class SourceBase(ConnectorBase):
                         }
                         stream_state = StreamState(
                             data=stream_state_data,
-                            stream_status=StreamStatus.RUNNING
+                            stream_status=StreamStatus.RUNNING,
                         )
                         yield stream_instance._checkpoint_stream_state(configured_stream, stream_state)
                     yield record
@@ -152,7 +163,7 @@ class SourceBase(ConnectorBase):
                 configured_stream.cursor_field, record)
         stream_state = StreamState(
             data=stream_state_data,
-            stream_status=StreamStatus.STARTED
+            stream_status=StreamStatus.RUNNING,
         )
         return stream_state
 

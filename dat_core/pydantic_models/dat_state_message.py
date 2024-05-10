@@ -6,19 +6,10 @@ from __future__ import annotations
 
 from enum import Enum
 from typing import Any, Dict, Optional
-
+from datetime import datetime
 from pydantic import BaseModel, Field
 from dat_core.pydantic_models.dat_document_stream import DatDocumentStream
 
-def _current_timestamp() -> int:
-    """
-    Not to be used outside of this module
-
-    Returns:
-        int: current timestamp as integer
-    """
-    from datetime import datetime
-    return int(datetime.now().timestamp())
 
 class StreamStatus(Enum):
     STARTED = 'STARTED'
@@ -30,10 +21,10 @@ class StreamState(BaseModel):
     data: Dict[str, Any] = Field(..., description='the state data')
     stream_status: Optional[StreamStatus] = Field(
         None, description='the stream status')
-    emitted_at: Optional[int] = Field(
+    emitted_at: Optional[float] = Field(
         ...,
         description='when the data was emitted from the source. epoch in millisecond.',
-        default_factory=_current_timestamp
+        default_factory=lambda: datetime.now().timestamp(),
     )
 
 

@@ -24,4 +24,4 @@ properties:
           - COMPLETED
       emitted_at:
         description: "when the data was emitted from the source. epoch in millisecond."
-        type: integer
+        type: number

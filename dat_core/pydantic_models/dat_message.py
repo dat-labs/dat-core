@@ -5,8 +5,8 @@
 from __future__ import annotations
 
 from enum import Enum
+from datetime import datetime
 from typing import Any, Dict, List, Optional
-
 from pydantic import AnyUrl, BaseModel, Extra, Field
 from dat_core.pydantic_models.dat_catalog import DatCatalog
 from dat_core.pydantic_models.dat_log_message import DatLogMessage
@@ -52,9 +52,10 @@ class DatDocumentMessage(BaseModel):
         None, description='stream the data is associated with'
     )
     data: Data = Field(..., description='record data')
-    emitted_at: int = Field(
+    emitted_at: float = Field(
         ...,
         description='when the data was emitted from the source. epoch in millisecond.',
+        default_factory=lambda: datetime.now().timestamp(),
     )
 
 
@@ -79,3 +80,13 @@ class DatMessage(BaseModel):
         None,
         description='schema message: the state. Must be the last message produced. The platform uses this information',
     )
+
+    @classmethod
+    def as_dat_log(cls, message, level='DEBUG'):
+        return cls(
+            type=Type.LOG,
+            log=DatLogMessage(level=level, message=message)
+        )
+        
+# if __name__ == '__main__':
+#     print(DatMessage.as_dat_log('this is a DEBUG message'))
