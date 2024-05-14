@@ -26,6 +26,8 @@ class SourceBase(ConnectorBase):
     """
     Base abstract Class for all sources
     """
+    _catalog_class = DatCatalog
+
     def read_catalog_file(self) -> Dict:
         """
         Read the catalog file and return the json contents
@@ -44,7 +46,7 @@ class SourceBase(ConnectorBase):
         Returns:
             DatCatalog: Supported streams in the connector
         """
-        _catalog = DatCatalog.model_json_schema()
+        _catalog = self._catalog_class.model_json_schema()
         return jsonref.loads(jsonref.dumps(_catalog))
     
     @abstractmethod

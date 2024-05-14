@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import (Any, Dict, Optional, Tuple)
-import yaml
+import jsonref
 from dat_core.pydantic_models import (
     ConnectorSpecification,
     DatConnectionStatus,
@@ -10,8 +10,7 @@ from dat_core.pydantic_models import (
 
 class ConnectorBase(ABC):
 
-    _spec_file = None
-    _catalog_file = None
+    _spec_class = ConnectorSpecification
 
     @abstractmethod
     def check_connection(self, config: ConnectorSpecification) -> Tuple[bool, Optional[Any]]:
@@ -31,9 +30,8 @@ class ConnectorBase(ABC):
         """
         Will return source specification
         """
-        with open(self._spec_file, 'r') as f:
-            spec_json = yaml.safe_load(f)
-        return spec_json
+        _spec = self._spec_class.model_json_schema()
+        return jsonref.loads(jsonref.dumps(_spec))
 
     def check(self, config: ConnectorSpecification) -> DatConnectionStatus:
         """
