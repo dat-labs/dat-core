@@ -5,6 +5,7 @@ from typing import (
 )
 from datetime import datetime
 import yaml
+import jsonref
 from dat_core.pydantic_models import (
     DatMessage,
     StreamState,
@@ -43,12 +44,8 @@ class SourceBase(ConnectorBase):
         Returns:
             DatCatalog: Supported streams in the connector
         """
-        catalog_json = self.read_catalog_file()
-        if catalog_json:
-            return catalog_json
-        else:
-            # TODO: Write logic to return available streams
-            return {}
+        _catalog = DatCatalog.model_json_schema()
+        return jsonref.loads(jsonref.dumps(_catalog))
     
     @abstractmethod
     def streams(self, config: Mapping[str, Any], json_schemas: Mapping[str, Mapping[str, Any]]=None) -> List[Stream]:
