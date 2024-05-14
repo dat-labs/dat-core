@@ -20,6 +20,7 @@ pypdf = "^4.1.0"
 langchain-text-splitters = "^0.0.1"
 langchain-community = "^0.0.32"
 llama-index-readers-s3 = "^0.1.7"
+jsonref = "^1.1.0"
 
 
 [tool.poetry.group.test.dependencies]
