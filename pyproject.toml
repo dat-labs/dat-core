@@ -18,8 +18,7 @@ langchain-text-splitters = "^0.0.1"
 langchain-community = "^0.0.32"
 llama-index-readers-s3 = "^0.1.7"
 jsonref = "^1.1.0"
-# pydantic = {git = "https://github.com/dc-rahul/dat-pydantic.git", develop = true}
- pydantic = "^1.10.8"
+pydantic = {git = "https://github.com/dc-rahul/dat-pydantic.git", develop=true}
 
 
 [tool.poetry.group.test.dependencies]
