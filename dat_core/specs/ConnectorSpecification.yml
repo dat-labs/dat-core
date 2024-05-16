@@ -25,6 +25,7 @@ definitions:
     type: object
     required:
       - name
+      - dat_name
     properties:
       dat_name:
         type: string

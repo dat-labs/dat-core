@@ -13,7 +13,7 @@ class ConnectionSpecification(BaseModel):
     class Config:
         extra = 'allow'
     
-    dat_name: Optional[str] = Field(
+    dat_name: str = Field(
         None, description='Name of the actor instance.', title='Name'
     )
 
