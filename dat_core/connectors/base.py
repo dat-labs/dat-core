@@ -31,7 +31,15 @@ class ConnectorBase(ABC):
         Will return source specification
         """
         _spec = self._spec_class.model_json_schema()
-        return jsonref.loads(jsonref.dumps(_spec))
+        _resolved_spec =  jsonref.loads(jsonref.dumps(_spec))
+        _conn_spec = _resolved_spec['properties']['connection_specification']
+        for _schema in _conn_spec['allOf']:
+            for k,v in _schema.items():
+                _conn_spec[k] = v
+        del _conn_spec['allOf']
+        return _resolved_spec
+
+
 
     def check(self, config: ConnectorSpecification) -> DatConnectionStatus:
         """
