@@ -47,7 +47,13 @@ class SourceBase(ConnectorBase):
             DatCatalog: Supported streams in the connector
         """
         _catalog = self._catalog_class.model_json_schema()
-        return jsonref.loads(jsonref.dumps(_catalog))
+        _resolved_catalog = jsonref.loads(jsonref.dumps(_catalog))
+        _items = _resolved_catalog['properties']['document_streams']['items']
+        if 'anyOf' in _items:
+            _resolved_catalog['properties']['document_streams']['items'] = _items['anyOf']
+        else:
+            _resolved_catalog['properties']['document_streams']['items'] = [_items.copy(), ]
+        return _resolved_catalog
     
     @abstractmethod
     def streams(self, config: Mapping[str, Any], json_schemas: Mapping[str, Mapping[str, Any]]=None) -> List[Stream]:
