@@ -32,11 +32,12 @@ class ConnectorBase(ABC):
         """
         _spec = self._spec_class.model_json_schema()
         _resolved_spec =  jsonref.loads(jsonref.dumps(_spec))
-        _conn_spec = _resolved_spec['properties']['connection_specification']
-        for _schema in _conn_spec['allOf']:
-            for k,v in _schema.items():
-                _conn_spec[k] = v
-        del _conn_spec['allOf']
+        # _conn_spec = _resolved_spec['properties']['connection_specification']
+        # for _schema in _conn_spec['allOf']:
+        #     for k,v in _schema.items():
+        #         _conn_spec[k] = v
+        # del _conn_spec['allOf']
+        # del _resolved_spec['$defs']
         return _resolved_spec
 
 
