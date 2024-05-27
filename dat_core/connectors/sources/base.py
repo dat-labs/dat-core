@@ -55,18 +55,16 @@ class SourceBase(ConnectorBase):
         #     del _document_streams['anyOf']
         # else:
         #     _resolved_catalog['properties']['document_streams']['items'] = [_document_streams.copy()]
-        if 'anyOf' in _resolved_catalog['properties']['document_streams']['items']:
-            for doc_stream in _resolved_catalog['properties']['document_streams']['items']['anyOf']:
-                doc_stream['properties']['advanced']['properties']['splitter_settings']['oneOf'] = doc_stream['properties']['advanced']['properties']['splitter_settings']['anyOf'].copy()
-            
-            for doc_stream in _resolved_catalog['properties']['document_streams']['items']['anyOf']:
-                if 'anyOf' in doc_stream['properties']['advanced']['properties']['splitter_settings']:
-                    del doc_stream['properties']['advanced']['properties']['splitter_settings']['anyOf']
-        else:
-            doc_stream = _resolved_catalog['properties']['document_streams']['items']
+        if 'anyOf' not in _resolved_catalog['properties']['document_streams']['items']:
+            _resolved_catalog['properties']['document_streams']['items'] = {'anyOf': [_resolved_catalog['properties']['document_streams']['items'].copy()]}
+        
+        for doc_stream in _resolved_catalog['properties']['document_streams']['items']['anyOf']:
             doc_stream['properties']['advanced']['properties']['splitter_settings']['oneOf'] = doc_stream['properties']['advanced']['properties']['splitter_settings']['anyOf'].copy()
+        
+        for doc_stream in _resolved_catalog['properties']['document_streams']['items']['anyOf']:
             if 'anyOf' in doc_stream['properties']['advanced']['properties']['splitter_settings']:
                 del doc_stream['properties']['advanced']['properties']['splitter_settings']['anyOf']
+            
         # del _resolved_catalog['$defs']
         return _resolved_catalog
     
