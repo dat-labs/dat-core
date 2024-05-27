@@ -29,7 +29,7 @@ class SplitByHtmlHeaderExtraConfig(BaseModel):
 
 
 class SplitByHtmlHeaderSettings(BaseModel):
-    splitter_settings: Optional[str] = 'SPLIT_BY_HTML_HEADER'
+    splitter_settings: Optional[str] = Field('SPLIT_BY_HTML_HEADER', json_schema_extra = {'hidden': True})
     config: Optional[SplitByHtmlHeaderExtraConfig] = None
 
 
@@ -38,7 +38,7 @@ class SplitByCharacterExtraConfig(BaseModel):
 
 
 class SplitByCharacterSettings(BaseModel):
-    splitter_settings: Optional[str] = 'SPLIT_BY_CHARACTER'
+    splitter_settings: Optional[str] = Field('SPLIT_BY_CHARACTER', json_schema_extra = {'hidden': True})
     config: Optional[SplitByCharacterExtraConfig] = None
 
 
@@ -47,17 +47,17 @@ class SplitCodeExtraConfig(BaseModel):
 
 
 class SplitCodeSettings(BaseModel):
-    splitter_settings: Optional[str] = 'SPLIT_CODE'
+    splitter_settings: Optional[str] = Field('SPLIT_CODE', json_schema_extra = {'hidden': True})
     config: Optional[SplitCodeExtraConfig] = None
 
 
 class SplitByMarkdownSettings(BaseModel):
-    splitter_settings: Optional[str] = 'SPLIT_BY_MARKDOWN'
+    splitter_settings: Optional[str] = Field('SPLIT_BY_MARKDOWN', json_schema_extra = {'hidden': True})
     config: Optional[Dict[str, Any]] = {}
 
 
 class SplitJsonRecursivelySettings(BaseModel):
-    splitter_settings: Optional[str] = 'SPLIT_JSON_RECURSIVELY'
+    splitter_settings: Optional[str] = Field('SPLIT_JSON_RECURSIVELY', json_schema_extra = {'hidden': True})
     config: Optional[Dict[str, Any]] = {}
 
 
@@ -66,12 +66,12 @@ class SplitByCharacterRecursiverlyConfig(BaseModel):
 
 
 class SplitByCharacterRecursiverlySettings(BaseModel):
-    splitter_settings: Optional[str] = 'SPLIT_BY_CHARACTER_RECURSIVELY'
+    splitter_settings: Optional[str] = Field('SPLIT_BY_CHARACTER_RECURSIVELY', json_schema_extra = {'hidden': True})
     config: Optional[SplitByCharacterRecursiverlyConfig] = None
 
 
 class SplitByTokensSettings(BaseModel):
-    splitter_settings: Optional[str] = 'SPLIT_BY_TOKENS'
+    splitter_settings: Optional[str] = Field('SPLIT_BY_TOKENS', json_schema_extra = {'hidden': True})
     config: Optional[SplitByCharacterRecursiverlyConfig] = None
 
 
