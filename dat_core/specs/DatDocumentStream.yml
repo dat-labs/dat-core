@@ -12,11 +12,6 @@ properties:
   namespace:
     description: The namespace the data is associated with.
     type: string
-    nullable: true
-  json_schema:
-    description: The JSON schema for the document stream.
-    type: object
-    nullable: true
   read_sync_mode:
     description: A list of supported sync modes for the stream while reading.
     type: string
@@ -37,7 +32,6 @@ properties:
       The path to the field used to determine if a record is new or modified.
       REQUIRED for INCREMENTAL sync mode.
     type: string
-    nullable: true
   advanced:
     description: "Additional optional settings"
     type: object
@@ -47,7 +41,7 @@ properties:
         oneOf:
           - type: object
             properties:
-              strategy:
+              splitter_settings:
                 type: string
                 default: SPLIT_BY_HTML_HEADER
               config:
@@ -62,7 +56,7 @@ properties:
                   
           - type: object
             properties:
-              strategy:
+              splitter_settings:
                 type: string
                 default: SPLIT_BY_CHARACTER
               config:
@@ -74,7 +68,7 @@ properties:
           
           - type: object
             properties:
-              strategy:
+              splitter_settings:
                 type: string
                 default: SPLIT_CODE
               config:
@@ -85,7 +79,7 @@ properties:
                     default: ['\nclass ', '\ndef '] # defaults to python code
           - type: object
             properties:
-              strategy:
+              splitter_settings:
                 type: string
                 default: SPLIT_BY_MARKDOWN
               config:
@@ -93,7 +87,7 @@ properties:
                 default: {}
           - type: object
             properties:
-              strategy:
+              splitter_settings:
                 type: string
                 default: SPLIT_JSON_RECURSIVELY
               config:
@@ -101,7 +95,7 @@ properties:
                 default: {}
           - type: object
             properties:
-              strategy:
+              splitter_settings:
                 type: string
                 default: SPLIT_BY_CHARACTER_RECURSIVELY
               config:
@@ -112,7 +106,7 @@ properties:
                     default: ["\n\n", "\n", " ", ""]
           - type: object
             properties:
-              strategy:
+              splitter_settings:
                 type: string
                 default: SPLIT_BY_TOKENS
               config:
