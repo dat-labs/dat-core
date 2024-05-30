@@ -10,6 +10,7 @@ readme = "README.md"
 python = "^3.10"
 jsonschema = "^4.21.1"
 pyyaml = "^6.0.1"
+pydantic = "^2.6.4"
 click = "^8.1.7"
 coverage = "^7.4.3"
 alembic = "^1.13.1"
@@ -18,7 +19,6 @@ langchain-text-splitters = "^0.0.1"
 langchain-community = "^0.0.32"
 llama-index-readers-s3 = "^0.1.7"
 jsonref = "^1.1.0"
-pydantic = {git = "https://github.com/dc-rahul/dat-pydantic.git", develop=true}
 
 
 [tool.poetry.group.test.dependencies]

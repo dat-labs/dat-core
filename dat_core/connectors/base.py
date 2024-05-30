@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from typing import (Any, Dict, Optional, Tuple)
 import jsonref
 from dat_core.pydantic_models import (
+    CustomGenerateJsonSchema,
     ConnectorSpecification,
     DatConnectionStatus,
     Status,
@@ -30,7 +31,7 @@ class ConnectorBase(ABC):
         """
         Will return source specification
         """
-        _spec = self._spec_class.model_json_schema()
+        _spec = self._spec_class.model_json_schema(schema_generator=CustomGenerateJsonSchema)
         _resolved_spec =  jsonref.loads(jsonref.dumps(_spec))
         # _conn_spec = _resolved_spec['properties']['connection_specification']
         # for _schema in _conn_spec['allOf']:

@@ -18,6 +18,7 @@ from dat_core.pydantic_models import (
     Level,
     Type,
     DatStateMessage,
+    CustomGenerateJsonSchema,
 )
 from dat_core.connectors.base import ConnectorBase
 from dat_core.connectors.sources.stream import Stream
@@ -46,7 +47,7 @@ class SourceBase(ConnectorBase):
         Returns:
             DatCatalog: Supported streams in the connector
         """
-        _catalog = self._catalog_class.model_json_schema()
+        _catalog = self._catalog_class.model_json_schema(schema_generator=CustomGenerateJsonSchema)
         _resolved_catalog =  jsonref.loads(jsonref.dumps(_catalog))
         # _resolved_catalog = resolve_refs(_catalog)
         # _document_streams = _resolved_catalog['properties']['document_streams']['items']
