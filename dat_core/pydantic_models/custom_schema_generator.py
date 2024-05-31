@@ -3,7 +3,6 @@ from __future__ import annotations as _annotations
 from typing import NewType, TYPE_CHECKING
 
 import pydantic_core
-from pydantic_core import core_schema
 from pydantic.json_schema import GenerateJsonSchema
 from pydantic.types import JsonSchemaValue
 from pydantic_core import CoreSchema, core_schema
