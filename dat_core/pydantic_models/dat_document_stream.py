@@ -25,11 +25,20 @@ class SplitByHtmlHeaderExtraConfig(BaseModel):
     headers_to_split_on: Optional[List[str]] = Field(
         ['h2', 'h3'],
         description='list of headers we want to track mapped to (arbitrary) keys for metadata. Allowed header values: h1, h2, h3, h4, h5, h6',
+        json_schema_extra={
+            'ui-opts': {
+                'widget': 'textboxDelimiterSeparatedChip',
+            }
+        }
     )
 
 
 class SplitByHtmlHeaderSettings(BaseModel):
-    splitter_settings: Optional[str] = Field('SPLIT_BY_HTML_HEADER', json_schema_extra = {'hidden': True})
+    splitter_settings: Optional[str] = Field('SPLIT_BY_HTML_HEADER', json_schema_extra={
+        'ui-opts': {
+            'hidden': True,
+        }
+    })
     config: Optional[SplitByHtmlHeaderExtraConfig] = None
 
 
@@ -38,26 +47,61 @@ class SplitByCharacterExtraConfig(BaseModel):
 
 
 class SplitByCharacterSettings(BaseModel):
-    splitter_settings: Optional[str] = Field('SPLIT_BY_CHARACTER', json_schema_extra = {'hidden': True})
+    splitter_settings: Optional[str] = Field(
+        'SPLIT_BY_CHARACTER',
+        json_schema_extra={
+            'ui-opts': {
+                'hidden': True,
+            }
+        }
+    )
     config: Optional[SplitByCharacterExtraConfig] = None
 
 
 class SplitCodeExtraConfig(BaseModel):
-    separators: Optional[List] = ['\\nclass ', '\\ndef ']
+    separators: Optional[List] = Field(
+        ['\\nclass ', '\\ndef '],
+        json_schema_extra={
+            'ui-opts': {
+                'widget': 'textboxDelimiterSeparatedChip',
+            }
+        }
+    )
 
 
 class SplitCodeSettings(BaseModel):
-    splitter_settings: Optional[str] = Field('SPLIT_CODE', json_schema_extra = {'hidden': True})
+    splitter_settings: Optional[str] = Field(
+        'SPLIT_CODE',
+        json_schema_extra={
+            'ui-opts': {
+                'hidden': True,
+            }
+        }
+    )
     config: Optional[SplitCodeExtraConfig] = None
 
 
 class SplitByMarkdownSettings(BaseModel):
-    splitter_settings: Optional[str] = Field('SPLIT_BY_MARKDOWN', json_schema_extra = {'hidden': True})
+    splitter_settings: Optional[str] = Field(
+        'SPLIT_BY_MARKDOWN',
+        json_schema_extra={
+            'ui-opts': {
+                'hidden': True,
+            }
+        }
+    )
     config: Optional[Dict[str, Any]] = {}
 
 
 class SplitJsonRecursivelySettings(BaseModel):
-    splitter_settings: Optional[str] = Field('SPLIT_JSON_RECURSIVELY', json_schema_extra = {'hidden': True})
+    splitter_settings: Optional[str] = Field(
+        'SPLIT_JSON_RECURSIVELY',
+        json_schema_extra={
+            'ui-opts': {
+                'hidden': True,
+            }
+        }
+    )
     config: Optional[Dict[str, Any]] = {}
 
 
@@ -66,12 +110,26 @@ class SplitByCharacterRecursiverlyConfig(BaseModel):
 
 
 class SplitByCharacterRecursiverlySettings(BaseModel):
-    splitter_settings: Optional[str] = Field('SPLIT_BY_CHARACTER_RECURSIVELY', json_schema_extra = {'hidden': True})
+    splitter_settings: Optional[str] = Field(
+        'SPLIT_BY_CHARACTER_RECURSIVELY',
+        json_schema_extra={
+            'ui-opts': {
+                'hidden': True,
+            }
+        }
+    )
     config: Optional[SplitByCharacterRecursiverlyConfig] = None
 
 
 class SplitByTokensSettings(BaseModel):
-    splitter_settings: Optional[str] = Field('SPLIT_BY_TOKENS', json_schema_extra = {'hidden': True})
+    splitter_settings: Optional[str] = Field(
+        'SPLIT_BY_TOKENS',
+        json_schema_extra={
+            'ui-opts': {
+                'hidden': True,
+            }
+        }
+    )
     config: Optional[SplitByCharacterRecursiverlyConfig] = None
 
 
@@ -86,29 +144,63 @@ class Advanced(BaseModel):
             SplitByCharacterRecursiverlySettings,
             SplitByTokensSettings,
         ]
-    ] = None
+    ] = Field(
+        None,
+        description='Splitter settings.',
+        json_schema_extra={
+            'ui-opts': {
+                'widget': 'group',
+                'collapsible': False,
+            }
+        }
+    )
 
 
 class DatDocumentStream(BaseModel):
     class Config:
         extra = 'allow'
 
-    name: str = Field(..., description='The name of the document stream.')
+    name: str = Field(
+        ...,
+        description='The name of the document stream.',
+        json_schema_extra={
+            'ui-opts': {
+                'hidden': True,
+            }
+        }
+    )
     namespace: Optional[str] = Field(
         None, description='The namespace the data is associated with.'
     )
     read_sync_mode: Optional[ReadSyncMode] = Field(
         'INCREMENTAL',
-        description='A list of supported sync modes for the stream while reading.',
+        description='An list of supported sync modes for the stream while reading.',
+        json_schema_extra={
+            'ui-opts': {
+                'widget': 'radioButton',
+            }
+        }
     )
     write_sync_mode: Optional[WriteSyncMode] = Field(
         'APPEND',
         description='A list of supported sync modes for the stream while writing.',
+        json_schema_extra={
+            'ui-opts': {
+                'widget': 'radioButton',
+            }
+        }
     )
     cursor_field: Optional[str] = Field(
         None,
         description='The path to the field used to determine if a record is new or modified.\nREQUIRED for INCREMENTAL sync mode.',
     )
     advanced: Optional[Advanced] = Field(
-        None, description='Additional optional settings'
+        None,
+        description='Additional optional settings',
+        json_schema_extra={
+            'ui-opts': {
+                'widget': 'group',
+                'collapsible': True,
+            }
+        }
     )
