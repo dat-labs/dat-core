@@ -149,8 +149,7 @@ class Advanced(BaseModel):
         description='Splitter settings.',
         json_schema_extra={
             'ui-opts': {
-                'widget': 'group',
-                'collapsible': False,
+                'widget': 'singleDropdown',
             }
         }
     )
