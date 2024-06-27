@@ -1,5 +1,4 @@
 from collections import defaultdict
-from abc import ABC
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 from dat_core.connectors.destinations.seeder import Seeder
 from dat_core.pydantic_models import (
@@ -10,7 +9,7 @@ from dat_core.pydantic_models import (
 )
 
 
-class DataProcessor(ABC):
+class DataProcessor:
     """
     This class is responsible for processing the data and seeding it to the destination.
 
@@ -114,7 +113,7 @@ class DataProcessor(ABC):
                     self._process_batch()
                     yield DatMessage(
                         type=Type.LOG,
-                        log=DatLogMessage(level=Level.INFO, message=f"Processed {self.number_of_documents_per_stream} documents.")
+                        log=DatLogMessage(level=Level.INFO, message=f"Processed {dict(self.number_of_documents_per_stream)} document chunks.")
                     )
                     yield message
             if message.type == Type.RECORD:
@@ -127,12 +126,12 @@ class DataProcessor(ABC):
                     self._process_batch()
                     yield DatMessage(
                         type=Type.LOG,
-                        log=DatLogMessage(level=Level.INFO, message=f"Processed {self.number_of_documents_per_stream} documents.")
+                        log=DatLogMessage(level=Level.INFO, message=f"Processed {dict(self.number_of_documents_per_stream)} document chunks.")
                     )
         self._process_batch()
         yield DatMessage(
             type=Type.LOG,
-            log=DatLogMessage(level=Level.INFO, message=f"Processed {self.number_of_documents_per_stream} documents.")
+            log=DatLogMessage(level=Level.INFO, message=f"Processed {dict(self.number_of_documents_per_stream)} document chunks.")
         )
 
     def _find_stream_idx(self, stream_name: str, catalog: DatCatalog) -> Optional[int]:
