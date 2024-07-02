@@ -21,11 +21,6 @@ class StreamState(BaseModel):
     data: Dict[str, Any] = Field(..., description='the state data')
     stream_status: Optional[StreamStatus] = Field(
         None, description='the stream status')
-    emitted_at: Optional[float] = Field(
-        ...,
-        description='when the data was emitted from the source. epoch in millisecond.',
-        default_factory=lambda: datetime.now().timestamp(),
-    )
 
 
 
@@ -35,3 +30,8 @@ class DatStateMessage(BaseModel):
 
     stream: DatDocumentStream
     stream_state: StreamState
+    emitted_at: Optional[float] = Field(
+        ...,
+        description='when the data was emitted from the source. epoch in millisecond.',
+        default_factory=lambda: datetime.now().timestamp(),
+    )
