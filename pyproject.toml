@@ -18,6 +18,7 @@ pendulum = "^3.0.0"
 langchain-text-splitters = "^0.0.1"
 langchain-community = "^0.0.32"
 llama-index-readers-s3 = "^0.1.7"
+llama-index-readers-web
 jsonref = "^1.1.0"
 
 
