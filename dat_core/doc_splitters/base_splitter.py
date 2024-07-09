@@ -76,8 +76,11 @@ class BaseSplitter:
             try:
                 docs = self._default_loader.lazy_load_data() # llama index loaders lazy_load
             except NotImplementedError:
-                docs = self._default_loader.load_data() # llama index default load method
-                
+                try:
+                    docs = self._default_loader.load_data() # llama index default load method
+                except TypeError:
+                    docs = self._default_loader.load_data(base_url=self._default_loader.prefix)
+            
         
         for doc in docs:
             try:
