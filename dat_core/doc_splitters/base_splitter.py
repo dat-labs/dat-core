@@ -58,7 +58,7 @@ class BaseSplitter:
         """
         self._default_splitter = splitter_object
     
-    def load(self) -> Generator[Document, Any, Any]:
+    def load(self, **kwargs) -> Generator[Document, Any, Any]:
         """
         Loads documents using the registered loader.
 
@@ -69,17 +69,14 @@ class BaseSplitter:
             raise Exception('Please register a document loader first using register_document_loader()')
         
         try:
-            docs = self._default_loader.lazy_load() # langchain loaders lazy_load
+            docs = self._default_loader.lazy_load(**kwargs) # langchain loaders lazy_load
         except NotImplementedError:
-            docs = self._default_loader.load() # langchain loaders default load
+            docs = self._default_loader.load(**kwargs) # langchain loaders default load
         except AttributeError:
             try:
-                docs = self._default_loader.lazy_load_data() # llama index loaders lazy_load
+                docs = self._default_loader.lazy_load_data(**kwargs) # llama index loaders lazy_load
             except NotImplementedError:
-                try:
-                    docs = self._default_loader.load_data() # llama index default load method
-                except TypeError:
-                    docs = self._default_loader.load_data(base_url=self._default_loader.prefix)
+                docs = self._default_loader.load_data(**kwargs) # llama index default load method
             
         
         for doc in docs:
@@ -88,7 +85,7 @@ class BaseSplitter:
             except (AttributeError, KeyError):
                 yield Document.from_llama_index_document(doc)
 
-    def load_and_chunk(self) -> Generator[Document, Any, Any]:
+    def load_and_chunk(self, **kwargs) -> Generator[Document, Any, Any]:
         """
         Loads and chunks documents using the registered loader and splitter.
 
@@ -104,7 +101,7 @@ class BaseSplitter:
         if not self._default_splitter:
             raise Exception('Please register a document splitter first using register_document_splitter()')
 
-        docs = self.load()
+        docs = self.load(**kwargs)
 
         for doc in docs:
             yield from self.split_text(doc.page_content)
