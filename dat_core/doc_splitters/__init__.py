@@ -16,4 +16,7 @@ class Document(BaseModel):
     
     @classmethod
     def from_llama_index_document(cls, doc: LIDocument) -> "Document":
-        return cls(filepath=doc.metadata['file_path'], page_content=doc.text, metadata=doc.metadata)
+        if 'file_path' in doc.metadata:
+            return cls(filepath=doc.metadata['file_path'], page_content=doc.text, metadata=doc.metadata)
+        elif 'URL' in doc.metadata:
+            return cls(filepath=doc.metadata['URL'], page_content=doc.text, metadata=doc.metadata)

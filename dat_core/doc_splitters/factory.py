@@ -21,12 +21,12 @@ from langchain_community.document_loaders import (
     UnstructuredURLLoader,
     CSVLoader,
     GoogleDriveLoader,
-    WebBaseLoader,
     UnstructuredURLLoader,
     S3DirectoryLoader,
 
 )
 from llama_index.readers.s3 import S3Reader
+from llama_index.readers.web import WholeSiteReader
 from dat_core.doc_splitters.base_splitter import BaseSplitter
 
 
@@ -40,7 +40,7 @@ class DocLoaderType(Enum):
     URL = 'URL'
     CSV = 'CSV'
     GOOGLE_DRIVE = 'GOOGLE_DRIVE'
-    WEB_CRAWLER = 'WEB_CRAWLER'
+    WHOLE_SITE_READER = 'WHOLE_SITE_READER'
     S3_DIR_LOADER = 'S3_DIR_LOADER'
 
 class TextSplitterType(Enum):
@@ -139,7 +139,7 @@ doc_splitter_factory.register_loader(DocLoaderType.HTML, UnstructuredHTMLLoader)
 doc_splitter_factory.register_loader(DocLoaderType.URL, UnstructuredURLLoader)
 doc_splitter_factory.register_loader(DocLoaderType.CSV, CSVLoader)
 doc_splitter_factory.register_loader(DocLoaderType.GOOGLE_DRIVE, GoogleDriveLoader)
-doc_splitter_factory.register_loader(DocLoaderType.WEB_CRAWLER, WebBaseLoader)
+doc_splitter_factory.register_loader(DocLoaderType.WHOLE_SITE_READER, WholeSiteReader)
 doc_splitter_factory.register_loader(DocLoaderType.S3_DIR_LOADER, S3Reader)
 
 
