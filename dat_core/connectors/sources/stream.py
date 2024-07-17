@@ -13,6 +13,7 @@ from dat_core.pydantic_models import (
     DatStateMessage,
     StreamState,
     StreamMetadata,
+    SchemaField
 )
 def to_snake_case(_str):
     """
@@ -31,6 +32,7 @@ class Stream(ABC):
     Base abstract class for a Dat Stream
     """
     _name = None
+    _json_schema = None
     _state_checkpoint_interval = None
     _default_cursor = None
 
@@ -50,20 +52,9 @@ class Stream(ABC):
         return ReadSyncMode.INCREMENTAL
     
     @property
-    def json_schema(self) -> Mapping[str, Any]:
-        return self._schema
-    
-    def get_schema_json(self) -> Dict:
-        """
-        Get the schema by either reading from the catalog.yml or some
-        custom implementation
+    def json_schema(self) -> List[SchemaField]:
+        return self._json_schema
 
-        Returns:
-            Dict: schema of the stream response
-        """
-        # Default behavior. Otherwise one could have custom implementation
-        return self.json_schema
-    
     def as_pydantic_model(self) -> DatDocumentStream:
         return DatDocumentStream(
             name=self.name,

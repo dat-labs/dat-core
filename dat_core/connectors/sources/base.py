@@ -1,9 +1,10 @@
 from abc import abstractmethod
 from typing import (
     Any, Dict, List,
-    Mapping, Optional, Generator
+    Mapping, Optional, Generator,
+    Union
 )
-from datetime import datetime
+from pydantic import create_model
 import yaml
 import jsonref
 from dat_core.pydantic_models import (
@@ -28,6 +29,8 @@ class SourceBase(ConnectorBase):
     Base abstract Class for all sources
     """
     _catalog_class = DatCatalog
+    _has_dynamic_streams = False
+
 
     def read_catalog_file(self) -> Dict:
         """
@@ -35,7 +38,10 @@ class SourceBase(ConnectorBase):
         """
         with open(self._catalog_file) as _c:
             return yaml.safe_load(_c)
-        
+
+    def create_pydantic_model(self, stream: Stream) -> Any:
+        raise NotImplementedError
+
     def discover(self, config: ConnectorSpecification) -> Dict:
         """
         Should publish a connectors capabilities i.e it's catalog
@@ -47,6 +53,20 @@ class SourceBase(ConnectorBase):
         Returns:
             DatCatalog: Supported streams in the connector
         """
+        if self._has_dynamic_streams:
+            streams = self.streams(config)
+            stream_classes = []
+            for stream in streams:
+                _class = self.create_pydantic_model(stream)
+                stream_classes.append(_class)
+
+            DocumentStreamsUnion = Union[tuple(stream_classes)]
+
+            GenericCatalogModel = create_model(
+                'GenericCatalog',
+                document_streams=(List[DocumentStreamsUnion], ...)
+            )
+            self._catalog_class = GenericCatalogModel
         _catalog = self._catalog_class.model_json_schema(schema_generator=CustomGenerateJsonSchema)
         _resolved_catalog =  jsonref.loads(jsonref.dumps(_catalog))
         # _resolved_catalog = resolve_refs(_catalog)

@@ -154,6 +154,14 @@ class Advanced(BaseModel):
         }
     )
 
+class SchemaField(BaseModel):
+    class Config:
+        extra = 'allow'
+
+    name: str
+    data_type: str
+    size: int
+
 
 class DatDocumentStream(BaseModel):
     class Config:
@@ -162,6 +170,15 @@ class DatDocumentStream(BaseModel):
     name: str = Field(
         ...,
         description='The name of the document stream.',
+        json_schema_extra={
+            'ui-opts': {
+                'hidden': True,
+            }
+        }
+    )
+    json_schema: Optional[Union[SchemaField]] = Field(
+        None,
+        description='The JSON schema for the document stream.',
         json_schema_extra={
             'ui-opts': {
                 'hidden': True,
