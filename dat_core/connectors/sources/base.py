@@ -141,7 +141,7 @@ class SourceBase(ConnectorBase):
                 )
             )
             stream_instance = stream_instances.get(configured_stream.name)
-            stream_state = state.get(configured_stream.namespace, StreamState(data={})) if state else StreamState(data={})
+            stream_state = state.get(configured_stream.name, StreamState(data={})) if state else StreamState(data={})
             if configured_stream.read_sync_mode == ReadSyncMode.INCREMENTAL:
                 configured_stream.cursor_field = configured_stream.cursor_field or stream_instance._default_cursor
                 records = self._read_incremental(stream_instance, catalog, configured_stream, stream_state)
