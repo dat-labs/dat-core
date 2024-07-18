@@ -158,9 +158,18 @@ class SchemaField(BaseModel):
     class Config:
         extra = 'allow'
 
-    name: str
-    data_type: str
-    size: int
+    name: Optional[str] = Field(
+        None,
+        description='The name of the field.',
+    )
+    data_type: Optional[str] = Field(
+        None,
+        description='The data type of the field.',
+    )
+    size: Optional[int] = Field(
+        None,
+        description='The size of the field.',
+    )
 
 
 class DatDocumentStream(BaseModel):
