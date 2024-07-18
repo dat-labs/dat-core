@@ -13,7 +13,6 @@ from dat_core.pydantic_models import (
     DatStateMessage,
     StreamState,
     StreamMetadata,
-    SchemaField
 )
 def to_snake_case(_str):
     """
@@ -50,9 +49,9 @@ class Stream(ABC):
     def read_sync_mode(self) -> ReadSyncMode:
         # TODO: Fix return
         return ReadSyncMode.INCREMENTAL
-    
+
     @property
-    def json_schema(self) -> List[SchemaField]:
+    def json_schema(self) -> Optional[Dict[str, Any]]:
         return self._json_schema
 
     def as_pydantic_model(self) -> DatDocumentStream:
