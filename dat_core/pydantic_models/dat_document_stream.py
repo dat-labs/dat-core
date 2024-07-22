@@ -168,6 +168,15 @@ class DatDocumentStream(BaseModel):
             }
         }
     )
+    json_schema: Optional[Dict[str, Any]] = Field(
+        None,
+        description='Stream schema using Json schema specification.',
+        json_schema_extra={
+            'ui-opts': {
+                'hidden': True,
+            }
+        }
+    )
     namespace: Optional[str] = Field(
         None, description='The namespace the data is associated with.'
     )

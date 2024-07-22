@@ -31,6 +31,7 @@ class Stream(ABC):
     Base abstract class for a Dat Stream
     """
     _name = None
+    _json_schema = None
     _state_checkpoint_interval = None
     _default_cursor = None
 
@@ -48,22 +49,11 @@ class Stream(ABC):
     def read_sync_mode(self) -> ReadSyncMode:
         # TODO: Fix return
         return ReadSyncMode.INCREMENTAL
-    
-    @property
-    def json_schema(self) -> Mapping[str, Any]:
-        return self._schema
-    
-    def get_schema_json(self) -> Dict:
-        """
-        Get the schema by either reading from the catalog.yml or some
-        custom implementation
 
-        Returns:
-            Dict: schema of the stream response
-        """
-        # Default behavior. Otherwise one could have custom implementation
-        return self.json_schema
-    
+    @property
+    def json_schema(self) -> Optional[Dict[str, Any]]:
+        return self._json_schema
+
     def as_pydantic_model(self) -> DatDocumentStream:
         return DatDocumentStream(
             name=self.name,
