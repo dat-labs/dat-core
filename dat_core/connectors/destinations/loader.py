@@ -6,16 +6,16 @@ from dat_core.pydantic_models import (
 )
 
 
-class Seeder(ABC):
+class Loader(ABC):
     """
-    Abstract base class for seeders that interact with a destination.
+    Abstract base class for loaders that interact with a destination.
 
     Attributes:
         METADATA_FILTER_FIELDS (List[str]): List of metadata filter fields.
         METADATA_DAT_STREAM_FIELD (str): Metadata field for dat stream.
 
     Args:
-        config (Any): Configuration for the seeder.
+        config (Any): Configuration for the loader.
     """
 
     METADATA_FILTER_FIELDS = ["dat_source", "dat_stream", "dat_document_entity"]
@@ -25,12 +25,12 @@ class Seeder(ABC):
         self.config = config
 
     @abstractmethod
-    def seed(self, document_chunks: List[DatDocumentMessage], namespace: str, stream: str) -> None:
+    def load(self, document_chunks: List[DatDocumentMessage], namespace: str, stream: str) -> None:
         """
-        Abstract method to seed documents in the destination.
+        Abstract method to load documents in the destination.
 
         Args:
-            document_chunks (List[DatDocumentMessage]): List of document chunks to seed.
+            document_chunks (List[DatDocumentMessage]): List of document chunks to load.
             namespace (str): Namespace of the documents.
             stream (str): Stream of the documents.
 

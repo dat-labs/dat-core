@@ -1,6 +1,6 @@
 from collections import defaultdict
 from typing import Any, Dict, Iterable, List, Optional, Tuple
-from dat_core.connectors.destinations.seeder import Seeder
+from dat_core.connectors.destinations.loader import Loader
 from dat_core.pydantic_models import (
     DatMessage, Type, DatDocumentMessage,
     StreamStatus, DatCatalog,
@@ -11,30 +11,30 @@ from dat_core.pydantic_models import (
 
 class DataProcessor:
     """
-    This class is responsible for processing the data and seeding it to the destination.
+    This class is responsible for processing the data and loading it to the destination.
 
     Args:
         config: The configuration for the data processor.
-        seeder: The seeder object to seed the data to the destination.
+        loader: The loader object to load the data to the destination.
         batch_size: The batch size for processing the data.
     """
 
     def __init__(
-        self, config: Any, seeder: Seeder, batch_size: int,
+        self, config: Any, loader: Loader, batch_size: int,
     ) -> None:
         """
         Initialize the DataProcessor object.
 
         Args:
             config (Any): The configuration object.
-            seeder (Seeder): The seeder object.
+            loader (Loader): The loader object.
             batch_size (int): The batch size for processing data.
 
         Returns:
             None
         """
         self.config = config
-        self.seeder = seeder
+        self.loader = loader
         self.batch_size = batch_size
         self._init_batch()
         self._init_class_vars()
@@ -66,7 +66,7 @@ class DataProcessor:
         for (namespace, stream), documents in self.documents.items():
             for _, chunks in documents.items():
                 self.number_of_documents_per_stream[(namespace, stream)] += len(chunks)
-                self.seeder.seed(chunks, namespace, stream)
+                self.loader.load(chunks, namespace, stream)
         self._init_batch()
 
     def _process_delete(self, metadata: StreamMetadata, namespace: str) -> None:
@@ -81,7 +81,7 @@ class DataProcessor:
             DatLogMessage: A log message indicating the deletion operation.
 
         """
-        self.seeder.delete(filter=metadata, namespace=namespace)
+        self.loader.delete(filter=metadata, namespace=namespace)
 
     def processor(self, configured_catalog: DatCatalog, input_messages: Iterable[DatMessage]) -> Iterable[DatMessage]:
         """
@@ -99,7 +99,7 @@ class DataProcessor:
         """
         yield DatMessage(type=Type.LOG, log=DatLogMessage(level=Level.INFO, message="Initializing data processor."))
         yield DatMessage(type=Type.LOG, log=DatLogMessage(level=Level.INFO, message=f"Processing {len(input_messages)} messages."))
-        self.seeder.initiate_sync(configured_catalog)
+        self.loader.initiate_sync(configured_catalog)
         for message in input_messages:
             if message.type == Type.STATE:
                 if message.state.stream_state.stream_status == StreamStatus.STARTED:
