@@ -63,6 +63,7 @@ class Loader(ABC):
         """
         pass
 
+    @abstractmethod
     def initiate_sync(self, configured_catalog: DatCatalog) -> None:
         """
         Initiates the synchronization process with the specified configured catalog.
@@ -72,18 +73,5 @@ class Loader(ABC):
 
         Returns:
             None
-        """
-        pass
-
-    @abstractmethod
-    def metadata_filter(self, metadata: StreamMetadata) -> Any:
-        """
-        Abstract method to filter documents by metadata.
-
-        Args:
-            metadata (StreamMetadata): Metadata of the document.
-
-        Returns:
-            Any: Filtered value based on the metadata.
         """
         pass

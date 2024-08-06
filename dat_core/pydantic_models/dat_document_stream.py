@@ -39,11 +39,15 @@ class SplitByHtmlHeaderSettings(BaseModel):
             'hidden': True,
         }
     })
-    config: Optional[SplitByHtmlHeaderExtraConfig] = None
-
-
-class SplitByCharacterExtraConfig(BaseModel):
-    separator: Optional[str] = '\\n\\n'
+    headers_to_split_on: Optional[List[str]] = Field(
+        ['h2', 'h3'],
+        description='list of headers we want to track mapped to (arbitrary) keys for metadata. Allowed header values: h1, h2, h3, h4, h5, h6',
+        json_schema_extra={
+            'ui-opts': {
+                'widget': 'textboxDelimiterSeparatedChip',
+            }
+        }
+    )    
 
 
 class SplitByCharacterSettings(BaseModel):
@@ -55,18 +59,7 @@ class SplitByCharacterSettings(BaseModel):
             }
         }
     )
-    config: Optional[SplitByCharacterExtraConfig] = None
-
-
-class SplitCodeExtraConfig(BaseModel):
-    separators: Optional[List] = Field(
-        ['\\nclass ', '\\ndef '],
-        json_schema_extra={
-            'ui-opts': {
-                'widget': 'textboxDelimiterSeparatedChip',
-            }
-        }
-    )
+    separator: Optional[str] = '\\n\\n'
 
 
 class SplitCodeSettings(BaseModel):
@@ -78,7 +71,14 @@ class SplitCodeSettings(BaseModel):
             }
         }
     )
-    config: Optional[SplitCodeExtraConfig] = None
+    separators: Optional[List] = Field(
+        ['\\nclass ', '\\ndef '],
+        json_schema_extra={
+            'ui-opts': {
+                'widget': 'textboxDelimiterSeparatedChip',
+            }
+        }
+    )
 
 
 class SplitByMarkdownSettings(BaseModel):
@@ -90,7 +90,6 @@ class SplitByMarkdownSettings(BaseModel):
             }
         }
     )
-    config: Optional[Dict[str, Any]] = {}
 
 
 class SplitJsonRecursivelySettings(BaseModel):
@@ -102,11 +101,6 @@ class SplitJsonRecursivelySettings(BaseModel):
             }
         }
     )
-    config: Optional[Dict[str, Any]] = {}
-
-
-class SplitByCharacterRecursiverlyConfig(BaseModel):
-    separators: Optional[List] = ['\n\n', '\n', ' ', '']
 
 
 class SplitByCharacterRecursiverlySettings(BaseModel):
@@ -118,7 +112,7 @@ class SplitByCharacterRecursiverlySettings(BaseModel):
             }
         }
     )
-    config: Optional[SplitByCharacterRecursiverlyConfig] = None
+    separators: Optional[List] = ['\n\n', '\n', ' ', '']
 
 
 class SplitByTokensSettings(BaseModel):
@@ -130,7 +124,7 @@ class SplitByTokensSettings(BaseModel):
             }
         }
     )
-    config: Optional[SplitByCharacterRecursiverlyConfig] = None
+    separators: Optional[List] = ['\n\n', '\n', ' ', '']
 
 
 class Advanced(BaseModel):
@@ -198,9 +192,16 @@ class DatDocumentStream(BaseModel):
             }
         }
     )
+    # Keeping this field optional and hidden because either source will have a default 
+    # (developer decided) cursor value or it will be set by the user by selecting the stream field in the UI
     cursor_field: Optional[str] = Field(
         None,
         description='The path to the field used to determine if a record is new or modified.\nREQUIRED for INCREMENTAL sync mode.',
+        json_schema_extra={
+            'ui-opts': {
+                'hidden': True,
+            }
+        }
     )
     advanced: Optional[Advanced] = Field(
         None,
@@ -212,3 +213,4 @@ class DatDocumentStream(BaseModel):
             }
         }
     )
+
