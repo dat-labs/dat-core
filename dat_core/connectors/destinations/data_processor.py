@@ -1,3 +1,4 @@
+import json
 from collections import defaultdict
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 from dat_core.connectors.destinations.loader import Loader
@@ -97,6 +98,15 @@ class DataProcessor:
         Raises:
             ValueError: If the stream specified in the message is not found in the configured catalog.
         """
+        def yield_n_docs_per_stream(n_docs_p_stream):
+            for (namespace, stream_name), n_docs in n_docs_p_stream.items():
+                yield DatMessage(
+                    type=Type.LOG,
+                    log=DatLogMessage(level=Level.INFO, message=json.dumps(
+                        {'namespace': namespace, 'stream_name':
+                         stream_name, 'n_docs_processed': n_docs, }))
+                )
+        
         yield DatMessage(type=Type.LOG, log=DatLogMessage(level=Level.INFO, message="Initializing data processor."))
         yield DatMessage(type=Type.LOG, log=DatLogMessage(level=Level.INFO, message=f"Processing {len(input_messages)} messages."))
         self.loader.initiate_sync(configured_catalog)
@@ -111,10 +121,7 @@ class DataProcessor:
                     yield message
                 else:
                     self._process_batch()
-                    yield DatMessage(
-                        type=Type.LOG,
-                        log=DatLogMessage(level=Level.INFO, message=f"Processed {dict(self.number_of_documents_per_stream)} document chunks.")
-                    )
+                    yield from yield_n_docs_per_stream(dict(self.number_of_documents_per_stream))
                     yield message
             if message.type == Type.RECORD:
                 self.number_of_documents += 1
@@ -124,15 +131,9 @@ class DataProcessor:
                             message.record)
                 if self.number_of_documents >= self.batch_size:
                     self._process_batch()
-                    yield DatMessage(
-                        type=Type.LOG,
-                        log=DatLogMessage(level=Level.INFO, message=f"Processed {dict(self.number_of_documents_per_stream)} document chunks.")
-                    )
+                    yield from yield_n_docs_per_stream(dict(self.number_of_documents_per_stream))
         self._process_batch()
-        yield DatMessage(
-            type=Type.LOG,
-            log=DatLogMessage(level=Level.INFO, message=f"Processed {dict(self.number_of_documents_per_stream)} document chunks.")
-        )
+        yield from yield_n_docs_per_stream(dict(self.number_of_documents_per_stream))
 
     def _find_stream_idx(self, stream_name: str, catalog: DatCatalog) -> Optional[int]:
         """
