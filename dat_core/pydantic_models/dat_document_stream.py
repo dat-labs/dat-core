@@ -203,15 +203,15 @@ class DatDocumentStream(BaseModel):
             }
         }
     )
-    primary_key: Optional[List[str]] = Field(
-        None,
-        description='The primary key of the stream.',
-        json_schema_extra={
-            'ui-opts': {
-                'hidden': True,
-            }
-        }
-    )
+    # primary_key: Optional[List[str]] = Field(
+    #     None,
+    #     description='The primary key of the stream.',
+    #     json_schema_extra={
+    #         'ui-opts': {
+    #             'hidden': True,
+    #         }
+    #     }
+    # )
     advanced: Optional[Advanced] = Field(
         None,
         description='Additional optional settings',
