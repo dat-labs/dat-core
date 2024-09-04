@@ -23,6 +23,7 @@ from dat_core.pydantic_models import (
 )
 from dat_core.connectors.base import ConnectorBase
 from dat_core.connectors.sources.stream import Stream
+from dat_core.loggers import logger
 
 class SourceBase(ConnectorBase):
     """
@@ -182,14 +183,7 @@ class SourceBase(ConnectorBase):
                     )
                 )
             except StopIteration:
-                _log_msg = DatMessage(
-                    type=Type.LOG,
-                    log=DatLogMessage(
-                        level=Level.WARN,
-                        message='The source didnt return any data'
-                    )
-                )
-                print(_log_msg.model_dump_json(), flush=True)
+                logger.warning('The source didnt return any data')
 
     def _build_stream_state_from_record(self,
         stream_instance: Stream,

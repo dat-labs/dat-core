@@ -1,0 +1,1 @@
+from dat_core.loggers.default_logger import logger
