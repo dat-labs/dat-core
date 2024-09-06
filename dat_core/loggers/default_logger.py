@@ -43,7 +43,7 @@ class DefaultLogger:
                 message=msg
             )
         )
-        print(_msg, flush=True)
+        print(_msg.model_dump_json(), flush=True)
 
     def debug(self, msg: str) -> None:
         """
@@ -59,7 +59,7 @@ class DefaultLogger:
                 message=msg
             )
         )
-        print(_msg, flush=True)
+        print(_msg.model_dump_json(), flush=True)
 
     def error(self, msg: str) -> None:
         """
@@ -75,7 +75,7 @@ class DefaultLogger:
                 message=msg
             )
         )
-        print(_msg, flush=True)
+        print(_msg.model_dump_json(), flush=True)
 
     def warning(self, msg: str) -> None:
         """
@@ -91,7 +91,7 @@ class DefaultLogger:
                 message=msg
             )
         )
-        print(_msg, flush=True)
+        print(_msg.model_dump_json(), flush=True)
 
     def trace(self, msg: str) -> None:
         """
@@ -107,7 +107,7 @@ class DefaultLogger:
                 message=msg
             )
         )
-        print(_msg, flush=True)
+        print(_msg.model_dump_json(), flush=True)
 
     def fatal(self, msg: str) -> None:
         """
@@ -123,7 +123,7 @@ class DefaultLogger:
                 message=msg
             )
         )
-        print(_msg, flush=True)
+        print(_msg.model_dump_json(), flush=True)
 
     def critical(self, msg: str) -> None:
         """
@@ -140,7 +140,7 @@ class DefaultLogger:
                 message=msg
             )
         )
-        print(_msg, flush=True)
+        print(_msg.model_dump_json(), flush=True)
 
 
 
