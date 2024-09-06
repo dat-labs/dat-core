@@ -1,4 +1,4 @@
-from pydantic_models import DatLogMessage, DatMessage, Type, Level
+from dat_core.pydantic_models import DatLogMessage, DatMessage, Type, Level
 
 class DefaultLogger:
     """
