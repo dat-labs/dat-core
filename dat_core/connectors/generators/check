@@ -9,6 +9,7 @@ from jsonschema import validate
 from langchain_openai import OpenAIEmbeddings
 # from .utils import get_config, schema_validate
 # from base import GeneratorsBase
+from dat_core.loggers import logger
 
 def schema_validate(json_str, schema_yml_path):
     with open(schema_yml_path) as yaml_in:
@@ -38,12 +39,11 @@ def main(config):
             openai_api_key=os.getenv('OPENAI_API_KEY', None),
             # model=self.model,
         ).embed_query('foo')
-        # print(_r)
     except openai.AuthenticationError:
-        print(json.dumps(_d))
+        logger.error(json.dumps(_d))
         raise
     _d['DatConnectionStatus']['status'] = 'SUCCEEDED'
-    print(json.dumps(_d))
+    logger.info(json.dumps(_d))
     return
 
 if __name__ == '__main__':

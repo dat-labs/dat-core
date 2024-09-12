@@ -8,7 +8,7 @@ from dat_core.pydantic_models import (
     StreamMetadata, WriteSyncMode,
     Level, DatLogMessage
 )
-
+from dat_core.loggers import logger
 
 class DataProcessor:
     """
@@ -100,15 +100,11 @@ class DataProcessor:
         """
         def yield_n_docs_per_stream(n_docs_p_stream):
             for (namespace, stream_name), n_docs in n_docs_p_stream.items():
-                yield DatMessage(
-                    type=Type.LOG,
-                    log=DatLogMessage(level=Level.INFO, message=json.dumps(
-                        {'namespace': namespace, 'stream_name':
+                logger.info(json.dumps({'namespace': namespace, 'stream_name':
                          stream_name, 'n_docs_processed': n_docs, }))
-                )
         
-        yield DatMessage(type=Type.LOG, log=DatLogMessage(level=Level.INFO, message="Initializing data processor."))
-        yield DatMessage(type=Type.LOG, log=DatLogMessage(level=Level.INFO, message=f"Processing {len(input_messages)} messages."))
+        logger.info("Initializing data processor.")
+        logger.info(f"Processing {len(input_messages)} messages.")
         self.loader.initiate_sync(configured_catalog)
         for message in input_messages:
             if message.type == Type.STATE:

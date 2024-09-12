@@ -2,6 +2,7 @@
 from typing import Mapping, Tuple, List, Any
 import requests
 import pendulum
+from dat_core.loggers import logger
 
 
 class BaseOauth2Authenticator:
@@ -165,7 +166,7 @@ class BaseOauth2Authenticator:
                 resp_json.get(self._expires_in_name)
             )
         else:
-            print(res.text)
+            logger.error(res.text)
             # TODO: Raise specific exception
             raise Exception('Failed to exchange token')
 
@@ -193,7 +194,7 @@ class BaseOauth2Authenticator:
             )
         else:
             # TODO: Raise specific exception
-            print(res.text)
+            logger.error(res.text)
             raise Exception('Failed to exchange token')
 
     def _get_oauth2_url(self, url_template, **optional_kwargs) -> str:
