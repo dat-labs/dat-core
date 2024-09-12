@@ -130,6 +130,7 @@ class SourceBase(ConnectorBase):
         """
         stream_instances = {s.name: s for s in self.streams(config)}
         for configured_stream in catalog.document_streams:
+            logger.info(f'Running stream: {configured_stream.name}')
             stream_state_data = {}
             yield DatMessage(
                 type=Type.STATE,
@@ -145,6 +146,7 @@ class SourceBase(ConnectorBase):
             stream_state = state.get(configured_stream.name, StreamState(data={})) if state else StreamState(data={})
             if configured_stream.read_sync_mode == ReadSyncMode.INCREMENTAL:
                 configured_stream.cursor_field = configured_stream.cursor_field or stream_instance._default_cursor
+                logger.info('Calling read_incremental')
                 records = self._read_incremental(stream_instance, catalog, configured_stream, stream_state)
             else:
                 records = self._read_full_refresh(stream_instance, catalog, configured_stream)
@@ -172,6 +174,7 @@ class SourceBase(ConnectorBase):
                         )
                         yield stream_instance._checkpoint_stream_state(configured_stream, stream_state)
                     yield record
+                logger.info(f'Stream: {configured_stream.name} complete')
                 yield DatMessage(
                     type=Type.STATE,
                     state=DatStateMessage(
