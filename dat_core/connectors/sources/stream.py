@@ -1,4 +1,5 @@
 import time
+import uuid
 from typing import Dict, List, Optional, Iterable, Mapping, Any, Generator
 from abc import ABC, abstractmethod
 from dat_core.pydantic_models import (
@@ -34,6 +35,7 @@ class Stream(ABC):
     _json_schema = None
     _state_checkpoint_interval = None
     _default_cursor = None
+    _dat_run_id = None
 
     @classmethod
     @property
@@ -49,6 +51,16 @@ class Stream(ABC):
     def read_sync_mode(self) -> ReadSyncMode:
         # TODO: Fix return
         return ReadSyncMode.INCREMENTAL
+
+    @property
+    def dat_run_id(self):
+        """
+        This run_id is just to mark the current run and
+        will be used for upserting. This has no relation with connection_run_id
+        """
+        if not self._dat_run_id:
+            self._dat_run_id = uuid.uuid4().hex
+        return self._dat_run_id
 
     @property
     def json_schema(self) -> Optional[Dict[str, Any]]:
@@ -131,6 +143,7 @@ class Stream(ABC):
             dat_document_entity=data_entity,
             dat_last_modified=dat_last_modified or int(time.time()), #Populate current time if not already provided
             dat_document_chunk=document_chunk,
+            dat_run_id=self.dat_run_id,
             **extra_metadata
         )
         return metadata
