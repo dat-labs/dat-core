@@ -20,4 +20,3 @@ class StreamMetadata(BaseModel):
     dat_document_entity: Optional[str] = None
     dat_last_modified: Optional[int] = None
     dat_document_chunk: Optional[str] = None
-    dat_run_id: str
