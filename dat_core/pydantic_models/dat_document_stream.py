@@ -203,18 +203,9 @@ class DatDocumentStream(BaseModel):
             }
         }
     )
-    source_defined_primary_key: Optional[List[str]] = Field(
+    upsert_keys: Optional[List[str]] = Field(
         None,
-        description='The primary key of the stream.',
-        json_schema_extra={
-            'ui-opts': {
-                'hidden': True,
-            }
-        }
-    )
-    primary_key: Optional[List[str]] = Field(
-        None,
-        description='The primary key of the stream.',
+        description='The keys to use for upserting records.',
         json_schema_extra={
             'ui-opts': {
                 'hidden': True,
