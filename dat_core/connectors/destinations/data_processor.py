@@ -67,7 +67,7 @@ class DataProcessor:
             None
         """
         write_sync_mode = self.stream_write_sync_modes.get((namespace, stream))
-        if write_sync_mode == WriteSyncMode.UPSERT:
+        if write_sync_mode == WriteSyncMode.UPSERT.name:
             self._process_delete(dat_messages)
 
         documents = [msg.record for msg in dat_messages]
@@ -87,6 +87,7 @@ class DataProcessor:
             DatLogMessage: A log message indicating the deletion operation.
 
         """
+        logger.info("Write Sync Mode is set to 'UPSERT'. Processing delete operation.")
         first_record = dat_messages[0].record #Getting first record because all the records in the batch should belong to one stream and namespace
         stream = first_record.stream.name
         namespace = first_record.namespace
@@ -126,6 +127,7 @@ class DataProcessor:
         logger.info("Intializing data processor.")
         logger.info(f"Configured catalog: {configured_catalog.model_dump_json()}")
         logger.debug(f"Processing {len(input_messages)} messages.")
+
         self._initialize_write_sync_modes(configured_catalog)
 
         self.loader.initiate_sync(configured_catalog)
