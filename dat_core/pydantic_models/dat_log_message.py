@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field
 class Level(Enum):
     FATAL = 'FATAL'
     ERROR = 'ERROR'
-    WARN = 'WARN'
+    WARNING = 'WARNING'
     INFO = 'INFO'
     DEBUG = 'DEBUG'
     TRACE = 'TRACE'

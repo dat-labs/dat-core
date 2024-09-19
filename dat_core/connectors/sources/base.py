@@ -186,7 +186,7 @@ class SourceBase(ConnectorBase):
                     )
                 )
             except StopIteration:
-                logger.warning('The source didnt return any data')
+                logger.warning(f"The stream {configured_stream.name} has no records")
 
     def _build_stream_state_from_record(self,
         stream_instance: Stream,

@@ -87,6 +87,3 @@ class DatMessage(BaseModel):
             type=Type.LOG,
             log=DatLogMessage(level=level, message=message)
         )
-        
-# if __name__ == '__main__':
-#     print(DatMessage.as_dat_log('this is a DEBUG message'))
