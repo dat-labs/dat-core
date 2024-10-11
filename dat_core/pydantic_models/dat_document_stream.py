@@ -174,10 +174,10 @@ class DatDocumentStream(BaseModel):
             }
         }
     )
-    namespace: str = Field(
+    namespace: Optional[str] = Field(
         None, description='The namespace the data is associated with.'
     )
-    read_sync_mode: ReadSyncMode = Field(
+    read_sync_mode: Optional[ReadSyncMode] = Field(
         ReadSyncMode.FULL_REFRESH,
         description='An list of supported sync modes for the stream while reading.',
         json_schema_extra={
@@ -186,7 +186,7 @@ class DatDocumentStream(BaseModel):
             }
         }
     )
-    write_sync_mode: WriteSyncMode = Field(
+    write_sync_mode: Optional[WriteSyncMode] = Field(
         WriteSyncMode.APPEND,
         description='A list of supported sync modes for the stream while writing.',
         json_schema_extra={
