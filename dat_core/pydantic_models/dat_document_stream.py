@@ -47,7 +47,10 @@ class SplitByHtmlHeaderSettings(BaseModel):
                 'widget': 'textboxDelimiterSeparatedChip',
             }
         }
-    )    
+    )
+
+    class Config:
+        extra = 'allow' 
 
 
 class SplitByCharacterSettings(BaseModel):
@@ -171,11 +174,11 @@ class DatDocumentStream(BaseModel):
             }
         }
     )
-    namespace: Optional[str] = Field(
+    namespace: str = Field(
         None, description='The namespace the data is associated with.'
     )
-    read_sync_mode: Optional[ReadSyncMode] = Field(
-        'INCREMENTAL',
+    read_sync_mode: ReadSyncMode = Field(
+        ReadSyncMode.FULL_REFRESH,
         description='An list of supported sync modes for the stream while reading.',
         json_schema_extra={
             'ui-opts': {
@@ -183,8 +186,8 @@ class DatDocumentStream(BaseModel):
             }
         }
     )
-    write_sync_mode: Optional[WriteSyncMode] = Field(
-        'APPEND',
+    write_sync_mode: WriteSyncMode = Field(
+        WriteSyncMode.APPEND,
         description='A list of supported sync modes for the stream while writing.',
         json_schema_extra={
             'ui-opts': {

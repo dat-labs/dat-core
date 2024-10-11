@@ -94,7 +94,7 @@ class DataProcessor:
         ids = {getattr(msg.record.data.metadata, self.loader.METADATA_DAT_RECORD_ID_FIELD) for msg in dat_messages}
         _filter={
                 self.loader.METADATA_DAT_STREAM_FIELD: stream,
-                self.loader.METADATA_DAT_RECORD_ID_FIELD: list(ids),
+                self.loader.METADATA_DAT_RECORD_ID_FIELD: list(ids) + ["not_set"],
                 self.loader.METADATA_DAT_RUN_ID_FIELD: first_record.data.metadata.dat_run_id,
                 self.loader.METADATA_DAT_SOURCE_FIELD: first_record.data.metadata.dat_source,
             }
