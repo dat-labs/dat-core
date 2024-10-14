@@ -181,7 +181,7 @@ class DatDocumentStream(BaseModel):
         title='Namespace',
     )
     read_sync_mode: Optional[ReadSyncMode] = Field(
-        ReadSyncMode.FULL_REFRESH,
+        ReadSyncMode.FULL_REFRESH.name,
         description='An list of supported sync modes for the stream while reading.',
         title='Read Sync Mode',
         json_schema_extra={
@@ -191,7 +191,7 @@ class DatDocumentStream(BaseModel):
         }
     )
     write_sync_mode: Optional[WriteSyncMode] = Field(
-        WriteSyncMode.APPEND,
+        WriteSyncMode.APPEND.name,
         description='A list of supported sync modes for the stream while writing.',
         title='Write Sync Mode',
         json_schema_extra={
@@ -224,8 +224,8 @@ class DatDocumentStream(BaseModel):
     )
     advanced: Optional[Advanced] = Field(
         None,
-        description='Additional optional settings',
-        title='Advanced',
+        description='Additional Settings',
+        title='Advanced Settings',
         json_schema_extra={
             'ui-opts': {
                 'widget': 'group',
