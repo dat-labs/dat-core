@@ -159,6 +159,7 @@ class DatDocumentStream(BaseModel):
     name: str = Field(
         ...,
         description='The name of the document stream.',
+        title='Name',
         json_schema_extra={
             'ui-opts': {
                 'hidden': True,
@@ -168,6 +169,7 @@ class DatDocumentStream(BaseModel):
     json_schema: Optional[Dict[str, Any]] = Field(
         None,
         description='Stream schema using Json schema specification.',
+        title='Json Schema',
         json_schema_extra={
             'ui-opts': {
                 'hidden': True,
@@ -175,11 +177,13 @@ class DatDocumentStream(BaseModel):
         }
     )
     namespace: Optional[str] = Field(
-        None, description='The namespace the data is associated with.'
+        None, description='The namespace the data is associated with.',
+        title='Namespace',
     )
     read_sync_mode: Optional[ReadSyncMode] = Field(
         ReadSyncMode.FULL_REFRESH,
         description='An list of supported sync modes for the stream while reading.',
+        title='Read Sync Mode',
         json_schema_extra={
             'ui-opts': {
                 'widget': 'radioButton',
@@ -189,6 +193,7 @@ class DatDocumentStream(BaseModel):
     write_sync_mode: Optional[WriteSyncMode] = Field(
         WriteSyncMode.APPEND,
         description='A list of supported sync modes for the stream while writing.',
+        title='Write Sync Mode',
         json_schema_extra={
             'ui-opts': {
                 'widget': 'radioButton',
@@ -200,6 +205,7 @@ class DatDocumentStream(BaseModel):
     cursor_field: Optional[str] = Field(
         None,
         description='The path to the field used to determine if a record is new or modified.\nREQUIRED for INCREMENTAL sync mode.',
+        title='Cursor Field',
         json_schema_extra={
             'ui-opts': {
                 'hidden': True,
@@ -209,6 +215,7 @@ class DatDocumentStream(BaseModel):
     upsert_keys: Optional[List[str]] = Field(
         None,
         description='The keys to use for upserting records.',
+        title='Upsert Keys',
         json_schema_extra={
             'ui-opts': {
                 'hidden': True,
@@ -218,6 +225,7 @@ class DatDocumentStream(BaseModel):
     advanced: Optional[Advanced] = Field(
         None,
         description='Additional optional settings',
+        title='Advanced',
         json_schema_extra={
             'ui-opts': {
                 'widget': 'group',
