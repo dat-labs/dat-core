@@ -20,8 +20,15 @@ class WriteSyncMode(EnumWithStr):
     UPSERT = 'UPSERT'
     REPLACE = 'REPLACE'
 
+class BaseSplitterSettings(BaseModel):
+    def get_splitter_config(self, splitter_settings: Dict[str, Any]) -> Dict[str, Any]:
+        splitter_config = {}
+        for key, value in splitter_settings.items():
+            if key != 'splitter_settings':
+                splitter_config[key] = value
+        return splitter_config
 
-class SplitByHtmlHeaderExtraConfig(BaseModel):
+class SplitByHtmlHeaderExtraConfig(BaseSplitterSettings):
     headers_to_split_on: Optional[List[str]] = Field(
         ['h2', 'h3'],
         description='list of headers we want to track mapped to (arbitrary) keys for metadata. Allowed header values: h1, h2, h3, h4, h5, h6',
@@ -33,7 +40,7 @@ class SplitByHtmlHeaderExtraConfig(BaseModel):
     )
 
 
-class SplitByHtmlHeaderSettings(BaseModel):
+class SplitByHtmlHeaderSettings(BaseSplitterSettings):
     splitter_settings: Optional[str] = Field('SPLIT_BY_HTML_HEADER', json_schema_extra={
         'ui-opts': {
             'hidden': True,
@@ -53,7 +60,7 @@ class SplitByHtmlHeaderSettings(BaseModel):
         extra = 'allow' 
 
 
-class SplitByCharacterSettings(BaseModel):
+class SplitByCharacterSettings(BaseSplitterSettings):
     splitter_settings: Optional[str] = Field(
         'SPLIT_BY_CHARACTER',
         json_schema_extra={
@@ -65,7 +72,7 @@ class SplitByCharacterSettings(BaseModel):
     separator: Optional[str] = '\\n\\n'
 
 
-class SplitCodeSettings(BaseModel):
+class SplitCodeSettings(BaseSplitterSettings):
     splitter_settings: Optional[str] = Field(
         'SPLIT_CODE',
         json_schema_extra={
@@ -84,7 +91,7 @@ class SplitCodeSettings(BaseModel):
     )
 
 
-class SplitByMarkdownSettings(BaseModel):
+class SplitByMarkdownSettings(BaseSplitterSettings):
     splitter_settings: Optional[str] = Field(
         'SPLIT_BY_MARKDOWN',
         json_schema_extra={
@@ -95,7 +102,7 @@ class SplitByMarkdownSettings(BaseModel):
     )
 
 
-class SplitJsonRecursivelySettings(BaseModel):
+class SplitJsonRecursivelySettings(BaseSplitterSettings):
     splitter_settings: Optional[str] = Field(
         'SPLIT_JSON_RECURSIVELY',
         json_schema_extra={
@@ -106,7 +113,7 @@ class SplitJsonRecursivelySettings(BaseModel):
     )
 
 
-class SplitByCharacterRecursiverlySettings(BaseModel):
+class SplitByCharacterRecursiverlySettings(BaseSplitterSettings):
     splitter_settings: Optional[str] = Field(
         'SPLIT_BY_CHARACTER_RECURSIVELY',
         json_schema_extra={
@@ -118,7 +125,7 @@ class SplitByCharacterRecursiverlySettings(BaseModel):
     separators: Optional[List] = ['\n\n', '\n', ' ', '']
 
 
-class SplitByTokensSettings(BaseModel):
+class SplitByTokensSettings(BaseSplitterSettings):
     splitter_settings: Optional[str] = Field(
         'SPLIT_BY_TOKENS',
         json_schema_extra={
