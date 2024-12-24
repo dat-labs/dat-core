@@ -143,7 +143,7 @@ class CustomGenerateJsonSchema(GenerateJsonSchema):
                 return {'$ref': self.core_to_json_refs[core_mode_ref]}
 
         # Generate the JSON schema, accounting for the json_schema_override and core_schema_override
-        metadata_handler = _core_metadata.CoreMetadataHandler(schema)
+        metadata_handler = _core_metadata.CoreMetadata(schema)
 
         def populate_defs(core_schema: CoreSchema, json_schema: JsonSchemaValue) -> JsonSchemaValue:
             if 'ref' in core_schema:
@@ -203,7 +203,7 @@ class CustomGenerateJsonSchema(GenerateJsonSchema):
         current_handler = _schema_generation_shared.GenerateJsonSchemaHandler(
             self, handler_func)
 
-        for js_modify_function in metadata_handler.metadata.get('pydantic_js_functions', ()):
+        for js_modify_function in metadata_handler.get('pydantic_js_functions', ()):
 
             def new_handler_func(
                 schema_or_field: CoreSchemaOrField,
@@ -224,7 +224,7 @@ class CustomGenerateJsonSchema(GenerateJsonSchema):
             current_handler = _schema_generation_shared.GenerateJsonSchemaHandler(
                 self, new_handler_func)
 
-        for js_modify_function in metadata_handler.metadata.get('pydantic_js_annotation_functions', ()):
+        for js_modify_function in metadata_handler.get('pydantic_js_annotation_functions', ()):
 
             def new_handler_func(
                 schema_or_field: CoreSchemaOrField,
